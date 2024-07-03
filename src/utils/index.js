@@ -1,5 +1,12 @@
-import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
+import { Socket } from "socket.io-client"
+
+export const promiseResolver = async (promiseList) => {
+    const results = await Promise.allSettled(promiseList)
+    const data = results.map(r => r.value)
+    return data
+}
+
+export const singlePromiseResolver = async (promise) =>  await promise
 
 export const puestos = [
     'Profesor de Tiempo Completo Titular "A"',
@@ -21,11 +28,10 @@ export const titulos = [
 
 export const distribucionActividades = [
     'Docencia',
-    'Atención a estudiantes',
-    'Atención personalizada',
-    'Gestión Institucional',
-    'Desarrollo de material',
-    'LIIAD'
+    'LIIAD',
+    'Tutorías',
+    'Gestión',
+    'Estadía técnica',
 ]
 
 export const modalidades = [
@@ -36,13 +42,13 @@ export const modalidades = [
     'Ingeniería Escolarizada',
     'Ingeniería Mixta',
 ]
-export const defaultActivity = {    
+export const defaultActivity = {
     id: crypto.randomUUID(),
-    pe: {
-        siglas: "",
-        descripcion: "",
-    },
+    pe: null,
     distribucion_actividades: "",
+    tipo_gestion: "",
+    tipo_estadia: "",
+    numero_estudiantes: 0,
     nombre_actividades: "",
     grados_grupos: [],
     horas_semanales: 0,
@@ -54,7 +60,9 @@ export const defaultRecord = {
     nombre: "",
     sexo: "",
     puesto: "",
-    actividades: [
+    anio: new Date().getFullYear(),
+    periodo: "",
+    actividad: [
         defaultActivity
     ],
     total: 0,
@@ -85,7 +93,34 @@ export const generatePeriods = (year, ordinario) => {
 
 export const checkEmptyStringOption = (string) => string === "" ? [] : [string]
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export const sumHoras = (activities) => {
+    if (activities?.length){
+        return activities.map(e => e.subtotal_clasificacion).reduce((p, c) => p + c, 0)
+    }
+    return 0
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const generateTemplateObject = (record) => {
+    const plantilla = Object.fromEntries(Object.entries(record).filter(([k, v]) => {
+        if (k != 'actividades') {
+            return true
+        }
+    })
+    )
+    return plantilla
+}
+/**
+ * 
+ * @param {Socket} socket 
+ * @param {*} toast 
+ * @returns 
+ */
+export const checkSocketStatus = (socket,toast) => {
+    if (socket.disconnected) {
+        toast.error('No hay conexión con el servidor', {
+            id: 'no-connection'
+        })
+        return true
+    }
+    return false
+}
