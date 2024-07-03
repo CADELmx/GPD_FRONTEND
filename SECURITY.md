@@ -6,6 +6,7 @@ Because this project is not stable and is currently in development there's no su
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 0.2.x   | :x:                |
 | 0.1.x   | :x:                |
 
 ## Reporting a Vulnerability
