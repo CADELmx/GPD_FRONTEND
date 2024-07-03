@@ -2,6 +2,7 @@
 <h1 align="center">
   Gestión de Plantillas Docentes (GPD)
 </h1>
+
 This is a web app designed to solve the inefficiency problem in the [UTIM](http://www.utim.edu.mx/) for assignement of workload
 
 the app has two basic routes /index and /secretary, the first one is for workload assignement and the second one is for aproving the workload,
