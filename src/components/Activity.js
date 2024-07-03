@@ -108,6 +108,7 @@ export const Activity = ({ act, eduPrograms }) => {
             .map(e => e.subtotal_clasificacion)
             .reduce((p, c) => p + c, 0)
         setStored({
+            selectedItem: acts.length > 1 ? acts[acts.length - 2].id : acts[0].id,
             record: {
                 ...record,
                 total
