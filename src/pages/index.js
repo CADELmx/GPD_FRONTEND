@@ -30,35 +30,3 @@ export const getStaticProps = async () => {
     }
   }
 }
-
-export const getStaticProps = async () => {
-  const eduPromise = supabase.from('programaseducativos').select('siglas,descripcion')
-  const acaPromise = supabase.from('dpersonales').select('ide,nombre,puesto,area').likeAnyOf('puesto', [
-    '%asignatura%',
-    '%Tiempo Completo%',
-    '%de Apoyo%',
-  ]).in('area', [
-    'P.E. de Tecnologías de la Información',
-    'P.E. de Lengua Inglesa',
-    'P.E. de Lengua inglesa',
-  ])
-  const promiseResolver = async (promiseList) => {
-    const results = await Promise.allSettled(promiseList)
-    const data = results.map(r => r.value)
-    return data
-  }
-  const [eduData, acaData] = await promiseResolver([eduPromise, acaPromise])
-  if (eduData.error || acaData.error) {
-    return {
-      props: {
-        error: 'Error al cargar los datos'
-      }
-    }
-  }
-  return {
-    props: {
-      programasEducativos: eduData.data,
-      academicWorkers: acaData.data,
-    }
-  }
-}

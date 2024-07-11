@@ -3,7 +3,7 @@ import { Avatar, Chip, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMen
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import logo from "public/utim.png"
+import logo from "/public/utim.png"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { LoginButton } from "./LoginButton"
