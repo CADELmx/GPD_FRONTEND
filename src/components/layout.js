@@ -1,5 +1,5 @@
 import { StoredContext } from "@/context"
-import { Avatar, Chip, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
+import { Chip, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"

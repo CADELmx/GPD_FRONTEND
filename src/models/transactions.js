@@ -1,13 +1,6 @@
+import axios from "axios"
 import { supabase } from "./conector"
-
-export const insertActivities = async (activities) => {
-    const response = await supabase.from('actividad').insert(activities).select('id')
-    return response
-}
-
-export const insertTemplate = (template) => {
-    return supabase.from('plantilla').insert([template]).select('id')
-}
+import { getCookie } from "cookies-next"
 
 const academicWorkersFilter = [
     '%asignatura%',
@@ -32,6 +25,26 @@ export const getOneAcademicWorker = (id) => {
         .ilikeAnyOf('puesto', academicWorkersFilter)
 }
 
+const saxios = axios.create({
+    baseURL: process.env.API_URL,
+    headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+    },
+})
+
+export const insertActivities = async (activities) => {
+    const response = await saxios.post('/activity',activities)
+    return response
+}
+
+export const insertPrtialTemplate = async (template) => {
+    return supabase.from('plantilla').insert([template]).select('id')
+}
+
+export const insertTemplate = (template) => {
+    return saxios.post('/template', template)
+}
+
 export const getAcademicPrograms = () => {
     return supabase.from('programaseducativos').select('id,siglas,descripcion')
 }
@@ -40,16 +53,18 @@ export const getTemplates = () => {
     return supabase.from('plantilla').select('*')
 }
 
+export const getTemplate = (id) => {
+    return saxios.get(`/templates/${id}`)
+}
+
+export const 
+
 export const getTemplateJoinActivities = () => {
     return supabase.from('plantilla').select('id,nombre,actividad(*),total,status')
 }
 
 export const getTemplateJoinActivitiesById = (id) => {
     return supabase.from('plantilla').select('id,nombre,actividad(*),total,status').eq('id', id)
-}
-
-export const getTemplate = (id) => {
-    return supabase.from('plantilla').select('*').eq('id', id)
 }
 
 export const getActivites = () => {
