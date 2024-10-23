@@ -33,7 +33,11 @@ const serverClient = axios.create({
 })
 
 export const insertActivities = (activities) => {
-    return serverClient.post('/activity', activities)
+    return serverClient.post('/activity', activities, {
+        params: {
+            many: true
+        }
+    })
 }
 
 export const insertTemplate = (template) => {
@@ -53,34 +57,21 @@ export const getTemplates = async () => {
 }
 
 export const getTemplate = (id) => {
-    return serverClient.get(`/templates/${id}`)
-}
-
-export const getPartialTemplatesJoinActivities = () => {
-    return serverClient.get('/partial-templates', {
+    return serverClient.get('/templates/', {
         params: {
-            join: true
-        }
-    })
-}
-
-export const getPartialTemplateJoinActivitiesById = (id) => {
-    return serverClient.get('/partial-templates/', {
-        params: {
-            join: true,
             id
         }
     })
 }
 
-export const getActivites = () => {
-    return serverClient.get('/activity')
+export const getPartialTemplates = () => {
+    return serverClient.get('/partial-templates')
 }
 
-export const getActivitiesByPartialTemplate = (id) => {
-    return serverClient.get('/activity/', {
+export const getPartialTemplate = (id) => {
+    return serverClient.get('/partial-templates/', {
         params: {
-            template: id
+            id
         }
     })
 }
@@ -89,6 +80,30 @@ export const setPartialTemplateStatus = (id, status) => {
     return serverClient.put('partial-template', status, {
         params: {
             id
+        }
+    })
+}
+
+export const getPartialTemplatesJoinActivities = () => {
+    return serverClient.get('/partial-templates/activities')
+}
+
+export const getPartialTemplateJoinActivity = (id) => {
+    return serverClient.get('/partial-templates/activities', {
+        params: {
+            id
+        }
+    })
+}
+
+export const getActivities = () => {
+    return serverClient.get('/activity')
+}
+
+export const getActivitiesByPartialTemplate = (id) => {
+    return serverClient.get('/activity/', {
+        params: {
+            template: id
         }
     })
 }
@@ -124,12 +139,16 @@ export const checkExistentComment = (partialTemplateId) => {
     })
 }
 
-export const getTemplateJoinComment = () => {
-    return supabase.from('plantilla').select('id,nombre,total,status,comentarios(*)')
+export const getPartialTemplateJoinComment = (templateId) => {
+    return serverClient.get('/partial-templates/comments', {
+        params: {
+            id: templateId
+        }
+    })
 }
 
 export const generateRecords = async () => {
-    const { data, error } = await getTemplateJoinActivities()
+    const { data, error } = await getPartialTemplatesJoinActivities()
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantillas y/o actividades')
         return {
@@ -146,7 +165,7 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data, error } = await getTemplateJoinActivitiesById(id)
+    const { data, error } = await getPartialTemplateJoinActivity(id)
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
@@ -157,7 +176,7 @@ export const generateSingleRecord = async (id) => {
     }
     return {
         props: {
-            plantilla: data[0],
+            plantilla: data,
         }
     }
 }
