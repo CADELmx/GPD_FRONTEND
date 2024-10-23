@@ -25,58 +25,72 @@ export const getOneAcademicWorker = (id) => {
         .ilikeAnyOf('puesto', academicWorkersFilter)
 }
 
-const saxios = axios.create({
+const serverClient = axios.create({
     baseURL: process.env.API_URL,
     headers: {
         Authorization: `Bearer ${getCookie('token')}`
     },
 })
 
-export const insertActivities = async (activities) => {
-    const response = await saxios.post('/activity',activities)
-    return response
-}
-
-export const insertPrtialTemplate = async (template) => {
-    return supabase.from('plantilla').insert([template]).select('id')
+export const insertActivities = (activities) => {
+    return serverClient.post('/activity', activities)
 }
 
 export const insertTemplate = (template) => {
-    return saxios.post('/template', template)
+    return serverClient.post('/template', template)
+}
+
+export const insertPartialTemplate = (template) => {
+    return serverClient.post('/template', template)
 }
 
 export const getAcademicPrograms = () => {
-    return supabase.from('programaseducativos').select('id,siglas,descripcion')
+    return serverClient.post('/educational-programs')
 }
 
-export const getTemplates = () => {
-    return supabase.from('plantilla').select('*')
+export const getTemplates = async () => {
+    return serverClient.get('/templates')
 }
 
 export const getTemplate = (id) => {
-    return saxios.get(`/templates/${id}`)
+    return serverClient.get(`/templates/${id}`)
 }
 
-export const 
-
-export const getTemplateJoinActivities = () => {
-    return supabase.from('plantilla').select('id,nombre,actividad(*),total,status')
+export const getPartialTemplatesJoinActivities = () => {
+    return serverClient.get('/partial-templates', {
+        params: {
+            join: true
+        }
+    })
 }
 
-export const getTemplateJoinActivitiesById = (id) => {
-    return supabase.from('plantilla').select('id,nombre,actividad(*),total,status').eq('id', id)
+export const getPartialTemplateJoinActivitiesById = (id) => {
+    return serverClient.get('/partial-templates/', {
+        params: {
+            join: true,
+            id
+        }
+    })
 }
 
 export const getActivites = () => {
-    return supabase.from('actividad').select('*')
+    return serverClient.get('/activity')
 }
 
-export const getActivitiesByTemplate = (id) => {
-    return supabase.from('actividad').select('*').eq('plantilla_id', id)
+export const getActivitiesByPartialTemplate = (id) => {
+    return serverClient.get('/activity/', {
+        params: {
+            template: id
+        }
+    })
 }
 
-export const setTemplateStatus = (id, status) => {
-    return supabase.from('plantilla').update({ status }).eq('id', id).select('id')
+export const setPartialTemplateStatus = (id, status) => {
+    return serverClient.put('partial-template', status, {
+        params: {
+            id
+        }
+    })
 }
 
 export const insertComment = (template_id, comment) => {
