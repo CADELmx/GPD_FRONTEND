@@ -93,20 +93,35 @@ export const setPartialTemplateStatus = (id, status) => {
     })
 }
 
-export const insertComment = (template_id, comment) => {
-    return supabase.from('comentarios').insert({ plantilla_id: template_id, comentario: comment }).select('id')
+export const insertComment = (partialTemplateId, comment) => {
+    return serverClient.post('/comments', {
+        partialTemplateId,
+        comment
+    })
 }
 
-export const updateComment = (template_id, comment) => {
-    return supabase.from('comentarios').update({ comentario: comment }).eq('plantilla_id', template_id).select('id')
+export const updateComment = (partialTemplateId, comment) => {
+    return serverClient.put('/comments', { comment }, {
+        params: {
+            id: partialTemplateId
+        }
+    })
 }
 
-export const deleteComment = (template_id) => {
-    return supabase.from('comentarios').delete().eq('plantilla_id', template_id).select('id')
+export const deleteComment = (partialTemplateId) => {
+    return serverClient.delete('/comments', null, {
+        params: {
+            id: partialTemplateId
+        }
+    })
 }
 
-export const checkExistentComment = (template_id) => {
-    return supabase.from('comentarios').select('id').eq('plantilla_id', template_id)
+export const checkExistentComment = (partialTemplateId) => {
+    return serverClient.get('/comments', {
+        params: {
+            id: partialTemplateId
+        }
+    })
 }
 
 export const getTemplateJoinComment = () => {
