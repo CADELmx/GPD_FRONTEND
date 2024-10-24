@@ -31,6 +31,14 @@ const serverClient = axios.create({
         Authorization: `Bearer ${getCookie('token')}`
     },
 })
+/**
+ * 
+ * @param {import("axios").AxiosPromise} AxiosPromise 
+ */
+export const AxiosAbtraction = async (AxiosPromise) => {
+    const { data } = await AxiosPromise
+    return data
+}
 
 export const insertActivities = (activities) => {
     return serverClient.post('/activity', activities, {
@@ -148,7 +156,9 @@ export const getPartialTemplateJoinComment = (templateId) => {
 }
 
 export const generateRecords = async () => {
-    const { data, error } = await getPartialTemplatesJoinActivities()
+    const { data, error } = await AxiosAbtraction(
+        getPartialTemplatesJoinActivities()
+    )
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantillas y/o actividades')
         return {
@@ -165,7 +175,9 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data, error } = await getPartialTemplateJoinActivity(id)
+    const { data, error } = await AxiosAbtraction(
+        getPartialTemplateJoinActivity(id)
+    )
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {

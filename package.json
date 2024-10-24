@@ -21,6 +21,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
+    "secreutim": "file:",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5"
   },
