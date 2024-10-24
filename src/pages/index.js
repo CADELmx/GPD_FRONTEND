@@ -1,6 +1,6 @@
 import { AcademicTemplateForm } from "@/components/AcademicTemplateForm";
 import { ModalError } from "@/components/ModalError";
-import { getAcademicPrograms, getAllAcademicWorkers } from "@/models/transactions";
+import { AxiosAbtraction, getAcademicPrograms, getAllAcademicWorkers } from "@/models/transactions";
 import { promiseResolver } from "@/utils";
 
 export default function Index({ academicPrograms, academicWorkers, getSsrError }) {
@@ -14,10 +14,10 @@ export default function Index({ academicPrograms, academicWorkers, getSsrError }
 }
 
 export const getStaticProps = async () => {
-  const eduPromise = getAcademicPrograms()
-  const acaPromise = getAllAcademicWorkers()
-  const [eduData, acaData] = await promiseResolver([eduPromise, acaPromise])
-  const error = eduData.error || acaData.error
+  const eduPromise =AxiosAbtraction(getAcademicPrograms())
+  const acaPromise = AxiosAbtraction(getAllAcademicWorkers())
+  const [educationalData, academicData] = await promiseResolver([eduPromise, acaPromise])
+  const error = educationalData.error || academicData.error
   if (error) {
     console.error('#ERROR# Error al obtener datos de programas educativos y/o trabajadores')
   }
@@ -25,8 +25,8 @@ export const getStaticProps = async () => {
     revalidate: 3,
     props: {
       getSsrError: error ? 'Algo salió mal, recarga la página' : null,
-      academicPrograms: eduData.data,
-      academicWorkers: acaData.data,
+      academicPrograms: educationalData.data,
+      academicWorkers: academicData.data,
     }
   }
 }
