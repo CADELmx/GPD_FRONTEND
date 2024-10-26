@@ -1,5 +1,5 @@
 import { StoredContext } from "@/context"
-import { getOneAcademicWorker } from "@/models/transactions"
+import { AxiosAbtraction, getOneAcademicWorker, getPersonalData } from "@/models/transactions"
 import { Chip, Input, Select, SelectItem, SelectSection, Switch } from "@nextui-org/react"
 import { useState } from "react"
 import toast from "react-hot-toast"
@@ -10,11 +10,12 @@ export const NtInput = ({ academicWorkers }) => {
     const [locked, setLocked] = useState(false)
     const [selectorActive, setSelectorActive] = useState(false)
     const handleChangeFromSupabase = async (newValue) => {
-        const supaPromise = getOneAcademicWorker(newValue)
+        const supaPromise = getPersonalData(newValue)
         if (newValue === '') return
         toast.promise(supaPromise, {
             loading: 'Buscando número de trabajador',
-            success: ({ data, error }) => {
+            success: ({ data, request, error }) => {
+                console.log(data, request)
                 if (error) {
                     return 'Error al buscar el número de trabajador'
                 }

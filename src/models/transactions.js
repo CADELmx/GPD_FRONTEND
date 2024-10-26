@@ -13,6 +13,7 @@ const areaFiter = [
     'P.E. de Lengua Inglesa',
 ]
 
+
 export const getAllAcademicWorkers = () => {
     return supabase.from('dpersonales').select('ide,nombre,puesto,area')
         .likeAnyOf('puesto', academicWorkersFilter)
@@ -31,14 +32,23 @@ const serverClient = axios.create({
         Authorization: `Bearer ${getCookie('token')}`
     },
 })
+
+export const getPersonalData = (id) => {
+    return serverClient.get('/personal-data', {
+        params: {
+            id
+        }
+    })
+}
+
+export const getAllPersonalData = () => {
+    return serverClient.get('/personal-data')
+}
+
 /**
  * 
  * @param {import("axios").AxiosPromise} AxiosPromise 
- */
-export const AxiosAbtraction = async (AxiosPromise) => {
-    const { data } = await AxiosPromise
-    return data
-}
+*/
 
 export const insertActivities = (activities) => {
     return serverClient.post('/activity', activities, {
@@ -57,7 +67,7 @@ export const insertPartialTemplate = (template) => {
 }
 
 export const getAcademicPrograms = () => {
-    return serverClient.post('/educational-programs')
+    return serverClient.get('/educational-programs')
 }
 
 export const getTemplates = async () => {
@@ -156,9 +166,7 @@ export const getPartialTemplateJoinComment = (templateId) => {
 }
 
 export const generateRecords = async () => {
-    const { data, error } = await AxiosAbtraction(
-        getPartialTemplatesJoinActivities()
-    )
+    const { data: { data, error } } = await getPartialTemplatesJoinActivities()
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantillas y/o actividades')
         return {
@@ -175,9 +183,7 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data, error } = await AxiosAbtraction(
-        getPartialTemplateJoinActivity(id)
-    )
+    const { data: { data, error } } = await getPartialTemplateJoinActivity(id)
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
