@@ -165,6 +165,18 @@ export const getPartialTemplateJoinComment = (templateId) => {
     })
 }
 
+export const getArea = (id) => {
+    return serverClient.get('/areas', {
+        params: {
+            id
+        }
+    })
+}
+
+export const getAreas = () => {
+    return serverClient.get('/areas')
+}
+
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
     if (error) {
