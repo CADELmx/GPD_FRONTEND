@@ -3,7 +3,7 @@
   "version": "0.2.2",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,7 @@
     "@nextui-org/react": "^2.2.9",
     "@supabase/ssr": "^0.3.0",
     "@supabase/supabase-js": "^2.42.7",
+    "axios": "^1.7.2",
     "cookies-next": "^4.2.1",
     "excel4node": "^1.8.2",
     "framer-motion": "^11.0.8",
@@ -20,6 +21,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
+    "secreutim": "file:",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5"
   },

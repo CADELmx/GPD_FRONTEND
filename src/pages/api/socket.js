@@ -1,4 +1,4 @@
-import { checkExistentComment, deleteComment, insertActivities, insertComment, insertTemplate, setTemplateStatus, updateComment } from "@/models/transactions";
+import { checkExistentComment, deleteComment, insertActivities, insertComment, insertPartialTemplate, setTemplateStatus, updateComment } from "@/models/transactions";
 import { generateTemplateObject } from "@/utils";
 import { Server } from "socket.io";
 
@@ -28,7 +28,7 @@ const iohandler = (_, res) => {
         }
         const onCreateTemplate = async templateObject => {
             const template = generateTemplateObject(templateObject)
-            const { error: templateError, data } = await insertTemplate(template)
+            const { error: templateError, data } = await insertPartialTemplate(template)
             if (templateError) {
                 io.emit('templateError', 'Error al guardar plantilla')
                 return

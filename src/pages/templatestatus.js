@@ -1,6 +1,6 @@
 import { ModalError } from "@/components/ModalError"
 import { StoredContext } from "@/context"
-import { getTemplateJoinActivities } from "@/models/transactions"
+import { getPartialTemplatesJoinActivities } from "@/models/transactions"
 import { Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 
@@ -70,7 +70,7 @@ export default function TemplatesStatus({ plantillas, error }) {
 }
 
 export const getStaticProps = async () => {
-    const { data, error } = await getTemplateJoinActivities()
+    const { data: { data, error } } = await getPartialTemplatesJoinActivities()
     if (error) {
         return {
             props: {
