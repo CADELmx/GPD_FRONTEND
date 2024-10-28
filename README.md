@@ -23,7 +23,7 @@ bun dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Basic setup
-- Database driver: [Supabase](https://supabase.com/)
+- Backend: [GPD_BACKEND](https://github.com/CADELmx/GPD_BACKEND)
 - Realtime events: [Socket.io](https://socket.io/)
 - State management: [React Context API](https://react.dev/reference/react/useContext)
 - Toast notifications: [React Hot Toast](https://react-hot-toast.com/docs)
