@@ -140,7 +140,7 @@ export const AcademicProgramSelector = ({ act, eduPrograms, handler }) => {
     return (
         <div className="flex flex-col md:flex-row gap-2">
             <Select isDisabled={act?.distribucion_actividades === ""} className="md:w-2/5" label='Programa educativo' name='pe' defaultSelectedKeys={act.pe ? [act.pe] : []} onSelectionChange={handler} >
-                {
+                {eduPrograms.length === 0 ? null :
                     eduPrograms.map((e) =>
                         <SelectItem key={e.id} variant="flat">{e.siglas}</SelectItem>)
                 }

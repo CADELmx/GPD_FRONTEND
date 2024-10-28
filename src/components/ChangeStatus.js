@@ -15,7 +15,7 @@ export const ChangeStatus = ({ status, templateid }) => {
     const [taskStatus, setTaskStatus] = useState(statusTypes.find(s => s.name === status) || statusTypes[0])
 
     const handleUpdateStatus = (newStatus) => {
-        if (checkSocketStatus(socket, toast)) return
+        if (checkSocketStatus(socket, toast)) return socket.connect()
         if (newStatus.name === 'Aprobado') socket.emit('deleteComment', { id: templateid })
         socket.emit('updateStatus', { id: templateid, status: newStatus })
         toast('Cambiando estado...', {
@@ -30,14 +30,14 @@ export const ChangeStatus = ({ status, templateid }) => {
         }
     }
     const handleInsertComment = () => {
-        if (checkSocketStatus(socket, toast)) return
+        if (checkSocketStatus(socket, toast)) return socket.connect()
         socket.emit('createComment', { id: templateid, comment })
         toast('Enviando comentario...', {
             id: 'comment-insert'
         })
     }
     const handleSetStatus = () => {
-        if (checkSocketStatus(socket, toast)) return
+        if (checkSocketStatus(socket, toast)) return socket.connect()
         socket.emit('updateStatus', { id: templateid, status: { name: 'Corrección', color: 'danger' } })
         toast('Enviando a corrección...', {
             id: 'status-change'

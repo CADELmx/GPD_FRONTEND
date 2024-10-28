@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Secretary({ plantillas, error }) {
+  console.log(plantillas)
   const { memory: { socket } } = StoredContext()
   const [templates, setTemplates] = useState(plantillas || []);
   useEffect(() => {

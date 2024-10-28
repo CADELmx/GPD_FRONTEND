@@ -21,7 +21,7 @@ export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, templa
     }
     const totalHoras = sumHoras(record?.actividad)
     const handleSubmit = () => {
-        if (checkSocketStatus(socket, toast)) return
+        if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
         socket.emit('createTemplate', record)
     }
