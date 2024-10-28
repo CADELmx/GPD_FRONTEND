@@ -1,30 +1,5 @@
 import axios from "axios"
-import { supabase } from "./conector"
 import { getCookie } from "cookies-next"
-
-const academicWorkersFilter = [
-    '%asignatura%',
-    '%Tiempo Completo%',
-    '%de Apoyo%',
-]
-
-const areaFiter = [
-    'P.E. de Tecnologías de la Información',
-    'P.E. de Lengua Inglesa',
-]
-
-
-export const getAllAcademicWorkers = () => {
-    return supabase.from('dpersonales').select('ide,nombre,puesto,area')
-        .likeAnyOf('puesto', academicWorkersFilter)
-        .in('area', areaFiter)
-}
-
-export const getOneAcademicWorker = (id) => {
-    return supabase.from('dpersonales').select('ide,nombre,puesto,area')
-        .eq('ide', id)
-        .ilikeAnyOf('puesto', academicWorkersFilter)
-}
 
 const serverClient = axios.create({
     baseURL: process.env.API_URL,
