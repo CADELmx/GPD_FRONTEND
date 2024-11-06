@@ -19,21 +19,16 @@ export const AreaCard = ({ area }) => {
             <CardHeader>
                 <h2>{area.name}</h2>
             </CardHeader>
-            <CardBody>
-                <p>{area.description}</p>
-            </CardBody>
         </Card>
     )
 }
 
 export const AreaCards = ({ areas }) => {
     if (areas.length === 0) return (
-        <div>
-            <h1>No hay áreas registradas</h1>
-        </div>
+        <h1>No hay áreas registradas</h1>
     )
     return (
-        <div>
+        <div className="flex flex-col gap-2">
             {areas.map((area) => (
                 <AreaCard area={area} key={area.id} />
             ))}
