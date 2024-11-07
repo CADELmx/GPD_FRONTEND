@@ -11,7 +11,13 @@
     {
       "src": "/social_preview.jpg",
       "sizes": "1280x640",
-      "type": "image/jpg"
+      "type": "image/jpg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "images/screenshots/screenshot-mobile-387x874.png",
+      "sizes": "387x874",
+      "type": "image/png"
     }
   ],
   "icons": [
