@@ -1,7 +1,7 @@
 import { AreasProvider, UseAreas } from "@/context"
 import { getAreas } from "@/models/transactions"
-import { Button, Card, CardHeader, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react"
-import { useState } from "react"
+import { Button, Card, CardHeader, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Navbar, NavbarContent, NavbarItem, useDisclosure } from "@nextui-org/react"
+import { useEffect, useState } from "react"
 
 export const getServerSideProps = async () => {
     const { data: { data, error } } = await getAreas()
@@ -84,24 +84,22 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange, area }) => {
 
 export default function Areas({ areas: ssrAreas, error }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure()
-    const { areaState, setStoredAreas } = UseAreas()
+    const { areaState: { areas }, setStoredAreas } = UseAreas()
     useEffect(() => {
         setStoredAreas({ areas: ssrAreas })
-        return () => { }
     }, [])
-
     return (
-        <div className="flex flex-col gap-2 items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
             <h1 className="font-bold text-utim">Áreas</h1>
-            <Button onPress={onOpen}>Nueva área</Button>
-            <AreaCards areas={areas} />
-            <AreaModal
-                isOpen={isOpen}
-                onOpen={onOpen}
-                onOpenChange={onOpenChange}
-                area={selectedArea}
-                setState={setSelectedArea}
-            />
+            <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3 pt-5 mt-5">
+                <Button className="bg-utim" onPress={onOpen}>Nueva área</Button>
+                <AreaCards areas={areas} />
+                <AreaModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onOpenChange={onOpenChange}
+                />
+            </div>
         </div>
     )
 }

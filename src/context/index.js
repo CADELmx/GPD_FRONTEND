@@ -73,7 +73,9 @@ export const AreasProvider = ({ children }) => {
         areas: [],
         selectedArea: null
     })
-    const setStoredAreas = (props) => setAreaState((areaState) => ({ ...props, ...areaState }))
+    const setStoredAreas = (prop) => {
+        setAreaState((areaState) => ({ ...areaState, ...prop }))
+    }
     return (
         <AreaContext.Provider value={{
             areaState,
