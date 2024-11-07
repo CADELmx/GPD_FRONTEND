@@ -3,10 +3,17 @@
   "short_name": "GPD",
   "theme_color": "#309b7b",
   "background_color": "#fff",
-  "display": "browser",
+  "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
+  "screenshots": [
+    {
+      "src": "/social_preview.jpg",
+      "sizes": "1280x640",
+      "type": "image/jpg"
+    }
+  ],
   "icons": [
     {
       "src": "images/icons/icon-72x72.png",
