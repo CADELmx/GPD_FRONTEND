@@ -14,12 +14,17 @@ export const getServerSideProps = async () => {
     }
 }
 
-export const AreaCard = ({ area }) => {
+export const AreaCard = ({ area, onOpenModal }) => {
+    const { areaState: { selectedArea }, setStoredAreas } = UseAreas()
+    const handlePress = () => {
+        setStoredAreas({ selectedArea: area })
+        onOpenModal()
+    }
     return (
         <Card>
             <CardHeader className="flex gap-1">
                 <h2 className="w-full">{area.name}</h2>
-                <Button isIconOnly variant="light">
+                <Button onPress={handlePress} isIconOnly variant="light">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                     </svg>
@@ -34,25 +39,23 @@ export const AreaCard = ({ area }) => {
     )
 }
 
-export const AreaCards = ({ areas }) => {
+export const AreaCards = ({ areas, onOpenModal }) => {
     if (areas.length === 0) return (
         <h1>No hay áreas registradas</h1>
     )
     return (
         <div className="flex flex-col gap-2">
             {areas.map((area) => (
-                <AreaCard area={area} key={area.id} />
+                <AreaCard onOpenModal={onOpenModal} area={area} key={area.id} />
             ))}
         </div>
     )
 }
 
-export const AreaModal = ({ isOpen, onOpen, onOpenChange, area }) => {
+export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
+    const { areaState: { selectedArea }, setStoredAreas } = UseAreas()
     const handleChange = (e) => {
-        setState((prevState) => ({
-            ...prevState,
-            [e.target.name]: e.target.value
-        }))
+        setStoredAreas({ selectedArea: { name: e.target.value } })
     }
     return (
         <>
@@ -66,7 +69,7 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange, area }) => {
                                     <Input
                                         onChange={handleChange}
                                         label='Nombre del área'
-                                        defaultValue={area?.name}
+                                        defaultValue={selectedArea?.name}
                                     ></Input>
                                 </ModalBody>
                                 <ModalFooter>
@@ -85,6 +88,10 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange, area }) => {
 export default function Areas({ areas: ssrAreas, error }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure()
     const { areaState: { areas }, setStoredAreas } = UseAreas()
+    const handlePress = () => {
+        setStoredAreas({ selectedArea: null })
+        onOpen()
+    }
     useEffect(() => {
         setStoredAreas({ areas: ssrAreas })
     }, [])
@@ -92,8 +99,8 @@ export default function Areas({ areas: ssrAreas, error }) {
         <div className="flex flex-col items-center justify-center">
             <h1 className="font-bold text-utim">Áreas</h1>
             <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3 pt-5 mt-5">
-                <Button className="bg-utim" onPress={onOpen}>Nueva área</Button>
-                <AreaCards areas={areas} />
+                <Button className="bg-utim" onPress={handlePress}>Nueva área</Button>
+                <AreaCards areas={areas} onOpenModal={onOpen} />
                 <AreaModal
                     isOpen={isOpen}
                     onOpen={onOpen}
