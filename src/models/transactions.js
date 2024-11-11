@@ -20,11 +20,6 @@ export const getAllPersonalData = () => {
     return serverClient.get('/personal-data')
 }
 
-/**
- * 
- * @param {import("axios").AxiosPromise} AxiosPromise 
-*/
-
 export const insertActivities = (activities) => {
     return serverClient.post('/activity', activities, {
         params: {
@@ -151,6 +146,23 @@ export const getArea = (id) => {
 export const getAreas = () => {
     return serverClient.get('/areas')
 }
+
+export const createArea = (area) => {
+    return serverClient.post('/areas', area)
+}
+
+export const updateArea = (id, newArea) => {
+    return serverClient.put('/areas', newArea, {
+        params: {
+            id
+        }
+    })
+}
+
+export const deleteArea = (id) => {
+    return serverClient.delete('/areas' + id)
+}
+
 
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
