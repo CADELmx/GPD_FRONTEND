@@ -1,6 +1,7 @@
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
+import { UseSecretary } from "@/context"
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react"
 
-export const EducationalPorgramModal = ({ isOpen, onOpen, onOpenChange }) => {
+export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange }) => {
     const { educationalState: { selectedEducationalProgram, educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const handleChange = (e) => {
         setStoredEducationalPrograms({
@@ -64,6 +65,18 @@ export const EducationalPorgramModal = ({ isOpen, onOpen, onOpenChange }) => {
                                 }
                             </ModalHeader>
                             <ModalBody>
+                                <Select
+                                    onChange={handleChange}
+                                    label='Área'
+                                    name="areaId"
+                                    defaultSelectedKeys={[selectedEducationalProgram?.areaId]}
+                                    items={areas}
+                                >
+                                    {
+                                        (area) =>
+                                            <SelectItem key={area.id} value={area.id}>{area.name}</SelectItem>
+                                    }
+                                </Select>
                                 <Input
                                     onChange={handleChange}
                                     name="abbreviation"
@@ -79,6 +92,50 @@ export const EducationalPorgramModal = ({ isOpen, onOpen, onOpenChange }) => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button onPress={handleSubmit}>Guardar</Button>
+                                <Button color="danger" onPress={handleClose}>Cancelar</Button>
+                            </ModalFooter>
+                        </>
+                    )
+                }
+            </ModalContent>
+        </Modal>
+    )
+}
+
+export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }) => {
+    const { educationalState: { selectedEducationalProgram, educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
+    const handleDelete = async () => {
+        toast.promise(deleteEducationalProgram(selectedEducationalProgram.id), {
+            loading: 'Eliminando programa educativo...',
+            success: ({ data: { message, error } }) => {
+                if (error) return message
+                setStoredEducationalPrograms({
+                    selectedEducationalProgram: null,
+                    educationalPrograms: educationalPrograms.filter(educationalProgram => educationalProgram.id !== id)
+                })
+                onOpenChange()
+                return message
+            },
+            error: 'Error al realizar esta acción, intente de nuevo'
+        })
+    }
+    const handleClose = () => {
+        setStoredEducationalPrograms({ selectedEducationalProgram: null })
+        onOpenChange()
+    }
+    return (
+        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+            <ModalContent>
+                {
+                    (onClose) => (
+                        <>
+                            <ModalHeader>¿Estás seguro de eliminar el programa educativo?</ModalHeader>
+                            <ModalBody>
+                                Programa seleccionado
+                                <p>{selectedEducationalProgram.description}</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button onPress={handleDelete}>Eliminar</Button>
                                 <Button color="danger" onPress={handleClose}>Cancelar</Button>
                             </ModalFooter>
                         </>

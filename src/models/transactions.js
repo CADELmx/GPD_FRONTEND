@@ -159,6 +159,9 @@ export const deleteArea = (id) => {
     return serverClient.delete(`/areas/${id}`)
 }
 
+export const getEducationalPrograms = () => {
+    return serverClient.get('/educational-programs')
+}
 
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
