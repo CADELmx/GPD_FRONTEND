@@ -1,6 +1,7 @@
 import { UseSecretary } from "@/context"
-import { updateEducationalProgram } from "@/models/transactions"
+import { createEducationalProgram, updateEducationalProgram } from "@/models/transactions"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react"
+import toast from "react-hot-toast"
 
 export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange }) => {
     const { educationalState: { selectedEducationalProgram, educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
