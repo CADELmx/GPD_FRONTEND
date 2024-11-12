@@ -1,8 +1,8 @@
 import { UseSecretary } from "@/context"
 import { Button, Card, CardBody, CardHeader } from "@nextui-org/react"
 
-export const EducationalProgramCard = ({ educationalProgram, onOpenModal, onOpenDeleteModal }) => {
-    const { educationalState: { selectedEducationalProgram }, setStoredEducationalPrograms } = UseSecretary()
+const EducationalProgramCard = ({ educationalProgram, onOpenModal, onOpenDeleteModal }) => {
+    const { setStoredEducationalPrograms } = UseSecretary()
     const handlePress = () => {
         setStoredEducationalPrograms({ selectedEducationalProgram: educationalProgram })
         onOpenModal()
@@ -30,5 +30,23 @@ export const EducationalProgramCard = ({ educationalProgram, onOpenModal, onOpen
                 </Button>
             </CardBody>
         </Card>
+    )
+}
+
+export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOpenDeleteModal }) => {
+    if (educationalPrograms.length === 0) return (
+        <h1>No hay programas educativos registrados</h1>
+    )
+    return (
+        <div className="flex flex-col gap-2">
+            {educationalPrograms.map((educationalProgram) => (
+                <EducationalProgramCard
+                    onOpenModal={onOpenModal}
+                    onOpenDeleteModal={onOpenDeleteModal}
+                    educationalProgram={educationalProgram}
+                    key={educationalProgram.id}
+                />
+            ))}
+        </div>
     )
 }

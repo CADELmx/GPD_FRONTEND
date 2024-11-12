@@ -1,8 +1,8 @@
 import { UseSecretary } from "@/context"
 import { Button, Card, CardHeader } from "@nextui-org/react"
 
-export const AreaCard = ({ area, onOpenModal, onOpenDeleteModal }) => {
-    const { areaState: { selectedArea }, setStoredAreas } = UseSecretary()
+const AreaCard = ({ area, onOpenModal, onOpenDeleteModal }) => {
+    const { setStoredAreas } = UseSecretary()
     const handlePress = () => {
         setStoredAreas({ selectedArea: area })
         onOpenModal()
