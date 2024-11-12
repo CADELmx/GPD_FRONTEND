@@ -92,8 +92,8 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
                                 ></Input>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="success" onPress={handleSubmit}>Guardar</Button>
                                 <Button color="danger" onPress={handleClose}>Cancelar</Button>
+                                <Button color="success" onPress={handleSubmit}>Guardar</Button>
                             </ModalFooter>
                         </>
                     )

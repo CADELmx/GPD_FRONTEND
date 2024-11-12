@@ -72,7 +72,7 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
                                 ></Input>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" onPress={handleClose}>Cancelar</Button>
+                                <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
                                 <Button color="success" onPress={handleSubmit}>Guardar</Button>
                             </ModalFooter>
                         </>
@@ -120,8 +120,8 @@ export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }) => {
                                 <p className="text-utim">{selectedArea?.name}</p>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" onPress={handleClose}>Cancelar</Button>
-                                <Button color="success" onPress={handleDelete}>Eliminar</Button>
+                                <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
+                                <Button color="warning" onPress={handleDelete}>Eliminar</Button>
                             </ModalFooter>
                         </>
                     )
