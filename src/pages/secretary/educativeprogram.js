@@ -1,3 +1,4 @@
+import { EducationalProgramCards } from "@/components/educationalProgram/EducationalProgramCard"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
 import { getAreas } from "@/models/transactions"
@@ -44,7 +45,7 @@ export const CreateEducationalProgram = ({ areas }) => {
 }
 
 export default function EducativeProgram({ areas, error }) {
-    const { educationalState, setStoredEducationalPrograms } = UseSecretary()
+    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const DeleteModal = useDisclosure()
     const EducativeProgramModal = useDisclosure()
     const handleOpen = () => {
@@ -57,7 +58,7 @@ export default function EducativeProgram({ areas, error }) {
                 <Button className="bg-utim">Nueva área</Button>
                 <ModalError error={error} />
                 <CreateEducationalProgram areas={areas} />
-                
+                <EducationalProgramCards educationalPrograms={educationalPrograms} onOpenModal={handleOpen} onOpenDeleteModal={DeleteModal.onOpen} />
             </div>
         </div>
     )
