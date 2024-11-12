@@ -1,5 +1,5 @@
 import { Layout } from '@/components/layout'
-import { ContextProvider } from '@/context'
+import { AreasProvider, ContextProvider } from '@/context'
 import '@/styles/globals.css'
 import Notify from '@/toast'
 import { NextUIProvider } from '@nextui-org/react'
@@ -10,9 +10,11 @@ export default function App({ Component, pageProps }) {
     <NextUIProvider>
       <ThemeProvider attribute='class' enableSystem>
         <ContextProvider>
-          <Notify />
           <Layout>
-            <Component {...pageProps} />
+            <Notify />
+            <AreasProvider>
+              <Component {...pageProps} />
+            </AreasProvider>
           </Layout>
         </ContextProvider>
       </ThemeProvider>

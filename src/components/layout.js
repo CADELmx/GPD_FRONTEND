@@ -122,7 +122,7 @@ export const Layout = ({ children }) => {
                     </Chip>
                 </NavbarMenu>
             </Navbar>
-            {children}
+                {children}
         </>
     )
 }
