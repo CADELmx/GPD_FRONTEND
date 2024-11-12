@@ -1,6 +1,7 @@
 import { ModalError } from "@/components/ModalError"
+import { UseSecretary } from "@/context"
 import { getAreas } from "@/models/transactions"
-import { Button, Input, Select, SelectItem } from "@nextui-org/react"
+import { Button, Input, Select, SelectItem, useDisclosure } from "@nextui-org/react"
 import { useState } from "react"
 
 export const getServerSideProps = async () => {
@@ -43,12 +44,20 @@ export const CreateEducationalProgram = ({ areas }) => {
 }
 
 export default function EducativeProgram({ areas, error }) {
+    const { educationalState, setStoredEducationalPrograms } = UseSecretary()
+    const DeleteModal = useDisclosure()
+    const EducativeProgramModal = useDisclosure()
+    const handleOpen = () => {
+        EducativeProgramModal.onOpen()
+    }
     return (
         <div className="flex flex-col items-center justify-center">
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Registrar programa educativo</h1>
             <div className="flex flex-col gap-1 w-5/6 sm:w-2/3">
+                <Button className="bg-utim">Nueva área</Button>
                 <ModalError error={error} />
                 <CreateEducationalProgram areas={areas} />
+                
             </div>
         </div>
     )
