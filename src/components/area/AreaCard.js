@@ -8,6 +8,7 @@ export const AreaCard = ({ area, onOpenModal, onOpenDeleteModal }) => {
         onOpenModal()
     }
     const handleDeleteModal = () => {
+        console.log(area)
         setStoredAreas({ selectedArea: area })
         onOpenDeleteModal()
     }

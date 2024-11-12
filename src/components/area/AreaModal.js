@@ -1,9 +1,10 @@
 import { UseAreas } from "@/context"
 import { createArea, deleteArea, updateArea } from "@/models/transactions"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
+import toast from "react-hot-toast"
 
 export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
-    const { areaState: { selectedArea }, setStoredAreas } = UseAreas()
+    const { areaState: { selectedArea, areas }, setStoredAreas } = UseAreas()
     const handleChange = (e) => {
         setStoredAreas({
             selectedArea: {
@@ -17,8 +18,19 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
         onOpenChange()
     }
     const handleUpdate = async (id, newArea) => {
-        const { data } = await updateArea(id, newArea)
-        console.log(data)
+        toast.promise(updateArea(id, newArea), {
+            loading: 'Actualizando área...',
+            success: ({ data: { message, data, error } }) => {
+                if (error) return message
+                setStoredAreas({
+                    selectedArea: null,
+                    areas: areas.map(area => area.id === data.id ? data : area)
+                })
+                onOpenChange()
+                return message
+            },
+            error: 'Error al realizar esta acción, intente de nuevo'
+        })
     }
     const handleCreate = async (area) => {
         const { data } = await createArea(area)
@@ -27,7 +39,7 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
     const handleSubmit = () => {
         console.log('submit', selectedArea)
         if (selectedArea?.id) {
-            handleUpdate(selectedArea)
+            handleUpdate(selectedArea.id, selectedArea)
         } else {
             handleCreate(selectedArea)
         }
@@ -38,7 +50,9 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
                 {
                     (onClose) => (
                         <>
-                            <ModalHeader></ModalHeader>
+                            <ModalHeader>
+                                {selectedArea?.id ? 'Editar área' : 'Nueva área'}
+                            </ModalHeader>
                             <ModalBody>
                                 <Input
                                     onChange={handleChange}
@@ -61,11 +75,24 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
 export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }) => {
     const { areaState: { selectedArea }, setStoredAreas } = UseAreas()
     const handleDelete = () => {
+        toast.promise(deleteArea(selectedArea.id), {
+            loading: 'Eliminando área...',
+            success: ({ data: { message, error } }) => {
+                if (error) return message
+                setStoredAreas({
+                    selectedArea: null,
+                    areas: areas.filter(area => area.id !== selectedArea.id)
+                })
+                onOpenChange()
+                return message
+            },
+            error: 'Error al realizar esta acción, intente de nuevo'
+        })
+        setStoredAreas({ selectedArea: null })
         onOpenChange()
-        deleteArea(selectedArea.id)
     }
     const handleClose = () => {
-
+        setStoredAreas({ selectedArea: null })
         onOpenChange()
     }
     return (
@@ -74,9 +101,12 @@ export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }) => {
                 {
                     (onClose) => (
                         <>
-                            <ModalHeader></ModalHeader>
+                            <ModalHeader>
+                                ¿Estás seguro de eliminar este área?
+                            </ModalHeader>
                             <ModalBody>
-                                ¿Estás seguro de eliminar el área?
+                                Área seleccionada:
+                                <p className="text-utim">{selectedArea?.name}</p>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" onPress={handleClose}>Cancelar</Button>

@@ -42,7 +42,7 @@ export default function Areas({ areas: ssrAreas, error }) {
                     onOpen={onOpen}
                     onOpenChange={onOpenChange}
                 />
-                <DeleteAreaModal onOpen={DeleteModal.onOpen} onOpenChange={DeleteModal.onOpenChange} />
+                <DeleteAreaModal isOpen={DeleteModal.isOpen} onOpen={DeleteModal.onOpen} onOpenChange={DeleteModal.onOpenChange} />
             </div>
         </div>
     )

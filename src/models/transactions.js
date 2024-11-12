@@ -2,7 +2,7 @@ import axios from "axios"
 import { getCookie } from "cookies-next"
 
 const serverClient = axios.create({
-    baseURL: process.env.API_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
         Authorization: `Bearer ${getCookie('token')}`
     },
@@ -152,15 +152,11 @@ export const createArea = (area) => {
 }
 
 export const updateArea = (id, newArea) => {
-    return serverClient.put('/areas', newArea, {
-        params: {
-            id
-        }
-    })
+    return serverClient.put(`/areas/${id}`, newArea)
 }
 
 export const deleteArea = (id) => {
-    return serverClient.delete('/areas' + id)
+    return serverClient.delete(`/areas/${id}`)
 }
 
 
