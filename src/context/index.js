@@ -73,13 +73,22 @@ export const AreasProvider = ({ children }) => {
         areas: [],
         selectedArea: null
     })
+    const [educationalState, setEducationalState] = useState({
+        educationalPrograms: [],
+        selectedEducationalProgram: null
+    })
+    const setStoredEducationalPrograms = (prop) => {
+        setEducationalState((educationalState) => ({ ...educationalState, ...prop }))
+    }
     const setStoredAreas = (prop) => {
         setAreaState((areaState) => ({ ...areaState, ...prop }))
     }
     return (
         <AreaContext.Provider value={{
             areaState,
-            setStoredAreas
+            setStoredAreas,
+            educationalState,
+            setStoredEducationalPrograms
         }}>
             {children}
         </AreaContext.Provider>
