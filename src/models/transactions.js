@@ -163,6 +163,14 @@ export const getEducationalPrograms = () => {
     return serverClient.get('/educational-programs')
 }
 
+export const createEducationalProgram = (educationalProgram) => {
+    return serverClient.post('/educational-programs', educationalProgram)
+}
+
+export const updateEducationalProgram = (id, newEducationalProgram) => {
+    return serverClient.put(`/educational-programs/${id}`, newEducationalProgram)
+}
+
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
     if (error) {

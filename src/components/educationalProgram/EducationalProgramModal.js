@@ -1,4 +1,5 @@
 import { UseSecretary } from "@/context"
+import { updateEducationalProgram } from "@/models/transactions"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react"
 
 export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange }) => {
@@ -91,7 +92,7 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
                                 ></Input>
                             </ModalBody>
                             <ModalFooter>
-                                <Button onPress={handleSubmit}>Guardar</Button>
+                                <Button color="success" onPress={handleSubmit}>Guardar</Button>
                                 <Button color="danger" onPress={handleClose}>Cancelar</Button>
                             </ModalFooter>
                         </>
