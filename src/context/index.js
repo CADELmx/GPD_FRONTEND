@@ -66,7 +66,7 @@ export const ContextProvider = ({ children }) => {
 
 const AreaContext = createContext()
 
-export const UseAreas = () => useContext(AreaContext)
+export const UseSecretary = () => useContext(AreaContext)
 
 export const AreasProvider = ({ children }) => {
     const [areaState, setAreaState] = useState({

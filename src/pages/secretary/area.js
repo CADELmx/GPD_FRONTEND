@@ -1,6 +1,6 @@
 import { AreaCards } from "@/components/area/AreaCard"
 import { AreaModal, DeleteAreaModal } from "@/components/area/AreaModal"
-import { UseAreas } from "@/context"
+import { UseSecretary } from "@/context"
 import { getAreas } from "@/models/transactions"
 import { Button, useDisclosure } from "@nextui-org/react"
 import { useEffect } from "react"
@@ -19,7 +19,7 @@ export const getServerSideProps = async () => {
 export default function Areas({ areas: ssrAreas, error }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure()
     const DeleteModal = useDisclosure()
-    const { areaState: { areas }, setStoredAreas } = UseAreas()
+    const { areaState: { areas }, setStoredAreas } = UseSecretary()
     const handlePress = () => {
         setStoredAreas({ selectedArea: null })
         onOpen()

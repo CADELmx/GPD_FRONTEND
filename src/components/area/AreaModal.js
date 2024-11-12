@@ -1,10 +1,10 @@
-import { UseAreas } from "@/context"
+import { UseSecretary } from "@/context"
 import { createArea, deleteArea, updateArea } from "@/models/transactions"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
 import toast from "react-hot-toast"
 
 export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
-    const { areaState: { selectedArea, areas }, setStoredAreas } = UseAreas()
+    const { areaState: { selectedArea, areas }, setStoredAreas } = UseSecretary()
     const handleChange = (e) => {
         setStoredAreas({
             selectedArea: {
@@ -33,8 +33,19 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
         })
     }
     const handleCreate = async (area) => {
-        const { data } = await createArea(area)
-        console.log(data)
+        toast.promise(createArea(area), {
+            loading: 'Creando área...',
+            success: ({ data: { message, data, error } }) => {
+                if (error) return message
+                setStoredAreas({
+                    selectedArea: null,
+                    areas: [...areas, data]
+                })
+                onOpenChange()
+                return message
+            },
+            error: 'Error al realizar esta acción, intente de nuevo'
+        })
     }
     const handleSubmit = () => {
         console.log('submit', selectedArea)
@@ -73,7 +84,7 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
 }
 
 export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }) => {
-    const { areaState: { selectedArea }, setStoredAreas } = UseAreas()
+    const { areaState: { selectedArea }, setStoredAreas } = UseSecretary()
     const handleDelete = () => {
         toast.promise(deleteArea(selectedArea.id), {
             loading: 'Eliminando área...',
