@@ -1,5 +1,6 @@
 import { AreaCards } from "@/components/area/AreaCard"
 import { AreaModal, DeleteAreaModal } from "@/components/area/AreaModal"
+import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
 import { getAreas } from "@/models/transactions"
 import { Button, useDisclosure } from "@nextui-org/react"
@@ -32,6 +33,7 @@ export default function Areas({ areas: ssrAreas, error }) {
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Áreas</h1>
             <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3">
                 <Button className="bg-utim" onPress={handlePress}>Nueva área</Button>
+                <ModalError error={error} />
                 <AreaCards
                     areas={areas}
                     onOpenModal={onOpen}

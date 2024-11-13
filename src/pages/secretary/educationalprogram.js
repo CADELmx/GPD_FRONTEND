@@ -1,5 +1,5 @@
 import { EducationalProgramCards } from "@/components/educationalProgram/EducationalProgramCard"
-import { EducationalProgramModal } from "@/components/educationalProgram/EducationalProgramModal"
+import { EducationalProgramDeleteModal, EducationalProgramModal } from "@/components/educationalProgram/EducationalProgramModal"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
 import { getAreas, getEducationalPrograms } from "@/models/transactions"
@@ -38,7 +38,7 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
     return (
         <div className="flex flex-col items-center justify-center">
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Programas educativos</h1>
-            <div className="flex flex-col gap-1 w-5/6 sm:w-2/3">
+            <div className="flex flex-col gap-1 object-fill w-5/6 sm:w-2/3">
                 <Button className="bg-utim" onPress={EducativeProgramModal.onOpen}>Nuevo programa educativo</Button>
                 <ModalError error={error} />
                 <EducationalProgramCards
@@ -51,6 +51,11 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
                     isOpen={EducativeProgramModal.isOpen}
                     onOpen={EducativeProgramModal.onOpen}
                     onOpenChange={EducativeProgramModal.onOpenChange}
+                />
+                <EducationalProgramDeleteModal
+                    isOpen={DeleteModal.isOpen}
+                    onOpen={DeleteModal.onOpen}
+                    onOpenChange={DeleteModal.onOpenChange}
                 />
             </div>
         </div>

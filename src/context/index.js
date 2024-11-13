@@ -71,11 +71,17 @@ export const UseSecretary = () => useContext(AreaContext)
 export const AreasProvider = ({ children }) => {
     const [areaState, setAreaState] = useState({
         areas: [],
-        selectedArea: null
+        selectedArea: {
+            name: '',
+        }
     })
     const [educationalState, setEducationalState] = useState({
         educationalPrograms: [],
-        selectedEducationalProgram: null
+        selectedEducationalProgram: {
+            areaId: '',
+            name: '',
+            description: ''
+        }
     })
     const [subjectState, setSubjectState] = useState({
         subjects: [],

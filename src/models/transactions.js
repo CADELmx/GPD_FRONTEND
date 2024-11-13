@@ -171,6 +171,10 @@ export const updateEducationalProgram = (id, newEducationalProgram) => {
     return serverClient.put(`/educational-programs/${id}`, newEducationalProgram)
 }
 
+export const deleteEducationalProgram = (id) => {
+    return serverClient.delete(`/educational-programs/${id}`)
+}
+
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
     if (error) {

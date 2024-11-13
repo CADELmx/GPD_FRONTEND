@@ -1,5 +1,6 @@
 import { UseSecretary } from "@/context"
-import { createEducationalProgram, updateEducationalProgram } from "@/models/transactions"
+import { createEducationalProgram, deleteEducationalProgram, updateEducationalProgram } from "@/models/transactions"
+import { checkEmptyStringOption } from "@/utils"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react"
 import toast from "react-hot-toast"
 
@@ -9,7 +10,7 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
         setStoredEducationalPrograms({
             selectedEducationalProgram: {
                 ...selectedEducationalProgram,
-                [e.target.name]: e.target.value
+                [e.target.name]: e.target.name === 'areaId' ? parseInt(e.target.value) : e.target.value
             }
         })
     }
@@ -49,14 +50,18 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
     }
     const handleSubmit = () => {
         console.log('submit', selectedEducationalProgram)
+        const newEducationalProgram = {
+            ...selectedEducationalProgram,
+            areaId: parseInt(selectedEducationalProgram.areaId)
+        }
         if (selectedEducationalProgram?.id) {
-            handleUpdate(selectedEducationalProgram.id, selectedEducationalProgram)
+            handleUpdate(selectedEducationalProgram.id, newEducationalProgram)
         } else {
-            handleCreate(selectedEducationalProgram)
+            handleCreate(newEducationalProgram)
         }
     }
     return (
-        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onClose={handleClose} onOpenChange={onOpenChange}>
             <ModalContent>
                 {
                     (onClose) => (
@@ -71,7 +76,7 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
                                     onChange={handleChange}
                                     label='Área'
                                     name="areaId"
-                                    defaultSelectedKeys={[selectedEducationalProgram?.areaId]}
+                                    defaultSelectedKeys={checkEmptyStringOption(selectedEducationalProgram?.areaId)}
                                     items={areas}
                                 >
                                     {
@@ -94,7 +99,7 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
                             </ModalBody>
                             <ModalFooter>
                                 <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
-                                <Button color="success" onPress={handleSubmit}>Guardar</Button>
+                                <Button className="bg-utim" onPress={handleSubmit}>Guardar</Button>
                             </ModalFooter>
                         </>
                     )
@@ -107,7 +112,7 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
 export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }) => {
     const { educationalState: { selectedEducationalProgram, educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const handleDelete = async () => {
-        toast.promise(deleteEducationalProgram(selectedEducationalProgram.id), {
+        toast.promise(deleteEducationalProgram(parseInt(selectedEducationalProgram.id)), {
             loading: 'Eliminando programa educativo...',
             success: ({ data: { message, error } }) => {
                 if (error) return message
@@ -132,13 +137,12 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }) 
                     (onClose) => (
                         <>
                             <ModalHeader>¿Estás seguro de eliminar el programa educativo?</ModalHeader>
-                            <ModalBody>
-                                Programa seleccionado
-                                <p>{selectedEducationalProgram.description}</p>
+                            <ModalBody className="text-utim">
+                                {selectedEducationalProgram.description}
                             </ModalBody>
                             <ModalFooter>
-                                <Button onPress={handleDelete}>Eliminar</Button>
-                                <Button color="danger" onPress={handleClose}>Cancelar</Button>
+                                <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
+                                <Button color="danger" onPress={handleDelete}>Eliminar</Button>
                             </ModalFooter>
                         </>
                     )
