@@ -1,4 +1,4 @@
-import { checkExistentComment, deleteComment, insertActivities, insertComment, insertPartialTemplate, setPartialTemplateStatus, setTemplateStatus, updateComment } from "@/models/transactions";
+import { checkExistentComment, deleteComment, insertActivities, insertComment, insertPartialTemplate, setPartialTemplateStatus, updateComment } from "@/models/transactions";
 import { generateTemplateObject } from "@/utils";
 import { Server } from "socket.io";
 
