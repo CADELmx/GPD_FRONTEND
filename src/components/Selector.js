@@ -1,16 +1,21 @@
-import { StoredContext } from "@/context"
+import { UseTemplates } from "@/context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "@/utils"
 import { Input, Select, SelectItem, SelectSection, Textarea } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 
 const YearSelector = ({ selectedYear, setState }) => {
-    const { memory: { record }, setStored } = StoredContext()
+    const { memory: { partialTemplate }, setStored } = UseTemplates()
     const year = new Date().getFullYear()
     const yearList = Array.from({ length: 3 }, (_, k) => `${year - k + 1}`)
     return (
         <Select label='Año' disallowEmptySelection defaultSelectedKeys={[selectedYear]} className="md:w-2/5" onChange={e => {
             setState(e.target.value)
-            setStored({ record: { ...record, year: e.target.value } })
+            setStored({
+                partialTemplate: {
+                    ...partialTemplate,
+                    year: e.target.value
+                }
+            })
         }}>
             {
                 yearList.map((year) => {
@@ -22,7 +27,7 @@ const YearSelector = ({ selectedYear, setState }) => {
 }
 
 const PeriodSelector = ({ selectedYear }) => {
-    const { setStored, memory: { record } } = StoredContext()
+    const { setStored, memory: { partialTemplate } } = UseTemplates()
     const periods = [
         {
             period: "enero - abril",
@@ -47,13 +52,20 @@ const PeriodSelector = ({ selectedYear }) => {
         })
         const defaultGroups = option === "" ? [] :
             groups.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
-        setStored({ defaultGroups, record: { ...record, period: option, year: selectedYear } })
+        setStored({
+            defaultGroups,
+            partialTemplate: {
+                ...partialTemplate,
+                period: option,
+                year: selectedYear
+            }
+        })
     }
     const actualMonth = new Date().toLocaleString('es-MX', { month: 'long' })
     const actualPeriod = periods.find(p => p.months.includes(actualMonth))
     const defaultPeriod = `${actualPeriod.period} ${selectedYear}: Ordinario`
     useEffect(() => {
-        if (!record.period) {
+        if (!partialTemplate.period) {
             handleChange({ target: { value: defaultPeriod } })
         }
     }, [])
@@ -120,7 +132,7 @@ export const StayTypeSelector = ({ act, handler }) => {
 }
 
 export const GroupSelector = ({ act, handler }) => {
-    const { memory: { defaultGroups } } = StoredContext()
+    const { memory: { defaultGroups } } = UseTemplates()
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
             <Select isDisabled={!act.educationalProgramId} label="Grados y grupos" name="gradeGroups" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={act.gradeGroups} onSelectionChange={handler}

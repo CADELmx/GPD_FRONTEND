@@ -1,11 +1,12 @@
 import { Accordion, AccordionItem, Badge, BreadcrumbItem, Breadcrumbs, Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react"
 import { Activity } from "./Activity"
-import { StoredContext } from "@/context"
-import { useEffect, useState } from "react"
+import { UseTemplates } from "@/context"
 
 export const AcademicCharge = ({ academicPrograms }) => {
-    const { memory: { record: { activities }, selectedItem }, setStored } = StoredContext()
-    const visibleActivities = activities.filter(({ id }) => id === selectedItem)
+    const { memory: { activities, selectedActivity }, setStored } = UseTemplates()
+    const handlePress = () => {
+        setStored({ selectedActivity: activities.find(activity => activity.id === selectedActivity.id) })
+    }
     return (
         <Accordion aria-label="Academic Details" showDivider={false} isCompact fullWidth selectionMode="multiple">
             <AccordionItem
@@ -48,7 +49,7 @@ export const AcademicCharge = ({ academicPrograms }) => {
                                         <Button
                                             isIconOnly
                                             color={
-                                                items.some(e => e.accessKey === selectedItem) ? 'primary' : 'default'
+                                                items.some(e => e.accessKey === selectedActivity.id) ? 'primary' : 'default'
                                             }
                                             className="min-w-unit-6 w-unit-6 h-unit-6" size="sm"
                                             variant="solid"
@@ -84,17 +85,15 @@ export const AcademicCharge = ({ academicPrograms }) => {
                 >
                     {
                         activities.map(({ id }, i) => {
+                            console.log(id)
                             return (
-                                <BreadcrumbItem key={id} accessKey={id} isCurrent={id === selectedItem}>
+                                <BreadcrumbItem key={id} accessKey={id} isCurrent={id === selectedActivity.id}>
                                     <Chip
                                         size="sm"
                                         key={id}
                                         accessKey={id}
-                                        onClick={() => {
-                                            setStored({ selectedItem: id })
-                                            console.log('Activity selected', id)
-                                        }}
-                                        color={id === selectedItem ? 'primary' : 'default'}
+                                        onClick={handlePress}
+                                        color={id === selectedActivity.id ? 'primary' : 'default'}
                                     >
                                         {
                                             `Actividad ${i + 1}`
@@ -115,11 +114,7 @@ export const AcademicCharge = ({ academicPrograms }) => {
                 }
                 title='Detalles de carga académica'
             >
-                {
-                    visibleActivities.map((activity, i) => {
-                        return <Activity key={activity.id} act={activity} eduPrograms={academicPrograms} />
-                    })
-                }
+                <Activity act={selectedActivity} eduPrograms={academicPrograms} />
             </AccordionItem>
         </Accordion>
     )

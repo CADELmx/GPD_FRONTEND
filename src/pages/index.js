@@ -1,6 +1,6 @@
 import { AcademicTemplateForm } from "@/components/AcademicTemplateForm";
 import { ModalError } from "@/components/ModalError";
-import { AxiosAbtraction, getAcademicPrograms, getAllPersonalData } from "@/models/transactions";
+import { getAcademicPrograms, getAllPersonalData } from "@/models/transactions";
 import { promiseResolver } from "@/utils";
 
 export default function Index({ academicPrograms, academicWorkers, getSsrError }) {

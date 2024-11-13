@@ -1,33 +1,32 @@
-import { checkSocketStatus, positions, puestos, sumHoras, sumHours } from '@/utils'
+import { checkSocketStatus, positions, sumHours } from '@/utils'
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
 import { YearAndPeriodSelector } from './Selector'
 import { Button, Input, Select, SelectItem, Textarea } from '@nextui-org/react'
 import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
-import { StoredContext } from '@/context'
+import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
 
 export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, template }) => {
-    const { memory: { record, socket }, setStored, handleGlobalChange } = StoredContext()
+    const { memory: { partialTemplate, selectedActivity, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
     const [loading, setLoading] = useState(false)
-    const getPuesto = (puesto) => {
-        if (puesto === "") return []
-        if (!positions.includes(puesto)) {
-            positions.push(puesto)
-            return [puesto]
+    const getPosition = (position) => {
+        if (position === "") return []
+        if (!positions.includes(position)) {
+            positions.push(position)
+            return [position]
         }
-        return [record.position]
+        return [partialTemplate.position]
     }
-    const totalHours = sumHours(record?.activities)
+    const totalHours = sumHours(activities)
     const handleSubmit = () => {
         if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
-        socket.emit('createTemplate', record)
     }
     useEffect(() => {
-        if (template?.id) {
-            setStored({ record: template })
+        if (partialTemplate?.id) {
+            setStored({ partialTemplate: template })
         }
         const onCreatedTemplate = () => {
             setLoading(false)
@@ -53,29 +52,60 @@ export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, templa
             <div className="flex-col object-fill w-5/6 sm:w-2/3 pt-5 mt-5">
                 <form className="flex flex-col gap-2">
                     {
-                        !template?.id && <NtInput academicWorkers={academicWorkers} />
+                        !partialTemplate?.id && <NtInput academicWorkers={academicWorkers} />
                     }
                     <div className="flex gap-2" >
-                        <Textarea minRows={1} size="sm" radius="md" isRequired label="Nombre" type="text" name="name" onChange={handleGlobalChange} value={record?.name} />
-                        <Select className="w-40" label="Sexo" name="gender" onChange={handleGlobalChange}>
+                        <Textarea
+                            minRows={1}
+                            size="sm"
+                            radius="md"
+                            isRequired
+                            label="Nombre"
+                            type="text"
+                            name="name"
+                            onChange={handleGlobalChange}
+                            value={partialTemplate?.name}
+                        />
+                        <Select
+                            className="w-40"
+                            label="Sexo"
+                            name="gender"
+                            onChange={handleGlobalChange}
+                        >
                             <SelectItem key={'H'} variant="flat">H</SelectItem>
                             <SelectItem key={'M'} variant="flat">M</SelectItem>
                         </Select>
                     </div>
-                    <Select selectedKeys={getPuesto(record.position)} label='Puesto' name='position' onChange={handleGlobalChange}>
+                    <Select selectedKeys={getPosition(partialTemplate.position)} label='Puesto' name='position' onChange={handleGlobalChange}>
                         {
                             positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
                         }
                     </Select>
                     <YearAndPeriodSelector />
                     <AcademicCharge academicPrograms={academicPrograms} />
-                    <AddActivityButton isDisabled={template?.id} />
-                    <Input label="Total" type="number" min={0} name="total" value={totalHours == 0 ? '' : totalHours} defaultValue={record?.total} isDisabled onChange={handleGlobalChange} />
-                    <Button startContent={
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
-                    } className="w-full bg-utim" variant="solid" onPress={handleSubmit} isDisabled={(template?.id) || (totalHours < 32)} isLoading={loading}>
+                    <AddActivityButton isDisabled={partialTemplate?.id} />
+                    <Input
+                        label="Total"
+                        type="number"
+                        min={0}
+                        name="total"
+                        value={totalHours == 0 ? '' : totalHours}
+                        defaultValue={partialTemplate?.total}
+                        isDisabled
+                        onChange={handleGlobalChange}
+                    />
+                    <Button
+                        startContent={
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                        }
+                        className="w-full bg-utim"
+                        variant="solid"
+                        onPress={handleSubmit}
+                        isDisabled={(partialTemplate?.id) || (totalHours < 32)}
+                        isLoading={loading}
+                    >
                         Guardar
                     </Button>
                 </form>

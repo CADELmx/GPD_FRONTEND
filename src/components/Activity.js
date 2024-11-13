@@ -1,4 +1,4 @@
-import { StoredContext } from '@/context'
+import { StoredContext, UseTemplates } from '@/context'
 import { defaultActivity } from '@/utils'
 import { Button, Input, Textarea } from '@nextui-org/react'
 import toast from 'react-hot-toast'
@@ -6,64 +6,51 @@ import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementType
 import { useEffect } from 'react'
 
 export const Activity = ({ act, eduPrograms }) => {
-    const { memory: { record, selectedItem }, setStored } = StoredContext()
-    const { activities: acts } = record
+    const { memory: { partialTemplate, activities, selectedActivity }, setStored } = UseTemplates()
     const handleChange = (e) => {
-        const activities = acts.map((activity) => {
-            return (activity.id === selectedItem) ? { ...activity, [e.target.name]: e.target.value } : activity
-        })
         setStored({
-            record: {
-                ...record,
-                activities
-            }
+            selectedActivity: { ...selectedActivity, [e.target.name]: e.target.value }
         })
     }
     const handleDelete = () => {
-        const newActivities = acts.filter((activity) => activity.id !== act.id)
-        const selectedItem = newActivities.length > 1 ? newActivities[newActivities.length - 1].id : newActivities[0].id
+        const newActivities = activities.filter(activity => activity.id !== selectedActivity.id)
+        const selectedItem = newActivities.length > 1 ? newActivities[newActivities.length - 1] : newActivities[0]
         setStored({
-            selectedItem,
-            record: {
-                ...record,
-                activities: newActivities
-            }
+            selectedActivity: selectedItem,
+            activities: newActivities
         })
     }
     const changeManagementType = (e) => {
         setStored({
-            record: {
-                ...record, activities: acts.map((activity) => (activity.id === selectedItem) ? {
-                    ...activity, managementType: e.size === 0 ? '' : e.anchorKey
-                } : activity)
+            selectedActivity: {
+                ...selectedActivity,
+                managementType: e.size === 0 ? '' : e.anchorKey
             }
         })
     }
     const changeStayType = (e) => {
-        const weeklyHours = e.anchorKey === 'TSU' ? 1 : 2
         setStored({
-            record: {
-                ...record, activities: acts.map((activity) => (activity.id === selectedItem) ? {
-                    ...activity, weeklyHours, subtotalClassification: weeklyHours * act.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
-                } : activity)
+            selectedActivity: {
+                ...selectedActivity,
+                weeklyHours: e.anchorKey === 'TSU' ? 1 : 2,
+                subtotalClassification: weeklyHours * act.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
             }
         })
     }
     const changeGroup = (e) => {
         setStored({
-            record: {
-                ...record, activities: acts.map((activity) => activity.id === selectedItem ? {
-                    ...activity, gradeGroups: Array.from(e), subtotalClassification: Array.from(e).length * act.weeklyHours
-                } : a)
+            selectedActivity: {
+                ...selectedActivity,
+                gradeGroups: Array.from(e),
+                subtotalClassification: Array.from(e).length * act.weeklyHours
             }
         })
     }
-    const changeWeekleyHours = (e) => {
+    const changeWeeklyHours = (e) => {
         if (act.activityDistribution === "Estadía técnica") {
             setStored({
-                record: {
-                    ...record, activities: acts.map(
-                        (activity) => activity.id === selectedItem ? { ...activity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.numberStudents || 1) } : activity)
+                selectedActivity: {
+                    ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.numberStudents || 1)
                 }
             })
             return
@@ -74,27 +61,22 @@ export const Activity = ({ act, eduPrograms }) => {
         ) {
             const subtotalClassification = act.gradeGroups.length === 0 || e.target.value === '' ? '' : act.gradeGroups.length * Number(e.target.value)
             setStored({
-                record: {
-                    ...record, activities: acts.map((activity) => activity.id === selectedItem ? {
-                        ...activity, [e.target.name]: Number(e.target.value), subtotalClassification
-                    } : activity)
+                selectedActivity: {
+                    ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification
                 }
             })
         } else {
             setStored({
-                record: {
-                    ...record, activities: acts.map(
-                        (activity) => activity.id === selectedItem ? { ...activity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) } : activity)
+                selectedActivity: {
+                    ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value)
                 }
             })
         }
     }
     const changeActivityProgram = (e) => {
         setStored({
-            record: {
-                ...record, activities: acts.map((activity) => (activity.id === selectedItem) ? {
-                    ...activity, pe: e.size === 0 ? "" : e.anchorKey
-                } : activity)
+            selectedActivity: {
+                ...selectedActivity, pe: e.size === 0 ? "" : e.anchorKey
             }
         })
     }
@@ -109,13 +91,12 @@ export const Activity = ({ act, eduPrograms }) => {
         })
     }
     const updateTotal = () => {
-        const total = record.activities
-            .map(e => e.subtotalClassification)
+        const total = activities
+            .map(activity => activity.subtotalClassification)
             .reduce((p, c) => p + c, 0)
         setStored({
-            selectedItem: acts.length > 1 ? acts[acts.length - 2].id : acts[0].id,
-            record: {
-                ...record,
+            partialTemplate: {
+                ...partialTemplate,
                 total
             }
         })
@@ -123,6 +104,12 @@ export const Activity = ({ act, eduPrograms }) => {
     useEffect(() => {
         updateTotal()
     }, [act.subtotalClassification])
+
+    useEffect(() => {
+        setStored({
+            activities: activities.map(activity => activity.id === selectedActivity.id ? selectedActivity : activity)
+        })
+    }, [selectedActivity])
 
     return (
         <div className='flex flex-col gap-2'>
@@ -175,11 +162,11 @@ export const Activity = ({ act, eduPrograms }) => {
                         <Input label="Número de estudiantes" type="number" defaultValue={act.numberStudents} name="numberStudents" onChange={changeStudentsNumber} min={1} />
                     )
                 }
-                <Input label="Horas semanales" type="number" name="weeklyHours" min={1} value={act?.weeklyHours === 0 ? '' : act?.weeklyHours} onChange={changeWeekleyHours} />
+                <Input label="Horas semanales" type="number" name="weeklyHours" min={1} value={act?.weeklyHours === 0 ? '' : act?.weeklyHours} onChange={changeWeeklyHours} />
             </div>
             <Input label="Subtotal por clasificación" type="number" name="subtotalClassification" value={act?.subtotalClassification === 0 ? '' : act?.subtotalClassification} isDisabled />
             {
-                acts.length > 1 && <Button color='danger' onClick={handleDelete}>
+                activities.length > 1 && <Button color='danger' onClick={handleDelete}>
                     Eliminar actividad
                 </Button>
             }
@@ -188,8 +175,7 @@ export const Activity = ({ act, eduPrograms }) => {
 }
 
 export const AddActivityButton = ({ isDisabled }) => {
-    const { memory: { record, selectedItem }, setStored } = StoredContext()
-    const { activities } = record
+    const { memory: { activities }, setStored } = UseTemplates()
     const handleCreate = () => {
         if (activities.length >= 10) {
             return toast.error('No puedes agregar más carga academica', {
@@ -197,16 +183,18 @@ export const AddActivityButton = ({ isDisabled }) => {
             })
         }
         const uuid = crypto.randomUUID()
+        const newActivity = {
+            ...defaultActivity,
+            id: uuid
+        }
         setStored({
-            record: {
-                ...record, activities: [...activities, {
-                    ...defaultActivity,
-                    id: uuid
-                }]
-            },
-            selectedItem: uuid
+            activities: [
+                ...activities,
+                newActivity
+            ],
+            selectedActivity: newActivity
         })
-        console.log('Activity created', selectedItem)
+        console.log('Activity created', newActivity)
     }
     return (
         <Button

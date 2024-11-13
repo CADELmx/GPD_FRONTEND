@@ -1,4 +1,4 @@
-import { StoredContext } from "@/context"
+import { StoredContext, UseTemplates } from "@/context"
 import { Chip, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,7 +14,7 @@ export const Layout = ({ children }) => {
         { name: "Secretaría", href: "/secretary" },
         { name: "Estado de plantillas", href: "/templatestatus" },
     ]
-    const { memory: { socket, user } } = StoredContext()
+    const { memory: { socket, user } } = UseTemplates()
     const [isConnected, setIsConnected] = useState(false);
     const [transport, setTransport] = useState("N/A");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -122,7 +122,7 @@ export const Layout = ({ children }) => {
                     </Chip>
                 </NavbarMenu>
             </Navbar>
-                {children}
+            {children}
         </>
     )
 }

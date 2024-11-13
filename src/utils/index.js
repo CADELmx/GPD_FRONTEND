@@ -62,9 +62,6 @@ export const defaultPartialTemplate = {
     position: "",
     year: new Date().getFullYear(),
     period: "",
-    activities: [
-        defaultActivity
-    ],
     total: 0,
 }
 

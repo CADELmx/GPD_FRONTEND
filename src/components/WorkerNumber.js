@@ -1,11 +1,11 @@
-import { StoredContext } from "@/context"
-import { AxiosAbtraction, getOneAcademicWorker, getPersonalData } from "@/models/transactions"
+import { UseTemplates } from "@/context"
+import { getPersonalData } from "@/models/transactions"
 import { Chip, Input, Select, SelectItem, SelectSection, Switch } from "@nextui-org/react"
 import { useState } from "react"
 import toast from "react-hot-toast"
 
 export const NtInput = ({ academicWorkers }) => {
-    const { memory: { record }, setStored } = StoredContext()
+    const { memory: { record }, setStored } = UseTemplates()
     const [idError, setIdError] = useState(false)
     const [locked, setLocked] = useState(false)
     const [selectorActive, setSelectorActive] = useState(false)

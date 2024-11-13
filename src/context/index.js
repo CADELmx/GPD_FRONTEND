@@ -1,17 +1,19 @@
-import { defaultPartialTemplate } from '@/utils'
+import { defaultActivity, defaultPartialTemplate } from '@/utils'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
-const Context = createContext()
 
-export const StoredContext = () => useContext(Context)
+const TemplateContext = createContext()
 
-export const ContextProvider = ({ children }) => {
+export const UseTemplates = () => useContext(TemplateContext)
+
+export const TemplatesProvider = ({ children }) => {
     const [memory, setMemory] = useState({
-        record: defaultPartialTemplate,
+        partialTemplate: defaultPartialTemplate,
+        activities: [defaultActivity],
+        selectedActivity: defaultActivity,
         defaultGroups: [],
         socket: io(),
-        selectedItem: defaultPartialTemplate.activities[0].id,
         user: getCookie('user', { secure: true })
     })
     const login = async (email, password) => {
@@ -36,8 +38,8 @@ export const ContextProvider = ({ children }) => {
     }
     const setStored = (prop) => setMemory((prev) => ({ ...prev, ...prop }))
     const handleGlobalChange = (event) => setStored({
-        record: {
-            ...memory.record,
+        partialTemplate: {
+            ...memory.partialTemplate,
             [event.target?.name]: event.target?.value
         }
     })
@@ -58,9 +60,9 @@ export const ContextProvider = ({ children }) => {
         setupSocket()
     }, [])
     return (
-        <Context.Provider value={ctx}>
+        <TemplateContext.Provider value={ctx}>
             {children}
-        </Context.Provider>
+        </TemplateContext.Provider>
     )
 }
 
