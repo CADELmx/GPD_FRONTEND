@@ -7,81 +7,84 @@ import { useEffect } from 'react'
 
 export const Activity = ({ act, eduPrograms }) => {
     const { memory: { record, selectedItem }, setStored } = StoredContext()
-    const { actividad: acts } = record
+    const { activities: acts } = record
     const handleChange = (e) => {
-        const actividad = acts.map((a) => {
-            return (a.id === selectedItem) ? { ...a, [e.target.name]: e.target.value } : a
+        const activities = acts.map((activity) => {
+            return (activity.id === selectedItem) ? { ...activity, [e.target.name]: e.target.value } : activity
         })
         setStored({
             record: {
                 ...record,
-                actividad
+                activities
             }
         })
     }
     const handleDelete = () => {
+        const newActivities = acts.filter((activity) => activity.id !== act.id)
+        const selectedItem = newActivities.length > 1 ? newActivities[newActivities.length - 1].id : newActivities[0].id
         setStored({
-            selectedItem: acts.length > 1 ? acts[acts.length - 2].id : acts[0].id,
+            selectedItem,
             record: {
                 ...record,
-                actividad: acts.filter((a) => a.id !== act.id)
+                activities: newActivities
             }
         })
     }
     const changeManagementType = (e) => {
         setStored({
             record: {
-                ...record, actividad: acts.map((a) => (a.id === selectedItem) ? {
-                    ...a, tipo_gestion: e.size === 0 ? '' : e.anchorKey
-                } : a)
+                ...record, activities: acts.map((activity) => (activity.id === selectedItem) ? {
+                    ...activity, managementType: e.size === 0 ? '' : e.anchorKey
+                } : activity)
             }
         })
     }
     const changeStayType = (e) => {
-        const horas_semanales = e.anchorKey === 'TSU' ? 1 : 2
+        const weeklyHours = e.anchorKey === 'TSU' ? 1 : 2
         setStored({
             record: {
-                ...record, actividad: acts.map((a) => (a.id === selectedItem) ? {
-                    ...a, horas_semanales, subtotal_clasificacion: horas_semanales * act.numero_estudiantes, tipo_estadia: e.size === 0 ? '' : e.anchorKey
-                } : a)
+                ...record, activities: acts.map((activity) => (activity.id === selectedItem) ? {
+                    ...activity, weeklyHours, subtotalClassification: weeklyHours * act.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
+                } : activity)
             }
         })
     }
     const changeGroup = (e) => {
         setStored({
             record: {
-                ...record, actividad: acts.map((a) => a.id === selectedItem ? {
-                    ...a, grados_grupos: Array.from(e), subtotal_clasificacion: Array.from(e).length * act.horas_semanales
+                ...record, activities: acts.map((activity) => activity.id === selectedItem ? {
+                    ...activity, gradeGroups: Array.from(e), subtotalClassification: Array.from(e).length * act.weeklyHours
                 } : a)
             }
         })
     }
     const changeWeekleyHours = (e) => {
-        if (act.distribucion_actividades === "Estadía técnica") {
+        if (act.activityDistribution === "Estadía técnica") {
             setStored({
                 record: {
-                    ...record, actividad: acts.map(
-                        (a) => a.id === selectedItem ? { ...a, [e.target.name]: Number(e.target.value), subtotal_clasificacion: Number(e.target.value) * (act.numero_estudiantes || 1) } : a)
+                    ...record, activities: acts.map(
+                        (activity) => activity.id === selectedItem ? { ...activity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.numberStudents || 1) } : activity)
                 }
             })
             return
         }
         if (
-            act.distribucion_actividades === "Docencia"
-            || act.distribucion_actividades === "Tutorías"
+            act.activityDistribution === "Docencia"
+            || act.activityDistribution === "Tutorías"
         ) {
-            const subtotal_clasificacion = act.grados_grupos.length === 0 || e.target.value === '' ? '' : act.grados_grupos.length * Number(e.target.value)
+            const subtotalClassification = act.gradeGroups.length === 0 || e.target.value === '' ? '' : act.gradeGroups.length * Number(e.target.value)
             setStored({
                 record: {
-                    ...record, actividad: acts.map(
-                        (a) => a.id === selectedItem ? { ...a, [e.target.name]: Number(e.target.value), subtotal_clasificacion } : a)
+                    ...record, activities: acts.map((activity) => activity.id === selectedItem ? {
+                        ...activity, [e.target.name]: Number(e.target.value), subtotalClassification
+                    } : activity)
                 }
             })
         } else {
             setStored({
                 record: {
-                    ...record, actividad: acts.map(
-                        (a) => a.id === selectedItem ? { ...a, [e.target.name]: Number(e.target.value), subtotal_clasificacion: Number(e.target.value) } : a)
+                    ...record, activities: acts.map(
+                        (activity) => activity.id === selectedItem ? { ...activity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) } : activity)
                 }
             })
         }
@@ -89,23 +92,25 @@ export const Activity = ({ act, eduPrograms }) => {
     const changeActivityProgram = (e) => {
         setStored({
             record: {
-                ...record, actividad: acts.map((a) => (a.id === selectedItem) ? {
-                    ...a, pe: e.size === 0 ? "" : e.anchorKey
-                } : a)
+                ...record, activities: acts.map((activity) => (activity.id === selectedItem) ? {
+                    ...activity, pe: e.size === 0 ? "" : e.anchorKey
+                } : activity)
             }
         })
     }
     const changeStudentsNumber = (e) => {
         setStored({
             record: {
-                ...record, actividad: acts.map(
-                    (a) => a.id === selectedItem ? { ...a, [e.target.name]: Number(e.target.value), subtotal_clasificacion: Number(e.target.value) * (act.horas_semanales || 1) } : a)
+                ...record, activities: acts.map(
+                    (activity) => activity.id === selectedItem ? {
+                        ...activity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.weeklyHours || 1)
+                    } : activity)
             }
         })
     }
     const updateTotal = () => {
-        const total = record.actividad
-            .map(e => e.subtotal_clasificacion)
+        const total = record.activities
+            .map(e => e.subtotalClassification)
             .reduce((p, c) => p + c, 0)
         setStored({
             selectedItem: acts.length > 1 ? acts[acts.length - 2].id : acts[0].id,
@@ -117,7 +122,7 @@ export const Activity = ({ act, eduPrograms }) => {
     }
     useEffect(() => {
         updateTotal()
-    }, [act.subtotal_clasificacion])
+    }, [act.subtotalClassification])
 
     return (
         <div className='flex flex-col gap-2'>
@@ -125,22 +130,22 @@ export const Activity = ({ act, eduPrograms }) => {
                 <ActTypeSelector act={act} handler={handleChange} />
                 {
                     (
-                        act.distribucion_actividades === "Gestión"
+                        act.activityDistribution === "Gestión"
                     ) && (
                         <ManagementTypeSelector act={act} handler={changeManagementType} />
                     )
                 }
                 {
                     !(
-                        act.distribucion_actividades === "Estadía técnica"
-                        || act.distribucion_actividades === "Tutorías"
+                        act.activityDistribution === "Estadía técnica"
+                        || act.activityDistribution === "Tutorías"
                     ) && (
-                        <Textarea minRows={1} size='sm' radius='md' label="Nombre de actividades" type="text" name="nombre_actividades" onChange={handleChange} isRequired defaultValue={act.nombre_actividades} />
+                        <Textarea minRows={1} size='sm' radius='md' label="Nombre de actividades" type="text" name="activityName" onChange={handleChange} isRequired defaultValue={act.activityName} />
                     )
                 }
                 {
                     (
-                        act.distribucion_actividades === "Estadía técnica"
+                        act.activityDistribution === "Estadía técnica"
                     ) && (
                         <StayTypeSelector act={act} handler={changeStayType} />
                     )
@@ -148,31 +153,31 @@ export const Activity = ({ act, eduPrograms }) => {
             </div>
             {
                 !(
-                    act.distribucion_actividades === "Estadía técnica"
-                    || act.distribucion_actividades === "Gestión"
-                    || act.distribucion_actividades === "LIIAD"
+                    act.activityDistribution === "Estadía técnica"
+                    || act.activityDistribution === "Gestión"
+                    || act.activityDistribution === "LIIAD"
                 ) && (
                     <AcademicProgramSelector act={act} eduPrograms={eduPrograms} handler={changeActivityProgram} />
                 )
             }
             {
                 !(
-                    act.distribucion_actividades === "LIIAD"
-                    || act.distribucion_actividades === "Estadía técnica"
-                    || act.distribucion_actividades === "Gestión"
+                    act.activityDistribution === "LIIAD"
+                    || act.activityDistribution === "Estadía técnica"
+                    || act.activityDistribution === "Gestión"
                 ) && (
                     <GroupSelector act={act} handler={changeGroup} />
                 )
             }
             <div className='flex gap-2'>
                 {
-                    (act.distribucion_actividades === "Estadía técnica") && (
-                        <Input label="Número de estudiantes" type="number" defaultValue={act.numero_estudiantes} name="numero_estudiantes" onChange={changeStudentsNumber} min={1} />
+                    (act.activityDistribution === "Estadía técnica") && (
+                        <Input label="Número de estudiantes" type="number" defaultValue={act.numberStudents} name="numberStudents" onChange={changeStudentsNumber} min={1} />
                     )
                 }
-                <Input label="Horas semanales" type="number" name="horas_semanales" min={1} value={act?.horas_semanales === 0 ? '' : act?.horas_semanales} onChange={changeWeekleyHours} />
+                <Input label="Horas semanales" type="number" name="weeklyHours" min={1} value={act?.weeklyHours === 0 ? '' : act?.weeklyHours} onChange={changeWeekleyHours} />
             </div>
-            <Input label="Subtotal por clasificación" type="number" name="subtotal_clasificacion" value={act?.subtotal_clasificacion === 0 ? '' : act?.subtotal_clasificacion} isDisabled />
+            <Input label="Subtotal por clasificación" type="number" name="subtotalClassification" value={act?.subtotalClassification === 0 ? '' : act?.subtotalClassification} isDisabled />
             {
                 acts.length > 1 && <Button color='danger' onClick={handleDelete}>
                     Eliminar actividad
@@ -182,11 +187,11 @@ export const Activity = ({ act, eduPrograms }) => {
     )
 }
 
-export const AddActivityButton = ({isDisabled}) => {
-    const { memory: { record }, setStored } = StoredContext()
-    const { actividad } = record
+export const AddActivityButton = ({ isDisabled }) => {
+    const { memory: { record, selectedItem }, setStored } = StoredContext()
+    const { activities } = record
     const handleCreate = () => {
-        if (actividad.length >= 10) {
+        if (activities.length >= 10) {
             return toast.error('No puedes agregar más carga academica', {
                 id: 'max-activities'
             })
@@ -194,21 +199,28 @@ export const AddActivityButton = ({isDisabled}) => {
         const uuid = crypto.randomUUID()
         setStored({
             record: {
-                ...record, actividad: [...actividad, {
+                ...record, activities: [...activities, {
                     ...defaultActivity,
                     id: uuid
                 }]
             },
             selectedItem: uuid
         })
+        console.log('Activity created', selectedItem)
     }
     return (
-        <Button isDisabled={isDisabled} startContent={
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-
-        } className="w-full" variant="solid" color="primary" onClick={handleCreate}>
+        <Button
+            isDisabled={isDisabled}
+            startContent={
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+            }
+            className="w-full"
+            variant="solid"
+            color="primary"
+            onClick={handleCreate}
+        >
             Agregar actividad
         </Button>
     )

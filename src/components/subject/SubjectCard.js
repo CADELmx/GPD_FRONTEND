@@ -60,14 +60,3 @@ export const SubjectCards = ({ subjects, onOpenModal, onOpenDeleteModal }) => {
         </div>
     )
 }
-
-export const CardRepeater = ({ array, onOpenModal, onOpenDeleteModal, EmptyComponent }) => {
-    if (array.length === 0) return (
-        <EmptyComponent />
-    )
-    return (
-        array.map((element) => (
-            <CardComponent {...element} key={element.id} onOpenModal={onOpenModal} onOpenDeleteModal={onOpenDeleteModal}></CardComponent>
-        ))
-    )
-}

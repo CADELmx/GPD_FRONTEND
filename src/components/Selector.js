@@ -1,5 +1,5 @@
 import { StoredContext } from "@/context"
-import { checkEmptyStringOption, distribucionActividades, generatePeriods } from "@/utils"
+import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "@/utils"
 import { Input, Select, SelectItem, SelectSection, Textarea } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 
@@ -10,7 +10,7 @@ const YearSelector = ({ selectedYear, setState }) => {
     return (
         <Select label='Año' disallowEmptySelection defaultSelectedKeys={[selectedYear]} className="md:w-2/5" onChange={e => {
             setState(e.target.value)
-            setStored({ record: { ...record, anio: e.target.value } })
+            setStored({ record: { ...record, year: e.target.value } })
         }}>
             {
                 yearList.map((year) => {
@@ -25,35 +25,35 @@ const PeriodSelector = ({ selectedYear }) => {
     const { setStored, memory: { record } } = StoredContext()
     const periods = [
         {
-            periodo: "enero - abril",
-            grados: ['2', '5', '8'],
-            meses: ['enero', 'febrero', 'marzo', 'abril']
+            period: "enero - abril",
+            grades: ['2', '5', '8'],
+            months: ['enero', 'febrero', 'marzo', 'abril']
         },
         {
-            periodo: "mayo - agosto",
-            grados: ['3', '6', '9'],
-            meses: ['mayo', 'junio', 'julio', 'agosto']
+            period: "mayo - agosto",
+            grades: ['3', '6', '9'],
+            months: ['mayo', 'junio', 'julio', 'agosto']
         },
         {
-            periodo: "septiembre - diciembre",
-            grados: ['1', '4', '7'],
-            meses: ['septiembre', 'octubre', 'noviembre', 'diciembre']
+            period: "septiembre - diciembre",
+            grades: ['1', '4', '7'],
+            months: ['septiembre', 'octubre', 'noviembre', 'diciembre']
         }
     ]
     const handleChange = (e) => {
         const option = e.target.value
         const groups = periods.find(opt => {
-            return option.includes(opt.periodo)
+            return option.includes(opt.period)
         })
         const defaultGroups = option === "" ? [] :
-            groups.grados.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
-        setStored({ defaultGroups, record: { ...record, periodo: option, anio: selectedYear } })
+            groups.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
+        setStored({ defaultGroups, record: { ...record, period: option, year: selectedYear } })
     }
     const actualMonth = new Date().toLocaleString('es-MX', { month: 'long' })
-    const actualPeriod = periods.find(p => p.meses.includes(actualMonth))
-    const defaultPeriod = `${actualPeriod.periodo} ${selectedYear}: Ordinario`
+    const actualPeriod = periods.find(p => p.months.includes(actualMonth))
+    const defaultPeriod = `${actualPeriod.period} ${selectedYear}: Ordinario`
     useEffect(() => {
-        if (!record.periodo) {
+        if (!record.period) {
             handleChange({ target: { value: defaultPeriod } })
         }
     }, [])
@@ -90,9 +90,9 @@ export const YearAndPeriodSelector = () => {
 
 export const ActTypeSelector = ({ act, handler }) => {
     return (
-        <Select className={act?.distribucion_actividades === "Tutorías" ? '' : 'md:w-3/5'} label="Distribución" onChange={handler} name="distribucion_actividades" defaultSelectedKeys={checkEmptyStringOption(act?.distribucion_actividades)}>
+        <Select className={act?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'} label="Distribución" onChange={handler} name="activityDistribution" defaultSelectedKeys={checkEmptyStringOption(act?.activityDistribution)}>
             {
-                distribucionActividades.map((a) => {
+                activitiesDistribution.map((a) => {
                     return <SelectItem key={a} variant="flat">{a}</SelectItem>
                 })
             }
@@ -102,7 +102,7 @@ export const ActTypeSelector = ({ act, handler }) => {
 
 export const ManagementTypeSelector = ({ act, handler }) => {
     return (
-        <Select className='md:w-2/4' name='tipo_gestion' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={[act?.tipo_gestión]}>
+        <Select className='md:w-2/4' name='managementType' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={[act?.managementType]}>
             <SelectItem key={'INST'} variant="flat">Institucional</SelectItem>
             <SelectItem key={'ACAD'} variant="flat">Académica</SelectItem>
             <SelectItem key={'ASES'} variant='flat'>Asesoría</SelectItem>
@@ -112,7 +112,7 @@ export const ManagementTypeSelector = ({ act, handler }) => {
 
 export const StayTypeSelector = ({ act, handler }) => {
     return (
-        <Select className='' onSelectionChange={handler} name='tipo_estadia' label='Tipo de estadía' defaultSelectedKeys={checkEmptyStringOption(act.tipo_estadia)}>
+        <Select className='' onSelectionChange={handler} name='stayType' label='Tipo de estadía' defaultSelectedKeys={checkEmptyStringOption(act.stayType)}>
             <SelectItem key='TSU'>TSU</SelectItem>
             <SelectItem key='ING'>ING</SelectItem>
         </Select>
@@ -123,7 +123,7 @@ export const GroupSelector = ({ act, handler }) => {
     const { memory: { defaultGroups } } = StoredContext()
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
-            <Select isDisabled={!act.pe} label="Grados y grupos" name="grados_grupos" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={act.grados_grupos} onSelectionChange={handler}
+            <Select isDisabled={!act.educationalProgramId} label="Grados y grupos" name="gradeGroups" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={act.gradeGroups} onSelectionChange={handler}
             >
                 {
                     defaultGroups.map((grupo) => (
@@ -131,7 +131,7 @@ export const GroupSelector = ({ act, handler }) => {
                     ))
                 }
             </Select>
-            <Input className="md:w-1/3" isReadOnly label='Nº de grupos' value={act.grados_grupos.length === 0 ? '' : act.grados_grupos.length} isDisabled />
+            <Input className="md:w-1/3" isReadOnly label='Nº de grupos' value={act.gradeGroups.length === 0 ? '' : act.gradeGroups.length} isDisabled />
         </div>
     )
 }
@@ -139,13 +139,13 @@ export const GroupSelector = ({ act, handler }) => {
 export const AcademicProgramSelector = ({ act, eduPrograms, handler }) => {
     return (
         <div className="flex flex-col md:flex-row gap-2">
-            <Select isDisabled={act?.distribucion_actividades === ""} className="md:w-2/5" label='Programa educativo' name='pe' defaultSelectedKeys={act.pe ? [act.pe] : []} onSelectionChange={handler} >
+            <Select isDisabled={act?.activityDistribution === ""} className="md:w-2/5" label='Programa educativo' name='educationalProgramId' defaultSelectedKeys={act.educationalProgramId ? [act.educationalProgramId] : []} onSelectionChange={handler} >
                 {eduPrograms.length === 0 ? null :
                     eduPrograms.map((e) =>
-                        <SelectItem key={e.id} variant="flat">{e.siglas}</SelectItem>)
+                        <SelectItem key={e.id} variant="flat">{e.abbreviation}</SelectItem>)
                 }
             </Select>
-            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={eduPrograms.find(e => e.id == act.pe)?.descripcion} />
+            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={eduPrograms.find(e => e.id == act.educationalProgramId)?.description} />
         </div>
     )
 }

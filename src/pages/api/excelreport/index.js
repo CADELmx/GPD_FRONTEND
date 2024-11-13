@@ -1,4 +1,4 @@
-import { getTemplateJoinActivities } from "@/models/transactions"
+import { getPartialTemplatesJoinActivities } from "@/models/transactions"
 import style from "excel4node/distribution/lib/style"
 import Workbook from "excel4node/distribution/lib/workbook/workbook"
 
@@ -93,16 +93,16 @@ export const generateWorkSheet = () => {
     worksheet.cell(3, 1, 5, 16).style(cellStyle)
     const generateCellA = (key, val) => {
         const entriesOpts = {
-            'nombre_actividades': (i, value) => {
+            'activityName': (i, value) => {
                 worksheet.cell(i, 2).string(value)
             },
-            'grados_grupos': (i, value) => {
+            'gradeGroups': (i, value) => {
                 worksheet.cell(i, 3).string(value.join(', '))
             },
-            'horas_semanales': (i, value) => {
+            'weeklyHours': (i, value) => {
                 worksheet.cell(i, 5).number(value)
             },
-            'subtotal_clasificacion': (i, value) => {
+            'subtotalClassification': (i, value) => {
                 worksheet.cell(i, 6).number(value)
             },
         }
@@ -110,10 +110,10 @@ export const generateWorkSheet = () => {
     }
     const generateCellB = (key, val) => {
         const entriesOpts = {
-            'nombre_actividades': (i, value) => {
+            'activityName': (i, value) => {
                 worksheet.cell(i, 2).string(value)
             },
-            'horas_semanales': (i, value) => {
+            'weeklyHours': (i, value) => {
                 worksheet.cell(i, 9).number(value)
             },
         }
@@ -121,10 +121,10 @@ export const generateWorkSheet = () => {
     }
     const generateCellC = (key, val) => {
         const entriesOpts = {
-            'grados_grupos': (i, value) => {
+            'gradeGroups': (i, value) => {
                 worksheet.cell(i, 7).string(value.join(', '))
             },
-            'horas_semanales': (i, value) => {
+            'weeklyHours': (i, value) => {
                 worksheet.cell(i, 8).number(value)
             }
         }
@@ -132,7 +132,7 @@ export const generateWorkSheet = () => {
     }
     const generateCellD = (key, val) => {
         const entriesOpts = {
-            'subtotal_clasificacion': (i, value) => {
+            'subtotalClassification': (i, value) => {
                 if (val === 'INST') {
                     worksheet.cell(i, 10).number(value)
                     return
@@ -146,7 +146,7 @@ export const generateWorkSheet = () => {
                     return
                 }
             },
-            'nombre_actividades': (i, value) => {
+            'activityName': (i, value) => {
                 worksheet.cell(i, 2).string(value)
             }
         }
@@ -154,13 +154,13 @@ export const generateWorkSheet = () => {
     }
     const generateCellE = (key, val) => {
         const entriesOpts = {
-            'numero_estudiantes': (i, value) => {
+            'numberStudents': (i, value) => {
                 worksheet.cell(i, 13).number(value)
             },
-            'horas_semanales': (i, value) => {
+            'weeklyHours': (i, value) => {
                 worksheet.cell(i, 14).number(value)
             },
-            'subtotal_clasificacion': (i, value) => {
+            'subtotalClassification': (i, value) => {
                 worksheet.cell(i, 15).number(value)
             }
         }
@@ -181,10 +181,10 @@ export const generateWorkSheet = () => {
 
 export const setupWorkSheet = (act, j, cellType) => {
     const entries = Object.entries(act)
-    const generateCell = cellType(act.distribucion_actividades)
+    const generateCell = cellType(act.activityDistribution)
     entries.forEach(([key, val]) => {
-        if (act.distribucion_actividades === 'Gestión') {
-            const addCell = generateCell(key, act.tipo_gestion)
+        if (act.activityDistribution === 'Gestión') {
+            const addCell = generateCell(key, act.managementType)
             if (typeof addCell === 'function') {
                 addCell(j + 3, val)
             }
@@ -198,14 +198,15 @@ export const setupWorkSheet = (act, j, cellType) => {
 }
 
 export default async function handler(req, res) {
-    const { data, error } = await getTemplateJoinActivities()
+    const { data: { data, error }, error: axiosError } = await getPartialTemplatesJoinActivities()
+    if (error || axiosError) return res.status(500).json({ error: 'Error al obtener datos de las plantillas' })
     const workBooks = data.map((record, i) => {
         const { workbook, worksheet, cellType } = generateWorkSheet()
         record.actividad.forEach((act, i) => setupWorkSheet(act, i, cellType))
         worksheet.cell(3, 16, 7, 16, true).number(record.total)
         return {
             workbook,
-            path: `./public/plantilla ${record.nombre}.xlsx`
+            path: `./public/plantilla ${record.name}.xlsx`
         }
     })
     workBooks.forEach(({ workbook, path }) => {

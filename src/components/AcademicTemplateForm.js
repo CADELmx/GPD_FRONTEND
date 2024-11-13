@@ -1,4 +1,4 @@
-import { checkSocketStatus, puestos, sumHoras } from '@/utils'
+import { checkSocketStatus, positions, puestos, sumHoras, sumHours } from '@/utils'
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
 import { YearAndPeriodSelector } from './Selector'
@@ -13,13 +13,13 @@ export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, templa
     const [loading, setLoading] = useState(false)
     const getPuesto = (puesto) => {
         if (puesto === "") return []
-        if (!puestos.includes(puesto)) {
-            puestos.push(puesto)
+        if (!positions.includes(puesto)) {
+            positions.push(puesto)
             return [puesto]
         }
-        return [record.puesto]
+        return [record.position]
     }
-    const totalHoras = sumHoras(record?.actividad)
+    const totalHours = sumHours(record?.activities)
     const handleSubmit = () => {
         if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
@@ -56,26 +56,26 @@ export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, templa
                         !template?.id && <NtInput academicWorkers={academicWorkers} />
                     }
                     <div className="flex gap-2" >
-                        <Textarea minRows={1} size="sm" radius="md" isRequired label="Nombre" type="text" name="nombre" onChange={handleGlobalChange} value={record?.nombre} />
-                        <Select className="w-40" label="Sexo" name="sexo" onChange={handleGlobalChange}>
+                        <Textarea minRows={1} size="sm" radius="md" isRequired label="Nombre" type="text" name="name" onChange={handleGlobalChange} value={record?.name} />
+                        <Select className="w-40" label="Sexo" name="gender" onChange={handleGlobalChange}>
                             <SelectItem key={'H'} variant="flat">H</SelectItem>
                             <SelectItem key={'M'} variant="flat">M</SelectItem>
                         </Select>
                     </div>
-                    <Select selectedKeys={getPuesto(record.puesto)} label='Puesto' name='puesto' onChange={handleGlobalChange}>
+                    <Select selectedKeys={getPuesto(record.position)} label='Puesto' name='position' onChange={handleGlobalChange}>
                         {
-                            puestos.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
+                            positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
                         }
                     </Select>
                     <YearAndPeriodSelector />
                     <AcademicCharge academicPrograms={academicPrograms} />
                     <AddActivityButton isDisabled={template?.id} />
-                    <Input label="Total" type="number" min={0} name="total" value={totalHoras == 0 ? '' : totalHoras} defaultValue={record?.total} isDisabled onChange={handleGlobalChange} />
+                    <Input label="Total" type="number" min={0} name="total" value={totalHours == 0 ? '' : totalHours} defaultValue={record?.total} isDisabled onChange={handleGlobalChange} />
                     <Button startContent={
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                         </svg>
-                    } className="w-full bg-utim" variant="solid" onPress={handleSubmit} isDisabled={(template?.id) || (totalHoras < 32)} isLoading={loading}>
+                    } className="w-full bg-utim" variant="solid" onPress={handleSubmit} isDisabled={(template?.id) || (totalHours < 32)} isLoading={loading}>
                         Guardar
                     </Button>
                 </form>

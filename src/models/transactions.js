@@ -193,8 +193,8 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data: { data, error } } = await getPartialTemplateJoinActivity(id)
-    if (error) {
+    const { data: { data, error }, error: axiosError } = await getPartialTemplateJoinActivity(id)
+    if (error || axiosError) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
             props: {

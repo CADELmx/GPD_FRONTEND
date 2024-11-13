@@ -1,4 +1,4 @@
-import { defaultRecord } from '@/utils'
+import { defaultPartialTemplate } from '@/utils'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
@@ -8,10 +8,10 @@ export const StoredContext = () => useContext(Context)
 
 export const ContextProvider = ({ children }) => {
     const [memory, setMemory] = useState({
-        record: defaultRecord,
+        record: defaultPartialTemplate,
         defaultGroups: [],
         socket: io(),
-        selectedItem: defaultRecord.actividad[0].id,
+        selectedItem: defaultPartialTemplate.activities[0].id,
         user: getCookie('user', { secure: true })
     })
     const login = async (email, password) => {
