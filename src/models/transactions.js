@@ -84,6 +84,11 @@ export const getPartialTemplateJoinActivity = (id) => {
     })
 }
 
+export const insertPartialTemplateAndActivities = async(template, activities) => {
+    const { data: { data, error }, error: axiosError } = await insertPartialTemplate(template)
+    
+}
+
 export const getActivities = () => {
     return serverClient.get('/activity')
 }

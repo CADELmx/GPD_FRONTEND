@@ -1,4 +1,4 @@
-import { checkSocketStatus, defaultActivity, positions, sumHours } from '@/utils'
+import { checkSocketStatus, positions, sumHours } from '@/utils'
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
 import { YearAndPeriodSelector } from './Selector'
@@ -7,6 +7,7 @@ import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
 import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
+import { insertPartialTemplate, insertPartialTemplateAndActivities } from '@/models/transactions'
 
 export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
@@ -23,6 +24,15 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
     const handleSubmit = () => {
         if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
+        toast.promise(insertPartialTemplateAndActivities(partialTemplate, activities), {
+            loading: 'Guardando plantilla...',
+            success: ({ data: { data, error }, error: axiosError }) => {
+                if (axiosError) return 'Error al enviar plantilla'
+                if (error) return error
+                setStored({ partialTemplate: data })
+            },
+            error: 'Error al guardar plantilla'
+        })
     }
     useEffect(() => {
         if (partialTemplate?.id) {
