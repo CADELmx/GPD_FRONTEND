@@ -1,11 +1,11 @@
-import { StoredContext } from "@/context";
+import { StoredContext, UseTemplates } from "@/context";
 import { Avatar, Button, Chip, Input } from "@nextui-org/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Login() {
     const { login, logout, memory: { user }
-    } = StoredContext()
+    } = UseTemplates()
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault()
