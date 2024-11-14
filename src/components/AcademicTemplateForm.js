@@ -8,6 +8,7 @@ import { AddActivityButton } from './Activity'
 import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
 import { insertPartialTemplate, insertPartialTemplateAndActivities } from '@/models/transactions'
+import { CheckIcon } from './Icons'
 
 export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
@@ -105,11 +106,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                         onChange={handleGlobalChange}
                     />
                     <Button
-                        startContent={
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                        }
+                        startContent={CheckIcon}
                         className="w-full bg-utim"
                         variant="solid"
                         onPress={handleSubmit}

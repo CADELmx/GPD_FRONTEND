@@ -1,7 +1,8 @@
 import { UseTemplates } from "@/context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "@/utils"
-import { Input, Select, SelectItem, SelectSection, Textarea } from "@nextui-org/react"
+import { Button, Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
 import { useEffect, useState } from "react"
+import { PlusIcon } from "./Icons"
 
 const YearSelector = ({ selectedYear, setState }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()
@@ -159,6 +160,29 @@ export const AcademicProgramSelector = ({ act, educationalPrograms, handler }) =
                 }
             </Select>
             <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={educationalPrograms.find(e => e.id == act.educationalProgramId)?.description} />
+        </div>
+    )
+}
+
+export const YearSelectorAlter = () => {
+    const defaultYear = String(new Date().getFullYear())
+    const [year, setYear] = useState(defaultYear)
+    const yearList = Array.from({ length: 3 }, (_, k) => ({
+        key: `${defaultYear - k + 1}`,
+        value: `${defaultYear - k + 1}`
+    }))
+    const [isDisabled, setIsDisabled] = useState(true);
+    return (
+        <div className="flex sm:flex gap-2 items-center">
+            <Select className="w-full" isDisabled={isDisabled} label='Año' disallowEmptySelection selectedKeys={[year]} onChange={e => setYear(e.target.value)} items={yearList}>
+                {
+                    ({ value, key }) => <SelectItem key={key} variant="flat">{value}</SelectItem>
+                }
+            </Select>
+            <Switch
+                thumbIcon={PlusIcon}
+                onChange={() => setIsDisabled(!isDisabled)}
+            />
         </div>
     )
 }

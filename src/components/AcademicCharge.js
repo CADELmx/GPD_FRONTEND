@@ -1,6 +1,7 @@
 import { Accordion, AccordionItem, Badge, BreadcrumbItem, Breadcrumbs, Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react"
 import { Activity } from "./Activity"
 import { UseTemplates } from "@/context"
+import { HorizontalDostIcon, StackIcon } from "./Icons"
 
 export const AcademicCharge = ({ educationalPrograms }) => {
     const { memory: { activities, selectedActivity }, setStored } = UseTemplates()
@@ -21,9 +22,7 @@ export const AcademicCharge = ({ educationalPrograms }) => {
                         color="primary"
                         content={activities.length}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
-                        </svg>
+                        {StackIcon}
                     </Badge>
                 }
             >
@@ -105,11 +104,7 @@ export const AcademicCharge = ({ educationalPrograms }) => {
             </AccordionItem>
             <AccordionItem
                 aria-label="Activity Details"
-                startContent={
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                    </svg>
-                }
+                startContent={HorizontalDostIcon}
                 title='Detalles de carga académica'
             >
                 <Activity act={selectedActivity} educationalPrograms={educationalPrograms} key={selectedActivity.id} />
