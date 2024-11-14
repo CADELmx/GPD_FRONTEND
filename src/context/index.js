@@ -81,7 +81,7 @@ export const AreasProvider = ({ children }) => {
         educationalPrograms: [],
         selectedEducationalProgram: {
             areaId: '',
-            name: '',
+            abbreviation: '',
             description: ''
         }
     })

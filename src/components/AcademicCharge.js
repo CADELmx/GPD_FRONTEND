@@ -2,11 +2,8 @@ import { Accordion, AccordionItem, Badge, BreadcrumbItem, Breadcrumbs, Button, C
 import { Activity } from "./Activity"
 import { UseTemplates } from "@/context"
 
-export const AcademicCharge = ({ academicPrograms }) => {
+export const AcademicCharge = ({ educationalPrograms }) => {
     const { memory: { activities, selectedActivity }, setStored } = UseTemplates()
-    const handlePress = () => {
-        setStored({ selectedActivity: activities.find(activity => activity.id === selectedActivity.id) })
-    }
     return (
         <Accordion aria-label="Academic Details" showDivider={false} isCompact fullWidth selectionMode="multiple">
             <AccordionItem
@@ -85,14 +82,15 @@ export const AcademicCharge = ({ academicPrograms }) => {
                 >
                     {
                         activities.map(({ id }, i) => {
-                            console.log(id)
                             return (
                                 <BreadcrumbItem key={id} accessKey={id} isCurrent={id === selectedActivity.id}>
                                     <Chip
                                         size="sm"
                                         key={id}
                                         accessKey={id}
-                                        onClick={handlePress}
+                                        onClick={() => {
+                                            setStored({ selectedActivity: activities.find(activity => activity.id === id) })
+                                        }}
                                         color={id === selectedActivity.id ? 'primary' : 'default'}
                                     >
                                         {
@@ -114,7 +112,7 @@ export const AcademicCharge = ({ academicPrograms }) => {
                 }
                 title='Detalles de carga académica'
             >
-                <Activity act={selectedActivity} eduPrograms={academicPrograms} />
+                <Activity act={selectedActivity} educationalPrograms={educationalPrograms} key={selectedActivity.id} />
             </AccordionItem>
         </Accordion>
     )

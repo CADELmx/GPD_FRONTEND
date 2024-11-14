@@ -148,16 +148,17 @@ export const GroupSelector = ({ act, handler }) => {
     )
 }
 
-export const AcademicProgramSelector = ({ act, eduPrograms, handler }) => {
+export const AcademicProgramSelector = ({ act, educationalPrograms, handler }) => {
     return (
         <div className="flex flex-col md:flex-row gap-2">
-            <Select isDisabled={act?.activityDistribution === ""} className="md:w-2/5" label='Programa educativo' name='educationalProgramId' defaultSelectedKeys={act.educationalProgramId ? [act.educationalProgramId] : []} onSelectionChange={handler} >
-                {eduPrograms.length === 0 ? null :
-                    eduPrograms.map((e) =>
-                        <SelectItem key={e.id} variant="flat">{e.abbreviation}</SelectItem>)
+            <Select isDisabled={act?.activityDistribution === ""} className="md:w-2/5" label='Programa educativo' name='educationalProgramId' defaultSelectedKeys={act.educationalProgramId ? [act.educationalProgramId] : []} onSelectionChange={handler} items={educationalPrograms}>
+                {
+                    (educationalProgram) => (
+                        <SelectItem key={educationalProgram.id} variant="flat">{educationalProgram.abbreviation}</SelectItem>
+                    )
                 }
             </Select>
-            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={eduPrograms.find(e => e.id == act.educationalProgramId)?.description} />
+            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={educationalPrograms.find(e => e.id == act.educationalProgramId)?.description} />
         </div>
     )
 }

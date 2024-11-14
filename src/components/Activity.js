@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementTypeSelector, StayTypeSelector } from './Selector'
 import { useEffect } from 'react'
 
-export const Activity = ({ act, eduPrograms }) => {
+export const Activity = ({ act, educationalPrograms }) => {
     const { memory: { partialTemplate, activities, selectedActivity }, setStored } = UseTemplates()
     const handleChange = (e) => {
         setStored({
@@ -29,10 +29,11 @@ export const Activity = ({ act, eduPrograms }) => {
         })
     }
     const changeStayType = (e) => {
+        const weeklyHours = e.anchorKey === 'TSU' ? 1 : 2
         setStored({
             selectedActivity: {
                 ...selectedActivity,
-                weeklyHours: e.anchorKey === 'TSU' ? 1 : 2,
+                weeklyHours,
                 subtotalClassification: weeklyHours * act.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
             }
         })
@@ -76,17 +77,14 @@ export const Activity = ({ act, eduPrograms }) => {
     const changeActivityProgram = (e) => {
         setStored({
             selectedActivity: {
-                ...selectedActivity, pe: e.size === 0 ? "" : e.anchorKey
+                ...selectedActivity, educationalProgramId: e.size === 0 ? "" : e.anchorKey
             }
         })
     }
     const changeStudentsNumber = (e) => {
         setStored({
-            record: {
-                ...record, activities: acts.map(
-                    (activity) => activity.id === selectedItem ? {
-                        ...activity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.weeklyHours || 1)
-                    } : activity)
+            selectedActivity: {
+                ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.weeklyHours || 1)
             }
         })
     }
@@ -144,7 +142,7 @@ export const Activity = ({ act, eduPrograms }) => {
                     || act.activityDistribution === "Gestión"
                     || act.activityDistribution === "LIIAD"
                 ) && (
-                    <AcademicProgramSelector act={act} eduPrograms={eduPrograms} handler={changeActivityProgram} />
+                    <AcademicProgramSelector act={act} educationalPrograms={educationalPrograms} handler={changeActivityProgram} />
                 )
             }
             {
@@ -182,10 +180,9 @@ export const AddActivityButton = ({ isDisabled }) => {
                 id: 'max-activities'
             })
         }
-        const uuid = crypto.randomUUID()
         const newActivity = {
             ...defaultActivity,
-            id: uuid
+            id: crypto.randomUUID()
         }
         setStored({
             activities: [
@@ -194,7 +191,6 @@ export const AddActivityButton = ({ isDisabled }) => {
             ],
             selectedActivity: newActivity
         })
-        console.log('Activity created', newActivity)
     }
     return (
         <Button

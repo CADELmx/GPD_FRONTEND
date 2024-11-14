@@ -1,5 +1,5 @@
 import { StoredContext, UseTemplates } from "@/context"
-import { Chip, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
+import { Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -13,6 +13,9 @@ export const Layout = ({ children }) => {
         { name: "Inicio", href: "/" },
         { name: "Secretaría", href: "/secretary" },
         { name: "Estado de plantillas", href: "/templatestatus" },
+    ]
+    const secretaryItems = [
+        { name: "Areas", href: "/secretary/areas" },
     ]
     const { memory: { socket, user } } = UseTemplates()
     const [isConnected, setIsConnected] = useState(false);
@@ -115,6 +118,20 @@ export const Layout = ({ children }) => {
                                 </Link>
                             </NavbarItem>
                         ))
+                    }{
+                        <NavbarItem>
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button>Secretaría</Button>
+                                </DropdownTrigger>
+                                <DropdownMenu items={secretaryItems}>
+                                    <DropdownItem>
+                                        <Link href="/secretary">Areas</Link>
+                                        
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </NavbarItem>
                     }
                     <LoginButton />
                     <Chip variant="dot" color={isConnected ? "success" : "danger"}>

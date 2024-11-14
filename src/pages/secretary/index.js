@@ -1,7 +1,7 @@
 import { ChangeStatus } from "@/components/ChangeStatus";
 import { MoreOptions } from "@/components/DownloadButton";
 import { ModalError } from "@/components/ModalError";
-import { StoredContext } from "@/context";
+import { StoredContext, UseTemplates } from "@/context";
 import { generateRecords } from "@/models/transactions";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 
 export default function Secretary({ plantillas, error }) {
   console.log(plantillas)
-  const { memory: { socket } } = StoredContext()
+  const { memory: { socket } } = UseTemplates()
   const [templates, setTemplates] = useState(plantillas || []);
   useEffect(() => {
     const onCreatedTemplate = (templateObject) => {

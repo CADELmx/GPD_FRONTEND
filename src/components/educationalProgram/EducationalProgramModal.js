@@ -2,6 +2,7 @@ import { UseSecretary } from "@/context"
 import { createEducationalProgram, deleteEducationalProgram, updateEducationalProgram } from "@/models/transactions"
 import { checkEmptyStringOption } from "@/utils"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react"
+import { useState } from "react"
 import toast from "react-hot-toast"
 
 export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange }) => {
@@ -76,7 +77,8 @@ export const EducationalProgramModal = ({ areas, isOpen, onOpen, onOpenChange })
                                     onChange={handleChange}
                                     label='Área'
                                     name="areaId"
-                                    defaultSelectedKeys={checkEmptyStringOption(selectedEducationalProgram?.areaId)}
+                                    required
+                                    defaultSelectedKeys={selectedEducationalProgram?.areaId ? [selectedEducationalProgram.areaId] : []}
                                     items={areas}
                                 >
                                     {

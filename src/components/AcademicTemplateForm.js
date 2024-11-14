@@ -1,4 +1,4 @@
-import { checkSocketStatus, positions, sumHours } from '@/utils'
+import { checkSocketStatus, defaultActivity, positions, sumHours } from '@/utils'
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
 import { YearAndPeriodSelector } from './Selector'
@@ -8,8 +8,8 @@ import { AddActivityButton } from './Activity'
 import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
 
-export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, template }) => {
-    const { memory: { partialTemplate, selectedActivity, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
+export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
+    const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
     const [loading, setLoading] = useState(false)
     const getPosition = (position) => {
         if (position === "") return []
@@ -82,7 +82,7 @@ export const AcademicTemplateForm = ({ academicPrograms, academicWorkers, templa
                         }
                     </Select>
                     <YearAndPeriodSelector />
-                    <AcademicCharge academicPrograms={academicPrograms} />
+                    <AcademicCharge educationalPrograms={educationalPrograms} />
                     <AddActivityButton isDisabled={partialTemplate?.id} />
                     <Input
                         label="Total"

@@ -5,14 +5,14 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 
 export const NtInput = ({ academicWorkers }) => {
-    const { memory: { record }, setStored } = UseTemplates()
+    const { memory: { partialTemplate }, setStored } = UseTemplates()
     const [idError, setIdError] = useState(false)
     const [locked, setLocked] = useState(false)
     const [selectorActive, setSelectorActive] = useState(false)
-    const handleChangeFromSupabase = async (newValue) => {
-        const supaPromise = getPersonalData(newValue)
-        if (newValue === '') return
-        toast.promise(supaPromise, {
+    const handleChangeFromBackend = async (newValue) => {
+        if (newValue === '' || !newValue) return
+        const personaDataPromise = getPersonalData(newValue)
+        toast.promise(personaDataPromise, {
             loading: 'Buscando número de trabajador',
             success: ({ data, request, error }) => {
                 console.log(data, request)
@@ -21,7 +21,7 @@ export const NtInput = ({ academicWorkers }) => {
                 }
                 if (data.length > 0) {
                     setIdError(false)
-                    setStored({ record: { ...record, nt: data[0].ide, puesto: data[0].puesto, nombre: data[0].nombre } })
+                    setStored({ partialTemplate: { ...partialTemplate, nt: data[0].ide, puesto: data[0].puesto, nombre: data[0].nombre } })
                     setLocked(true)
                     return 'Número de trabajador encontrado'
                 } else {
@@ -49,24 +49,30 @@ export const NtInput = ({ academicWorkers }) => {
             <div className="flex gap-2">
                 {
                     selectorActive && (
-                        <Select isDisabled={locked} name="worker" label='Escoger trabajador' onChange={(e) => handleChangeFromSupabase(e.target.value)}>
-                            <SelectSection title="Tecnologías de la Información">
+                        <Select isDisabled={locked} name="worker" label='Escoger trabajador' onChange={(e) => handleChangeFromBackend(e.target.value)}>
+                            <SelectSection
+                                items={academicWorkers.filter(w => w.area === 'P.E. de Tecnologías de la Información')}
+                                title="Tecnologías de la Información"
+                            >
                                 {
-                                    academicWorkers.filter(w => w.area === 'P.E. de Tecnologías de la Información').map(w => {
-                                        return <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.nombre}</SelectItem>
-                                    })
+                                    w => (
+                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.nombre}</SelectItem>
+                                    )
                                 }
                             </SelectSection>
-                            <SelectSection title="Lengua Inglesa">
+                            <SelectSection
+                                items={academicWorkers.filter(w => w.area === 'P.E. de Lengua Inglesa')}
+                                title="Lengua Inglesa"
+                            >
                                 {
-                                    academicWorkers.filter(w => w.area === 'P.E. de Lengua Inglesa').map(w => {
-                                        return <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.nombre}</SelectItem>
-                                    })
+                                    w => (
+                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.nombre}</SelectItem>
+                                    )
                                 }
                             </SelectSection>
                         </Select>
                     ) || (
-                        <Input label="N.T." type="number" min={1} name="nt" onValueChange={handleChangeFromSupabase} color={idError ? "warning" : "default"} isDisabled={locked} />
+                        <Input label="N.T." type="number" min={1} name="nt" onValueChange={handleChangeFromBackend} color={idError ? "warning" : "default"} isDisabled={locked} />
                     )
                 }
                 <Switch isSelected={locked} onValueChange={setLocked} thumbIcon={locked ? (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
