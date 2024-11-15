@@ -1,12 +1,18 @@
-import { Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Chip, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { UploadIcon } from "../Icons"
 import { useState } from "react";
 import axios from "axios";
+import { UseSecretary } from "@/context";
+import { createManyEducationalPrograms } from "@/models/transactions";
+import toast from "react-hot-toast";
 
 export const ExportEducationalProgramsMenu = () => {
+    const { areaState: { areas } } = UseSecretary()
     const [file, setFile] = useState();
     const [educationalPrograms, setEducationalPrograms] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState(new Set([]));
+    const [selectedArea, setSelectedArea] = useState(new Set([]));
     const handleFileChange = (e) => {
         if (e.target.files) {
             setFile(e.target.files[0])
@@ -21,10 +27,48 @@ export const ExportEducationalProgramsMenu = () => {
             if (status === 200) {
                 const { data } = await axios.get(`/api/import/${file.name}`)
                 const newEducationalPrograms = JSON.parse(data)
-                setEducationalPrograms(newEducationalPrograms.sort((a, b) => a.abbreviation.localeCompare(b.abbreviation)))
-                console.log(educationalPrograms)
+                    .sort((a, b) => a.abbreviation.localeCompare(b.abbreviation))
+                    .map((e, i) => ({
+                        ...e,
+                        index: i
+                    }))
+                setEducationalPrograms(newEducationalPrograms)
+                setFile(null)
             }
             setLoading(false)
+        }
+    }
+    const getFirstSetValue = (set) => {
+        return Array.from(set)[0]
+    }
+    const handleSubmit = async () => {
+        if (selectedEductationalPrograms.size > 0) {
+            setLoading(true)
+            const newEducationalPrograms = Array.from(selectedEductationalPrograms).map((index) => {
+                const { abbreviation, description } = educationalPrograms[index]
+                return ({
+                    abbreviation,
+                    description
+                })
+            })
+            toast.promise(createManyEducationalPrograms(Number(getFirstSetValue(selectedArea)), newEducationalPrograms), {
+                loading: 'Registrando programas educativos...',
+                success: ({ data: { data, error, message } }) => {
+                    console.log(data)
+                    setLoading(false)
+                    if (error) return message
+                    setEducationalPrograms(educationalPrograms.filter(e => {
+                        return !selectedEductationalPrograms.has(`${e.index}`)
+                    }))
+                    setSelectedEducationalPrograms(new Set([]))
+                    setSelectedArea(new Set([]))
+                    return message
+                },
+                error: () => {
+                    setLoading(false)
+                    return 'Error al registrar los programas educativos'
+                }
+            })
         }
     }
     return (
@@ -41,19 +85,76 @@ export const ExportEducationalProgramsMenu = () => {
                         <p className="text-xs text-utim">Archivos en formato JSON</p>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                        <Chip isDisabled={!file} variant="bordered">{file ? file?.name : 'Nada seleccionado'}</Chip>
+                        <Chip isDisabled={!file} variant="bordered">
+                            {file ? file?.name : 'Nada seleccionado'}
+                        </Chip>
                         {
                             file &&
-                            <Chip isDisabled={file?.type !== 'application/json'} variant="solid" color={file?.type === 'application/json' ? 'success' : 'danger'}>{file?.type || 'formato desconocido'}</Chip>
+                            <Chip
+                                isDisabled={file?.type !== 'application/json'}
+                                variant="solid"
+                                color={file?.type === 'application/json' ? 'success' : 'danger'}
+                            >
+                                {file?.type || 'formato desconocido'}
+                            </Chip>
                         }
                     </div>
                 </div>
-                <input id="dropzone-file" type="file" accept=".json,application/json" onChange={handleFileChange} className="hidden" />
+                <input
+                    id="dropzone-file"
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={handleFileChange}
+                    className="hidden"
+                />
             </label>
-            <Button className="bg-utim" fullWidth onPress={handleExport} isLoading={loading}>
+            <Button
+                color="primary"
+                fullWidth
+                onPress={handleExport}
+                isLoading={loading && file}
+            >
                 Importar programas educativos
             </Button>
-            <Table key={'table'} aria-label="tabla de importaciones">
+            <Select
+                isDisabled={educationalPrograms.length === 0}
+                items={areas}
+                label='Areas'
+                placeholder="Selecciona un area"
+                onSelectionChange={setSelectedArea}
+                selectedKeys={selectedArea}
+                disallowEmptySelection
+            >
+                {
+                    (area) => (
+                        <SelectItem key={area.id} value={area.id}>
+                            {area.name}
+                        </SelectItem>
+                    )
+                }
+            </Select>
+            <Button
+                fullWidth
+                className="bg-utim"
+                isDisabled={
+                    selectedEductationalPrograms.size === 0 || educationalPrograms.length === 0 || selectedArea.size === 0
+                }
+                onPress={handleSubmit}
+                isLoading={loading && !file}
+            >
+                Registrar en el área seleccionada
+            </Button>
+            <Table
+                selectedKeys={selectedEductationalPrograms}
+                onSelectionChange={setSelectedEducationalPrograms}
+                isCompact
+                selectionMode="multiple"
+                classNames={{
+                    td: 'text-xs',
+                }}
+                key={'table'}
+                aria-label="tabla de importaciones"
+            >
                 <TableHeader>
                     <TableColumn>
                         Programa educativo
@@ -62,10 +163,14 @@ export const ExportEducationalProgramsMenu = () => {
                         Abreviación
                     </TableColumn>
                 </TableHeader>
-                <TableBody key={'ld'} items={educationalPrograms} emptyContent={'Nada exportado aún'}>
+                <TableBody
+                    key={'ld'}
+                    items={educationalPrograms}
+                    emptyContent={'Nada exportado aún'}
+                >
                     {
                         (educationalProgram) => (
-                            <TableRow key={educationalProgram.abbreviation}>
+                            <TableRow key={educationalProgram.index}>
                                 <TableCell>
                                     {educationalProgram.description}
                                 </TableCell>

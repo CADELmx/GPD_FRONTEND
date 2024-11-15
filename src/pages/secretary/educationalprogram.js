@@ -5,7 +5,7 @@ import { TrashIcon, UploadIcon } from "@/components/Icons"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
 import { getAreas, getEducationalPrograms } from "@/models/transactions"
-import { Accordion, AccordionItem, Button, Chip, Input, useDisclosure } from "@nextui-org/react"
+import { Accordion, AccordionItem, Button, useDisclosure } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 
 export const getServerSideProps = async () => {
@@ -28,22 +28,16 @@ export const getServerSideProps = async () => {
 }
 
 export default function EducativeProgram({ areas, ssrEducationalPrograms, error }) {
-    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
-    const [selectedKeys, setSelectedKeys] = useState(new Set(['1']));
+    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
+    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const EducativeProgramModal = useDisclosure()
     const DeleteModal = useDisclosure()
     const handleOpen = () => {
         EducativeProgramModal.onOpen()
     }
-
-    useEffect(() => {
-        console.log(selectedKeys.size)
-        return () => {
-
-        };
-    }, [selectedKeys]);
     useEffect(() => {
         setStoredEducationalPrograms({ educationalPrograms: ssrEducationalPrograms })
+        setStoredAreas({ areas })
     }, [])
     return (
         <div className="flex flex-col items-center justify-center">
@@ -77,7 +71,6 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
                     )
                 }
                 <EducationalProgramModal
-                    areas={areas}
                     isOpen={EducativeProgramModal.isOpen}
                     onOpen={EducativeProgramModal.onOpen}
                     onOpenChange={EducativeProgramModal.onOpenChange}

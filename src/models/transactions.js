@@ -172,6 +172,14 @@ export const createEducationalProgram = (educationalProgram) => {
     return serverClient.post('/educational-programs', educationalProgram)
 }
 
+export const createManyEducationalPrograms = (areaId, educationalPrograms) => {
+    return serverClient.post('/educational-programs/many', educationalPrograms, {
+        params: {
+            id: areaId
+        }
+    })
+}
+
 export const updateEducationalProgram = (id, newEducationalProgram) => {
     return serverClient.put(`/educational-programs/${id}`, newEducationalProgram)
 }
