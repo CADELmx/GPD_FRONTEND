@@ -8,7 +8,6 @@ import { useEffect } from "react"
 
 export const getServerSideProps = async () => {
     const { data: { data, error } } = await getAreas()
-    console.log(data)
     return {
         props: {
             areas: data,

@@ -120,7 +120,7 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }) 
                 if (error) return message
                 setStoredEducationalPrograms({
                     selectedEducationalProgram: null,
-                    educationalPrograms: educationalPrograms.filter(educationalProgram => educationalProgram.id !== id)
+                    educationalPrograms: educationalPrograms.filter(educationalProgram => educationalProgram.id !== selectedEducationalProgram.id)
                 })
                 onOpenChange()
                 return message
