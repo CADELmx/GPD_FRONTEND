@@ -1,23 +1,30 @@
 import { UseTemplates } from "@/context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "@/utils"
-import { Button, Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
+import { Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
 import { useEffect, useState } from "react"
-import { PlusIcon } from "./Icons"
+import { LockIcon } from "./Icons"
 
 const YearSelector = ({ selectedYear, setState }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()
     const year = new Date().getFullYear()
     const yearList = Array.from({ length: 3 }, (_, k) => `${year - k + 1}`)
     return (
-        <Select label='Año' disallowEmptySelection defaultSelectedKeys={[selectedYear]} className="md:w-2/5" onChange={e => {
-            setState(e.target.value)
-            setStored({
-                partialTemplate: {
-                    ...partialTemplate,
-                    year: e.target.value
-                }
-            })
-        }}>
+        <Select
+            label='Año'
+            disallowEmptySelection
+            defaultSelectedKeys={[selectedYear]}
+            className="md:w-2/5"
+            isRequired
+            onChange={e => {
+                setState(e.target.value)
+                setStored({
+                    partialTemplate: {
+                        ...partialTemplate,
+                        year: e.target.value
+                    }
+                })
+            }}
+        >
             {
                 yearList.map((year) => {
                     return <SelectItem key={year} variant="flat">{year}</SelectItem>
@@ -71,7 +78,14 @@ const PeriodSelector = ({ selectedYear }) => {
         }
     }, [])
     return (
-        <Select label='Periodo' autoCapitalize="words" onChange={handleChange} disallowEmptySelection defaultSelectedKeys={[defaultPeriod]}>
+        <Select
+            label='Periodo'
+            autoCapitalize="words"
+            isRequired
+            onChange={handleChange}
+            disallowEmptySelectio
+            defaultSelectedKeys={[defaultPeriod]}
+        >
             <SelectSection title={'Ordinario'}>
                 {
                     generatePeriods(selectedYear, true).map(p => {
@@ -103,7 +117,14 @@ export const YearAndPeriodSelector = () => {
 
 export const ActTypeSelector = ({ act, handler }) => {
     return (
-        <Select className={act?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'} label="Distribución" onChange={handler} name="activityDistribution" defaultSelectedKeys={checkEmptyStringOption(act?.activityDistribution)}>
+        <Select
+            className={act?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'}
+            label="Distribución"
+            onChange={handler}
+            name="activityDistribution"
+            isRequired
+            defaultSelectedKeys={checkEmptyStringOption(act?.activityDistribution)}
+        >
             {
                 activitiesDistribution.map((a) => {
                     return <SelectItem key={a} variant="flat">{a}</SelectItem>
@@ -125,7 +146,14 @@ export const ManagementTypeSelector = ({ act, handler }) => {
 
 export const StayTypeSelector = ({ act, handler }) => {
     return (
-        <Select className='' onSelectionChange={handler} name='stayType' label='Tipo de estadía' defaultSelectedKeys={checkEmptyStringOption(act.stayType)}>
+        <Select
+            className=''
+            onSelectionChange={handler}
+            name='stayType'
+            label='Tipo de estadía'
+            defaultSelectedKeys={checkEmptyStringOption(act.stayType)}
+            disallowEmptySelection
+        >
             <SelectItem key='TSU'>TSU</SelectItem>
             <SelectItem key='ING'>ING</SelectItem>
         </Select>
@@ -180,7 +208,7 @@ export const YearSelectorAlter = () => {
                 }
             </Select>
             <Switch
-                thumbIcon={PlusIcon}
+                thumbIcon={LockIcon}
                 onChange={() => setIsDisabled(!isDisabled)}
             />
         </div>

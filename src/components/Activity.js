@@ -126,7 +126,17 @@ export const Activity = ({ act, educationalPrograms }) => {
                         act.activityDistribution === "Estadía técnica"
                         || act.activityDistribution === "Tutorías"
                     ) && (
-                        <Textarea minRows={1} size='sm' radius='md' label="Nombre de actividades" type="text" name="activityName" onChange={handleChange} isRequired defaultValue={act.activityName} />
+                        <Textarea
+                            minRows={1}
+                            size='sm'
+                            radius='md'
+                            label="Nombre de actividades"
+                            type="text"
+                            name="activityName"
+                            onChange={handleChange}
+                            isRequired
+                            defaultValue={act?.activityName}
+                        />
                     )
                 }
                 {
@@ -158,12 +168,25 @@ export const Activity = ({ act, educationalPrograms }) => {
             <div className='flex gap-2'>
                 {
                     (act.activityDistribution === "Estadía técnica") && (
-                        <Input label="Número de estudiantes" type="number" defaultValue={act.numberStudents} name="numberStudents" onChange={changeStudentsNumber} min={1} />
+                        <Input
+                            label="Número de estudiantes"
+                            type="number"
+                            defaultValue={act.numberStudents}
+                            name="numberStudents"
+                            onChange={changeStudentsNumber}
+                            min={1}
+                        />
                     )
                 }
                 <Input label="Horas semanales" type="number" name="weeklyHours" min={1} value={act?.weeklyHours === 0 ? '' : act?.weeklyHours} onChange={changeWeeklyHours} />
             </div>
-            <Input label="Subtotal por clasificación" type="number" name="subtotalClassification" value={act?.subtotalClassification === 0 ? '' : act?.subtotalClassification} isDisabled />
+            <Input
+                label="Subtotal por clasificación"
+                type="number"
+                name="subtotalClassification"
+                value={act?.subtotalClassification === 0 ? '' : act?.subtotalClassification}
+                isDisabled
+            />
             {
                 activities.length > 1 && <Button color='danger' onClick={handleDelete}>
                     Eliminar actividad

@@ -29,11 +29,11 @@ export const insertActivities = (activities) => {
 }
 
 export const insertTemplate = (template) => {
-    return serverClient.post('/template', template)
+    return serverClient.post('/templates', template)
 }
 
 export const insertPartialTemplate = (template) => {
-    return serverClient.post('/template', template)
+    return serverClient.post('/templates', template)
 }
 
 export const getAcademicPrograms = () => {
@@ -45,7 +45,7 @@ export const getTemplates = async () => {
 }
 
 export const getTemplate = (id) => {
-    return serverClient.get('/templates/', {
+    return serverClient.get('/templates', {
         params: {
             id
         }
@@ -57,7 +57,7 @@ export const getPartialTemplates = () => {
 }
 
 export const getPartialTemplate = (id) => {
-    return serverClient.get('/partial-templates/', {
+    return serverClient.get('/partial-templates', {
         params: {
             id
         }
@@ -65,7 +65,7 @@ export const getPartialTemplate = (id) => {
 }
 
 export const setPartialTemplateStatus = (id, status) => {
-    return serverClient.put('partial-template', status, {
+    return serverClient.put('/partial-template', status, {
         params: {
             id
         }
@@ -84,9 +84,9 @@ export const getPartialTemplateJoinActivity = (id) => {
     })
 }
 
-export const insertPartialTemplateAndActivities = async(template, activities) => {
+export const insertPartialTemplateAndActivities = async (template, activities) => {
     const { data: { data, error }, error: axiosError } = await insertPartialTemplate(template)
-    
+
 }
 
 export const getActivities = () => {
@@ -94,7 +94,7 @@ export const getActivities = () => {
 }
 
 export const getActivitiesByPartialTemplate = (id) => {
-    return serverClient.get('/activity/', {
+    return serverClient.get('/activity', {
         params: {
             template: id
         }

@@ -78,6 +78,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                             value={partialTemplate?.name}
                         />
                         <Select
+                            isRequired
                             className="w-40"
                             label="Sexo"
                             name="gender"
@@ -87,7 +88,13 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                             <SelectItem key={'M'} variant="flat">M</SelectItem>
                         </Select>
                     </div>
-                    <Select selectedKeys={getPosition(partialTemplate.position)} label='Puesto' name='position' onChange={handleGlobalChange}>
+                    <Select
+                        selectedKeys={getPosition(partialTemplate.position)}
+                        label='Puesto'
+                        name='position'
+                        onChange={handleGlobalChange}
+                        isRequired
+                    >
                         {
                             positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
                         }

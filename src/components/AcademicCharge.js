@@ -58,20 +58,21 @@ export const AcademicCharge = ({ educationalPrograms }) => {
                                         className="m-0"
                                         key={'DropdownSelectItem'}
                                         aria-label="Dropdown actividades"
+                                        items={items}
                                     >
                                         {
-                                            items.map((e, i) => {
+                                            (item) => {
                                                 return (
                                                     <DropdownItem
-                                                        key={e.accessKey}
+                                                        key={item.accessKey}
                                                         className="p-0 my-1 w-full grid"
                                                         color="primary"
-                                                        aria-label={`Select act ${i}`}
+                                                        aria-label={`Select act ${item.accessKey}`}
                                                     >
-                                                        {e.children}
+                                                        {item.children}
                                                     </DropdownItem>
                                                 )
-                                            })
+                                            }
                                         }
                                     </DropdownMenu>
                                 </Dropdown>

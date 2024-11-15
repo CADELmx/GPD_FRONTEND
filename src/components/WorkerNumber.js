@@ -12,17 +12,19 @@ export const NtInput = ({ academicWorkers }) => {
     const [selectorActive, setSelectorActive] = useState(false)
     const handleChangeFromBackend = async (newValue) => {
         if (newValue === '' || !newValue) return
-        const personaDataPromise = getPersonalData(newValue)
+        const personaDataPromise = getPersonalData(Number(newValue))
+        const data = await getPersonalData(Number(newValue))
+        console.log(data)
         toast.promise(personaDataPromise, {
             loading: 'Buscando número de trabajador',
-            success: ({ data, request, error }) => {
+            success: ({ data: { data, error, message } }) => {
                 console.log(data, request)
                 if (error) {
-                    return 'Error al buscar el número de trabajador'
+                    return message
                 }
-                if (data.length > 0) {
+                if (data) {
                     setIdError(false)
-                    setStored({ partialTemplate: { ...partialTemplate, nt: data[0].ide, puesto: data[0].puesto, nombre: data[0].nombre } })
+                    setStored({ partialTemplate: { ...partialTemplate, nt: data.ide, puesto: data.puesto, nombre: data.nombre } })
                     setLocked(true)
                     return 'Número de trabajador encontrado'
                 } else {
@@ -61,7 +63,7 @@ export const NtInput = ({ academicWorkers }) => {
                             >
                                 {
                                     w => (
-                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.nombre}</SelectItem>
+                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.name}</SelectItem>
                                     )
                                 }
                             </SelectSection>
@@ -71,7 +73,7 @@ export const NtInput = ({ academicWorkers }) => {
                             >
                                 {
                                     w => (
-                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.nombre}</SelectItem>
+                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.name}</SelectItem>
                                     )
                                 }
                             </SelectSection>
