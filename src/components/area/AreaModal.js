@@ -48,7 +48,6 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
         })
     }
     const handleSubmit = () => {
-        console.log('submit', selectedArea)
         if (selectedArea?.id) {
             handleUpdate(selectedArea.id, selectedArea)
         } else {
@@ -84,7 +83,7 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
 }
 
 export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }) => {
-    const { areaState: { selectedArea }, setStoredAreas } = UseSecretary()
+    const { areaState: { selectedArea, areas }, setStoredAreas } = UseSecretary()
     const handleDelete = () => {
         toast.promise(deleteArea(selectedArea.id), {
             loading: 'Eliminando área...',

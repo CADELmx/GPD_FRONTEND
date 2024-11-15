@@ -12,19 +12,13 @@ export const NtInput = ({ academicWorkers }) => {
     const [selectorActive, setSelectorActive] = useState(false)
     const handleChangeFromBackend = async (newValue) => {
         if (newValue === '' || !newValue) return
-        const personaDataPromise = getPersonalData(Number(newValue))
-        const data = await getPersonalData(Number(newValue))
-        console.log(data)
-        toast.promise(personaDataPromise, {
+        toast.promise(getPersonalData(Number(newValue)), {
             loading: 'Buscando número de trabajador',
             success: ({ data: { data, error, message } }) => {
-                console.log(data, request)
-                if (error) {
-                    return message
-                }
+                if (error) return message
                 if (data) {
                     setIdError(false)
-                    setStored({ partialTemplate: { ...partialTemplate, nt: data.ide, puesto: data.puesto, nombre: data.nombre } })
+                    setStored({ partialTemplate: { ...partialTemplate, nt: data.ide, position: data.position, name: data.name } })
                     setLocked(true)
                     return 'Número de trabajador encontrado'
                 } else {
