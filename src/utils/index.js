@@ -90,6 +90,10 @@ export const generatePeriods = (year, ordinary) => {
 
 export const checkEmptyStringOption = (string) => string === "" ? [] : [string]
 
+export const getFirstSetValue = (set) => {
+    return Array.from(set)[0]
+}
+
 export const sumHours = (activities) => {
     if (activities?.length) {
         return activities.map(e => e.subtotalClassification).reduce((p, c) => p + c, 0)

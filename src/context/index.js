@@ -2,6 +2,7 @@ import { defaultActivity, defaultPartialTemplate } from '@/utils'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
+import toast from 'react-hot-toast'
 
 const TemplateContext = createContext()
 

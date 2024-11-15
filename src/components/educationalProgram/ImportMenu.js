@@ -5,6 +5,8 @@ import axios from "axios";
 import { UseSecretary } from "@/context";
 import { createManyEducationalPrograms } from "@/models/transactions";
 import toast from "react-hot-toast";
+import { tableClassNames } from "./EducationalProgramCard";
+import { getFirstSetValue } from "@/utils";
 
 export const ExportEducationalProgramsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
@@ -37,9 +39,6 @@ export const ExportEducationalProgramsMenu = () => {
             }
             setLoading(false)
         }
-    }
-    const getFirstSetValue = (set) => {
-        return Array.from(set)[0]
     }
     const handleSubmit = async () => {
         if (selectedEductationalPrograms.size > 0) {
@@ -149,9 +148,7 @@ export const ExportEducationalProgramsMenu = () => {
                 onSelectionChange={setSelectedEducationalPrograms}
                 isCompact
                 selectionMode="multiple"
-                classNames={{
-                    td: 'text-xs',
-                }}
+                classNames={tableClassNames}
                 key={'table'}
                 aria-label="tabla de importaciones"
             >

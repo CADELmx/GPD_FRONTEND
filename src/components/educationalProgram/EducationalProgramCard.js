@@ -1,7 +1,15 @@
 import { UseSecretary } from "@/context"
-import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { useState } from "react"
+import toast from "react-hot-toast"
+import { playNotifySound } from "@/toast"
+
+export const tableClassNames = {
+    wrapper: 'm-0 p-1',
+    td: 'text-xs p-2',
+    th: 'text-xs p-2',
+}
 
 export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOpenDeleteModal }) => {
     const { setStoredEducationalPrograms, areaState: { areas } } = UseSecretary()
@@ -15,16 +23,25 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
         setStoredEducationalPrograms({ selectedEducationalProgram: educationalProgram })
         onOpenDeleteModal()
     }
-    if (educationalPrograms.length === 0) return (
-        <h1>No hay programas educativos registrados</h1>
-    )
+    const handleChangeArea = () => {
+        playNotifySound()
+        const programs = Array.from(selectedEductationalPrograms)
+        toast.success('Cambiando de area ' + programs.join(', '))
+    }
+    const handleDeleteMany = () => {
+        console.log('eliminando varios')
+        toast.success('Eliminando varios')
+        playNotifySound()
+    }
     return (
         <div className="flex flex-col gap-2">
             <div className="md:flex gap-2 items-center">
                 <Switch
+                    isDisabled={educationalPrograms.length === 0}
+                    aria-label="Switch selection mode"
                     className="flex max-w-full w-full"
                     classNames={{
-                        base: 'flex gap-2 p-1.5 bg-content2 rounded-lg border-2 border-transparent data-[selected=true]:border-default',
+                        base: 'flex gap-2 p-1.5 bg-content2 rounded-lg border-2 border-transparent data-[selected=true]:border-default data-[disabled=true]:cursor-default data-[disabled=true]:opacity-50',
                     }}
                     thumbIcon={PencilIcon}
                     isSelected={editmode}
@@ -38,13 +55,26 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                 {
                     editmode && (
                         <div className="flex items-center pt-2 md:pt-0 gap-2">
-                            <Button isDisabled={selectedEductationalPrograms.size === 0} startContent={ArrowsRightLeftIcon} color="primary">Cambiar de area</Button>
-                            <Button isDisabled={selectedEductationalPrograms.size === 0} startContent={TrashIcon} color="danger">Eliminar</Button>
+                            <Button
+                                aria-label="Cambiar de área"
+                                isDisabled={selectedEductationalPrograms.size === 0}
+                                startContent={ArrowsRightLeftIcon}
+                                color="primary"
+                                onPress={handleChangeArea}
+                            >Cambiar de area</Button>
+                            <Button
+                                aria-label="Eliminar varios"
+                                isDisabled={selectedEductationalPrograms.size === 0}
+                                startContent={TrashIcon}
+                                color="danger"
+                                onPress={handleDeleteMany}
+                            >Eliminar</Button>
                         </div>
                     )
                 }
             </div>
             <Table
+                aria-label="Tabla de programas educativos"
                 selectionMode={editmode ? "multiple" : 'none'}
                 onSelectionChange={(e) => {
                     setSelectedEductationalPrograms(e)
@@ -52,11 +82,7 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                 }}
                 selectedKeys={selectedEductationalPrograms}
                 isCompact
-                classNames={{
-                    wrapper: 'm-0 p-1',
-                    td: 'text-xs p-2',
-                    th: 'text-xs p-2',
-                }}>
+                classNames={tableClassNames}>
                 <TableHeader>
                     <TableColumn>
                         Abreviatura
@@ -73,7 +99,7 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                         }
                     </TableColumn>
                 </TableHeader>
-                <TableBody items={educationalPrograms}>
+                <TableBody emptyContent={'Sin programas educativos'} items={educationalPrograms}>
                     {(educationalProgram) => (
                         <TableRow key={educationalProgram.id}>
                             <TableCell className="text-utim">
@@ -83,7 +109,7 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                                 {educationalProgram.description}
                             </TableCell>
                             <TableCell>
-                                {areas[educationalProgram.areaId].name}
+                                {areas.find(area => area.id === educationalProgram.areaId).name}
                             </TableCell>
                             <TableCell>
                                 {
