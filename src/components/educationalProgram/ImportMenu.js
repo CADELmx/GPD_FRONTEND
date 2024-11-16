@@ -7,6 +7,7 @@ import { createManyEducationalPrograms } from "@/models/transactions";
 import toast from "react-hot-toast";
 import { tableClassNames } from "./EducationalProgramCard";
 import { getFirstSetValue } from "@/utils";
+import { playNotifySound } from "@/toast";
 
 export const ExportEducationalProgramsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
@@ -53,7 +54,6 @@ export const ExportEducationalProgramsMenu = () => {
             toast.promise(createManyEducationalPrograms(Number(getFirstSetValue(selectedArea)), newEducationalPrograms), {
                 loading: 'Registrando programas educativos...',
                 success: ({ data: { data, error, message } }) => {
-                    console.log(data)
                     setLoading(false)
                     if (error) return message
                     setEducationalPrograms(educationalPrograms.filter(e => {
@@ -61,7 +61,8 @@ export const ExportEducationalProgramsMenu = () => {
                     }))
                     setSelectedEducationalPrograms(new Set([]))
                     setSelectedArea(new Set([]))
-                    return message
+                    playNotifySound()
+                    return `${data.count} programas educativos registrados`
                 },
                 error: () => {
                     setLoading(false)

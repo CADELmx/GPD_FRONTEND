@@ -4,7 +4,7 @@ import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { playNotifySound } from "@/toast"
-import { ChangeAreaModal } from "./EducationalProgramModal"
+import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',
@@ -27,12 +27,10 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
         onOpenDeleteModal()
     }
     const handleChangeArea = () => {
-        const programs = Array.from(selectedEductationalPrograms)
         ChangeFromAreaModal.onOpenChange()
     }
     const handleDeleteMany = () => {
-        console.log('eliminando varios')
-        toast.success('Eliminando varios')
+        DeleteEducativeProgramsModal.onOpenChange()
     }
     return (
         <div className="flex flex-col gap-2">
@@ -42,6 +40,12 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                     isOpen={ChangeFromAreaModal.isOpen}
                     onOpen={ChangeFromAreaModal.onOpen}
                     onOpenChange={ChangeFromAreaModal.onOpenChange}
+                />
+                <DeleteManyModal
+                    selectedEducationalPrograms={selectedEductationalPrograms}
+                    isOpen={DeleteEducativeProgramsModal.isOpen}
+                    onOpen={DeleteEducativeProgramsModal.onOpen}
+                    onOpenChange={DeleteEducativeProgramsModal.onOpenChange}
                 />
                 <Switch
                     isDisabled={educationalPrograms.length === 0}

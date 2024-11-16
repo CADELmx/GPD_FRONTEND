@@ -169,6 +169,7 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
         toast.promise(Promise.allSettled(programPromises), {
             loading: 'Actualizando programas educativos...',
             success: (results) => {
+                onOpenChange()
                 const promisesData = results.map(({ value }) => ({
                     data: value.data,
                 }))
@@ -244,8 +245,103 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                             </ModalBody>
                             <ModalFooter className="flex flex-col">
                                 <div className="flex flex-row justify-end">
-                                    <Button variant="light" color="danger" onPress={onClose}>Cancelar</Button>
-                                    <Button className="bg-utim" onPress={handleUpdateMany}>Guardar</Button>
+                                    <Button
+                                        variant="light"
+                                        color="danger"
+                                        onPress={onClose}
+                                    >Cancelar
+                                    </Button>
+                                    <Button
+                                        isDisabled={selectedAreas.size === 0}
+                                        className="bg-utim"
+                                        onPress={handleUpdateMany}
+                                    >Guardar
+                                    </Button>
+                                </div>
+                            </ModalFooter>
+                        </>
+                    )
+                }
+            </ModalContent>
+        </Modal>
+    )
+}
+
+export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }) => {
+    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
+    const handleDeleteMany = () => {
+        const programsToDelete = educationalPrograms.filter((program) => selectedEducationalPrograms.has(program.id))
+        const programPromises = programsToDelete.map((program) => {
+            return deleteEducationalProgram(program.id)
+        })
+        toast.promise(Promise.allSettled(programPromises), {
+            loading: 'Eliminando programas educativos...',
+            success: (results) => {
+                onOpenChange()
+                const promisesData = results.map(({ value }) => ({
+                    data: value.data,
+                }))
+                if (promisesData.some(({ data }) => data.error)) {
+                    return 'Error al eliminar programas educativos'
+                }
+                playNotifySound()
+                setStoredEducationalPrograms({
+                    educationalPrograms: educationalPrograms.filter((program) => !selectedEducationalPrograms.has(program.id))
+                })
+                const success = promisesData.filter(({ data }) => !data.error)
+                const successLen = success.length
+                return `${successLen} programas educativos eliminados`
+            }
+        })
+    }
+    return (
+        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+            <ModalContent>
+                {
+                    (onClose) => (
+                        <>
+                            <ModalHeader>Eliminar programas educativos</ModalHeader>
+                            <ModalBody>
+                                <Table isHeaderSticky classNames={{
+                                    ...tableClassNames,
+                                    th: 'text-center text-1xl',
+                                    base: 'max-h-60 overflow-y-auto'
+                                }}>
+                                    <TableHeader>
+                                        <TableColumn>
+                                            Programas educativos seleccionados
+                                        </TableColumn>
+                                    </TableHeader>
+                                    <TableBody items={Array.from(selectedEducationalPrograms, (v, i) => ({
+                                        index: i,
+                                        value: v
+                                    }))}>
+                                        {
+                                            (educationalProgram) => {
+                                                return (
+                                                    <TableRow key={educationalProgram.index}>
+                                                        <TableCell>{educationalPrograms.find(p => p.id === educationalProgram.value).description}</TableCell>
+                                                    </TableRow>
+                                                )
+                                            }
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </ModalBody>
+                            <ModalFooter className="flex flex-col">
+                                <div className="flex flex-row justify-end">
+                                    <Button
+                                        variant="light"
+                                        color="danger"
+                                        onPress={onClose}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        color="danger"
+                                        onPress={handleDeleteMany}
+                                    >Eliminar
+                                    </Button>
                                 </div>
                             </ModalFooter>
                         </>
