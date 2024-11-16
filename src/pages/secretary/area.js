@@ -28,23 +28,21 @@ export default function Areas({ areas: ssrAreas, error }) {
         setStoredAreas({ areas: ssrAreas })
     }, [])
     return (
-        <div className="flex flex-col items-center justify-center">
+        <>
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Áreas</h1>
-            <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3">
-                <Button className="bg-utim" onPress={handlePress}>Nueva área</Button>
-                <ModalError error={error} />
-                <AreaCards
-                    areas={areas}
-                    onOpenModal={onOpen}
-                    onOpenDeleteModal={DeleteModal.onOpen}
-                />
-                <AreaModal
-                    isOpen={isOpen}
-                    onOpen={onOpen}
-                    onOpenChange={onOpenChange}
-                />
-                <DeleteAreaModal isOpen={DeleteModal.isOpen} onOpen={DeleteModal.onOpen} onOpenChange={DeleteModal.onOpenChange} />
-            </div>
-        </div>
+            <Button className="bg-utim" onPress={handlePress}>Nueva área</Button>
+            <ModalError error={error} />
+            <AreaCards
+                areas={areas}
+                onOpenModal={onOpen}
+                onOpenDeleteModal={DeleteModal.onOpen}
+            />
+            <AreaModal
+                isOpen={isOpen}
+                onOpen={onOpen}
+                onOpenChange={onOpenChange}
+            />
+            <DeleteAreaModal isOpen={DeleteModal.isOpen} onOpen={DeleteModal.onOpen} onOpenChange={DeleteModal.onOpenChange} />
+        </>
     )
 }

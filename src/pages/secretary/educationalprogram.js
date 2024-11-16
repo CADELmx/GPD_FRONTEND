@@ -40,47 +40,45 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
         setStoredAreas({ areas })
     }, [])
     return (
-        <div className="flex flex-col items-center justify-center">
+        <>
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Programas educativos</h1>
-            <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3">
-                <ModalError error={error} />
-                <Accordion
-                    showDivider={false}
-                    isCompact
-                    selectedKeys={selectedKeys}
-                    onSelectionChange={setSelectedKeys}
+            <ModalError error={error} />
+            <Accordion
+                showDivider={false}
+                isCompact
+                selectedKeys={selectedKeys}
+                onSelectionChange={setSelectedKeys}
+            >
+                <AccordionItem
+                    key='1'
+                    title="Exportar programas educativos"
+                    startContent={UploadIcon}
                 >
-                    <AccordionItem
-                        key='1'
-                        title="Exportar programas educativos"
-                        startContent={UploadIcon}
-                    >
-                        <ExportEducationalProgramsMenu />
-                    </AccordionItem>
-                </Accordion>
-                {
-                    selectedKeys.size === 1 || (
-                        <>
-                            <Button className="bg-utim" onPress={EducativeProgramModal.onOpen}>Nuevo programa educativo</Button>
-                            <EducationalProgramCards
-                                educationalPrograms={educationalPrograms}
-                                onOpenModal={handleOpen}
-                                onOpenDeleteModal={DeleteModal.onOpen}
-                            />
-                        </>
-                    )
-                }
-                <EducationalProgramModal
-                    isOpen={EducativeProgramModal.isOpen}
-                    onOpen={EducativeProgramModal.onOpen}
-                    onOpenChange={EducativeProgramModal.onOpenChange}
-                />
-                <EducationalProgramDeleteModal
-                    isOpen={DeleteModal.isOpen}
-                    onOpen={DeleteModal.onOpen}
-                    onOpenChange={DeleteModal.onOpenChange}
-                />
-            </div>
-        </div>
+                    <ExportEducationalProgramsMenu />
+                </AccordionItem>
+            </Accordion>
+            {
+                selectedKeys.size === 1 || (
+                    <>
+                        <Button className="bg-utim" onPress={EducativeProgramModal.onOpen}>Nuevo programa educativo</Button>
+                        <EducationalProgramCards
+                            educationalPrograms={educationalPrograms}
+                            onOpenModal={handleOpen}
+                            onOpenDeleteModal={DeleteModal.onOpen}
+                        />
+                    </>
+                )
+            }
+            <EducationalProgramModal
+                isOpen={EducativeProgramModal.isOpen}
+                onOpen={EducativeProgramModal.onOpen}
+                onOpenChange={EducativeProgramModal.onOpenChange}
+            />
+            <EducationalProgramDeleteModal
+                isOpen={DeleteModal.isOpen}
+                onOpen={DeleteModal.onOpen}
+                onOpenChange={DeleteModal.onOpenChange}
+            />
+        </>
     )
 }

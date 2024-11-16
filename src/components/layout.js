@@ -35,7 +35,7 @@ export const Layout = ({ children }) => {
         },
         {
             name: 'Crear nueva plantilla', href: '/director', icon: PlusIcon
-          
+
         }
     ]
     const { memory: { socket, user } } = UseTemplates()
@@ -107,8 +107,8 @@ export const Layout = ({ children }) => {
                     </NavbarBrand>
                 </NavbarContent>
                 <NavbarContent className="hidden sm:flex" justify="center">
-                    
-                <Dropdown>
+
+                    <Dropdown>
                         <NavbarItem>
                             <DropdownTrigger>
                                 <Button variant="light">Dirección de carrera</Button>
@@ -217,7 +217,11 @@ export const Layout = ({ children }) => {
                     </Chip>
                 </NavbarMenu>
             </Navbar>
-            {children}
+            <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3">
+                    {children}
+                </div>
+            </div>
         </>
     )
 }

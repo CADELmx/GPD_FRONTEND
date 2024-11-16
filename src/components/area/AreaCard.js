@@ -1,9 +1,11 @@
 import { UseSecretary } from "@/context"
-import { Button, Card, CardHeader } from "@nextui-org/react"
+import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { PencilIcon, TrashIcon } from "../Icons"
+import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 
-const AreaCard = ({ area, onOpenModal, onOpenDeleteModal }) => {
-    const { setStoredAreas } = UseSecretary()
+export const AreaCards = ({ onOpenModal, onOpenDeleteModal }) => {
+
+    const { setStoredAreas, areaState: { areas } } = UseSecretary()
     const handlePress = () => {
         setStoredAreas({ selectedArea: area })
         onOpenModal()
@@ -13,36 +15,36 @@ const AreaCard = ({ area, onOpenModal, onOpenDeleteModal }) => {
         onOpenDeleteModal()
     }
     return (
-        <Card>
-            <CardHeader className="flex gap-1">
-                <h2 className="w-full">{area.name}</h2>
-                <Button onPress={handlePress} isIconOnly variant="light">
-                    {PencilIcon}
-                </Button>
-                <Button onPress={handleDeleteModal} isIconOnly variant="light" color="danger">
-                    {TrashIcon}
-                </Button>
-            </CardHeader>
-        </Card>
-    )
-}
-
-
-
-export const AreaCards = ({ areas, onOpenModal, onOpenDeleteModal }) => {
-    if (areas.length === 0) return (
-        <h1>No hay áreas registradas</h1>
-    )
-    return (
         <div className="flex flex-col gap-2">
-            {areas.map((area) => (
-                <AreaCard
-                    onOpenModal={onOpenModal}
-                    onOpenDeleteModal={onOpenDeleteModal}
-                    area={area}
-                    key={area.id}
-                />
-            ))}
+            <Table classNames={tableClassNames}>
+                <TableHeader>
+                    <TableColumn>
+                        Nombre
+                    </TableColumn>
+                    <TableColumn>
+                        Acciones
+                    </TableColumn>
+                </TableHeader>
+                <TableBody items={areas}>
+                    {
+                        (area) => (
+                            <TableRow key={area.id}>
+                                <TableCell>{area.name}</TableCell>
+                                <TableCell>
+                                    <div className="w-full relative flex items-center gap-2">
+                                        <Button onPress={() => handlePress(area)} isIconOnly variant="light">
+                                            {PencilIcon}
+                                        </Button>
+                                        <Button onPress={() => handleDeleteModal(area)} isIconOnly variant="light" color="danger">
+                                            {TrashIcon}
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        )
+                    }
+                </TableBody>
+            </Table>
         </div>
     )
 }

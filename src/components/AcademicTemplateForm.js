@@ -9,6 +9,7 @@ import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
 import { insertPartialTemplate, insertPartialTemplateAndActivities } from '@/models/transactions'
 import { CheckIcon } from './Icons'
+import { playNotifySound } from '@/toast'
 
 export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
@@ -27,12 +28,12 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
         setLoading(true)
         toast.promise(insertPartialTemplateAndActivities(partialTemplate, activities), {
             loading: 'Guardando plantilla...',
-            success: ({ data: { data, error }, error: axiosError }) => {
-                if (axiosError) return 'Error al enviar plantilla'
+            success: ({ data: { data, error } }) => {
                 if (error) return error
                 setStored({ partialTemplate: data })
+                playNotifySound()
             },
-            error: 'Error al guardar plantilla'
+            error: 'Error al enviar plantilla'
         })
     }
     useEffect(() => {
@@ -59,71 +60,67 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
         }
     }, [])
     return (
-        <div className="flex flex-col items-center justify-center">
-            <div className="flex-col object-fill w-5/6 sm:w-2/3 pt-5 mt-5">
-                <form className="flex flex-col gap-2">
-                    {
-                        !partialTemplate?.id && <NtInput academicWorkers={academicWorkers} />
-                    }
-                    <div className="flex gap-2" >
-                        <Textarea
-                            minRows={1}
-                            size="sm"
-                            radius="md"
-                            isRequired
-                            label="Nombre"
-                            type="text"
-                            name="name"
-                            onChange={handleGlobalChange}
-                            value={partialTemplate?.name}
-                        />
-                        <Select
-                            isRequired
-                            className="w-40"
-                            label="Sexo"
-                            name="gender"
-                            onChange={handleGlobalChange}
-                        >
-                            <SelectItem key={'H'} variant="flat">H</SelectItem>
-                            <SelectItem key={'M'} variant="flat">M</SelectItem>
-                        </Select>
-                    </div>
-                    <Select
-                        selectedKeys={getPosition(partialTemplate.position)}
-                        label='Puesto'
-                        name='position'
-                        onChange={handleGlobalChange}
-                        isRequired
-                    >
-                        {
-                            positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
-                        }
-                    </Select>
-                    <YearAndPeriodSelector />
-                    <AcademicCharge educationalPrograms={educationalPrograms} />
-                    <AddActivityButton isDisabled={partialTemplate?.id} />
-                    <Input
-                        label="Total"
-                        type="number"
-                        min={0}
-                        name="total"
-                        value={totalHours == 0 ? '' : totalHours}
-                        defaultValue={partialTemplate?.total}
-                        isDisabled
-                        onChange={handleGlobalChange}
-                    />
-                    <Button
-                        startContent={CheckIcon}
-                        className="w-full bg-utim"
-                        variant="solid"
-                        onPress={handleSubmit}
-                        isDisabled={(partialTemplate?.id) || (totalHours < 32)}
-                        isLoading={loading}
-                    >
-                        Guardar
-                    </Button>
-                </form>
+        <form className="flex flex-col gap-2">
+            {
+                !partialTemplate?.id && <NtInput academicWorkers={academicWorkers} />
+            }
+            <div className="flex gap-2" >
+                <Textarea
+                    minRows={1}
+                    size="sm"
+                    radius="md"
+                    isRequired
+                    label="Nombre"
+                    type="text"
+                    name="name"
+                    onChange={handleGlobalChange}
+                    value={partialTemplate?.name}
+                />
+                <Select
+                    isRequired
+                    className="w-40"
+                    label="Sexo"
+                    name="gender"
+                    onChange={handleGlobalChange}
+                >
+                    <SelectItem key={'H'} variant="flat">H</SelectItem>
+                    <SelectItem key={'M'} variant="flat">M</SelectItem>
+                </Select>
             </div>
-        </div>
+            <Select
+                selectedKeys={getPosition(partialTemplate.position)}
+                label='Puesto'
+                name='position'
+                onChange={handleGlobalChange}
+                isRequired
+            >
+                {
+                    positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
+                }
+            </Select>
+            <YearAndPeriodSelector />
+            <AcademicCharge educationalPrograms={educationalPrograms} />
+            <AddActivityButton isDisabled={partialTemplate?.id} />
+            <Input
+                label="Total"
+                type="number"
+                min={0}
+                name="total"
+                value={totalHours == 0 ? '' : totalHours}
+                defaultValue={partialTemplate?.total}
+                isDisabled
+                onChange={handleGlobalChange}
+            />
+            <Button
+                startContent={CheckIcon}
+                className="w-full bg-utim"
+                variant="solid"
+                onPress={handleSubmit}
+                isDisabled={(partialTemplate?.id) || (totalHours < 32)}
+                isLoading={loading}
+            >
+                Guardar
+            </Button>
+        </form>
     )
 }

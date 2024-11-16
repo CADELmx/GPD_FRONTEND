@@ -43,52 +43,50 @@ export default function DirectorIndex({ areas, template: ssrTemplate, error }) {
         }
     }, [])
     return (
-        <div className="flex flex-col items-center justify-center">
+        <>
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Crear nueva plantilla</h1>
-            <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3">
-                <YearSelectorAlter />
-                <ModalError error={error} />
-                <Select
-                    isRequired
-                    items={areas}
-                    title="Area"
-                    placeholder="Area a la que pertenece la plantilla"
-                    label='Area'
-                    disallowEmptySelection
-                    onSelectionChange={(area) => {
-                        setTemplate({ ...template, areaId: Number(area.anchorKey) })
-                        console.log(template)
-                    }}
-                >
-                    {
-                        (area) => (
-                            <SelectItem key={area.id} variant="flat">{area.name}</SelectItem>
-                        )
-                    }
-                </Select>
+            <YearSelectorAlter />
+            <ModalError error={error} />
+            <Select
+                isRequired
+                items={areas}
+                title="Area"
+                placeholder="Area a la que pertenece la plantilla"
+                label='Area'
+                disallowEmptySelection
+                onSelectionChange={(area) => {
+                    setTemplate({ ...template, areaId: Number(area.anchorKey) })
+                    console.log(template)
+                }}
+            >
                 {
-                    template.id ?? (
-                        <div className="flex gap-2 text-utim">
-                            Estado :
-                            <Chip isDisabled={!(template.id) ?? true} color={templateStatus.color}>
-                                {templateStatus.name}
-                            </Chip>
-                        </div>
+                    (area) => (
+                        <SelectItem key={area.id} variant="flat">{area.name}</SelectItem>
                     )
                 }
-                <Button
-                    startContent={
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                    }
-                    isDisabled={template.areaId === ''}
-                    className="bg-utim"
-                    onPress={handleSubmit}
-                >
-                    Crear plantilla
-                </Button>
-            </div>
-        </div>
+            </Select>
+            {
+                template.id ?? (
+                    <div className="flex gap-2 text-utim">
+                        Estado :
+                        <Chip isDisabled={!(template.id) ?? true} color={templateStatus.color}>
+                            {templateStatus.name}
+                        </Chip>
+                    </div>
+                )
+            }
+            <Button
+                startContent={
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                }
+                isDisabled={template.areaId === ''}
+                className="bg-utim"
+                onPress={handleSubmit}
+            >
+                Crear plantilla
+            </Button>
+        </>
     )
 }
