@@ -1,9 +1,10 @@
 import { UseSecretary } from "@/context"
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { playNotifySound } from "@/toast"
+import { ChangeAreaModal } from "./EducationalProgramModal"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',
@@ -15,6 +16,8 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
     const { setStoredEducationalPrograms, areaState: { areas } } = UseSecretary()
     const [editmode, setEditmode] = useState(false);
     const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState(new Set([]));
+    const ChangeFromAreaModal = useDisclosure()
+    const DeleteEducativeProgramsModal = useDisclosure()
     const handlePress = (educationalProgram) => {
         setStoredEducationalPrograms({ selectedEducationalProgram: educationalProgram })
         onOpenModal()
@@ -24,18 +27,22 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
         onOpenDeleteModal()
     }
     const handleChangeArea = () => {
-        playNotifySound()
         const programs = Array.from(selectedEductationalPrograms)
-        toast.success('Cambiando de area ' + programs.join(', '))
+        ChangeFromAreaModal.onOpenChange()
     }
     const handleDeleteMany = () => {
         console.log('eliminando varios')
         toast.success('Eliminando varios')
-        playNotifySound()
     }
     return (
         <div className="flex flex-col gap-2">
             <div className="md:flex gap-2 items-center">
+                <ChangeAreaModal
+                    selectedEducationalPrograms={selectedEductationalPrograms}
+                    isOpen={ChangeFromAreaModal.isOpen}
+                    onOpen={ChangeFromAreaModal.onOpen}
+                    onOpenChange={ChangeFromAreaModal.onOpenChange}
+                />
                 <Switch
                     isDisabled={educationalPrograms.length === 0}
                     aria-label="Switch selection mode"
@@ -77,6 +84,7 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                 aria-label="Tabla de programas educativos"
                 selectionMode={editmode ? "multiple" : 'none'}
                 onSelectionChange={(e) => {
+                    if (e === 'all') return setSelectedEductationalPrograms(new Set(educationalPrograms.map((edu) => edu.id)))
                     setSelectedEductationalPrograms(e)
                     console.log(selectedEductationalPrograms)
                 }}

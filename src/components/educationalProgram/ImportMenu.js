@@ -120,7 +120,10 @@ export const ExportEducationalProgramsMenu = () => {
                 items={areas}
                 label='Areas'
                 placeholder="Selecciona un area"
-                onSelectionChange={setSelectedArea}
+                onSelectionChange={(e) => {
+                    if (e === 'all') return setSelectedArea(new Set(areas.map((area) => area.id)))
+                    setSelectedArea(e)
+                }}
                 selectedKeys={selectedArea}
                 disallowEmptySelection
             >
