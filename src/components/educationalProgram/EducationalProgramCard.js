@@ -1,10 +1,8 @@
 import { UseSecretary } from "@/context"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
-import { useState } from "react"
-import toast from "react-hot-toast"
-import { playNotifySound } from "@/toast"
 import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
+import { useState } from "react"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',
@@ -12,7 +10,7 @@ export const tableClassNames = {
     th: 'text-xs p-2',
 }
 
-export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOpenDeleteModal }) => {
+export const EducationalProgramsTable = ({ educationalPrograms, onOpenModal, onOpenDeleteModal }) => {
     const { setStoredEducationalPrograms, areaState: { areas } } = UseSecretary()
     const [editmode, setEditmode] = useState(false);
     const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState(new Set([]));
@@ -132,11 +130,19 @@ export const EducationalProgramCards = ({ educationalPrograms, onOpenModal, onOp
                                                     {VericalDotsIcon}
                                                 </Button>
                                             </DropdownTrigger>
-                                            <DropdownMenu>
-                                                <DropdownItem startContent={PencilIcon} onPress={() => handlePress(educationalProgram)}>
+                                            <DropdownMenu aria-label="Menú de opciones">
+                                                <DropdownItem
+                                                    startContent={PencilIcon}
+                                                    onPress={() => handlePress(educationalProgram)}
+                                                >
                                                     Editar
                                                 </DropdownItem>
-                                                <DropdownItem startContent={TrashIcon} onPress={() => handleDeleteModal(educationalProgram)} color="danger">Eliminar</DropdownItem>
+                                                <DropdownItem
+                                                    startContent={TrashIcon}
+                                                    onPress={() => handleDeleteModal(educationalProgram)} color="danger"
+                                                >
+                                                    Eliminar
+                                                </DropdownItem>
                                             </DropdownMenu>
                                         </Dropdown>
                                     )

@@ -1,4 +1,4 @@
-import { EducationalProgramCards } from "@/components/educationalProgram/EducationalProgramCard"
+import { EducationalProgramCards, EducationalProgramsTable } from "@/components/educationalProgram/EducationalProgramCard"
 import { EducationalProgramDeleteModal, EducationalProgramModal } from "@/components/educationalProgram/EducationalProgramModal"
 import { ExportEducationalProgramsMenu } from "@/components/educationalProgram/ImportMenu"
 import { TrashIcon, UploadIcon } from "@/components/Icons"
@@ -60,8 +60,13 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
             {
                 selectedKeys.size === 1 || (
                     <>
-                        <Button className="bg-utim" onPress={EducativeProgramModal.onOpen}>Nuevo programa educativo</Button>
-                        <EducationalProgramCards
+                        <Button
+                            className="bg-utim"
+                            onPress={EducativeProgramModal.onOpen}
+                        >
+                            Nuevo programa educativo
+                        </Button>
+                        <EducationalProgramsTable
                             educationalPrograms={educationalPrograms}
                             onOpenModal={handleOpen}
                             onOpenDeleteModal={DeleteModal.onOpen}

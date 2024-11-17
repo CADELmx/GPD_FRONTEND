@@ -1,6 +1,6 @@
 import { UseSecretary } from "@/context"
 import { createEducationalProgram, deleteEducationalProgram, updateEducationalProgram } from "@/models/transactions"
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Progress, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { tableClassNames } from "./EducationalProgramCard"
