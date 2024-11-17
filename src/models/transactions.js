@@ -1,7 +1,7 @@
 import axios from "axios"
 import { getCookie } from "cookies-next"
 
-const serverClient = axios.create({
+export const serverClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
         Authorization: `Bearer ${getCookie('token')}`
@@ -86,7 +86,7 @@ export const getPartialTemplateJoinActivity = (id) => {
 
 export const insertPartialTemplateAndActivities = async (template, activities) => {
     const { data: { data, error } } = await insertPartialTemplate(template)
-    
+
 }
 
 export const getActivities = () => {
@@ -150,6 +150,10 @@ export const getArea = (id) => {
 
 export const getAreas = () => {
     return serverClient.get('/areas')
+}
+
+export const getAreasJoinEducationalPrograms = () => {
+    return serverClient.get('/areas/educational-programs')
 }
 
 export const createArea = (area) => {

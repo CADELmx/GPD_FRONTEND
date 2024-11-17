@@ -2,7 +2,8 @@ import { UseSecretary } from "@/context"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { getEducationalPrograms } from "@/models/transactions"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',
@@ -10,8 +11,8 @@ export const tableClassNames = {
     th: 'text-xs p-2',
 }
 
-export const EducationalProgramsTable = ({ educationalPrograms, onOpenModal, onOpenDeleteModal }) => {
-    const { setStoredEducationalPrograms, areaState: { areas } } = UseSecretary()
+export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }) => {
+    const { setStoredEducationalPrograms, areaState: { areas }, educationalState: { educationalPrograms } } = UseSecretary()
     const [editmode, setEditmode] = useState(false);
     const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState(new Set([]));
     const ChangeFromAreaModal = useDisclosure()

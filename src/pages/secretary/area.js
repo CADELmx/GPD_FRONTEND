@@ -1,22 +1,26 @@
-import { AreasTable } from "@/components/area/AreaCard"
+import { AreasTable } from "@/components/area/AreaTable"
 import { AreaModal, DeleteAreaModal } from "@/components/area/AreaModal"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
-import { getAreas } from "@/models/transactions"
-import { Button, useDisclosure } from "@nextui-org/react"
+import { getAreas, getAreasJoinEducationalPrograms } from "@/models/transactions"
+import { Accordion, AccordionItem, Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { useEffect } from "react"
+import { tableClassNames } from "@/components/educationalProgram/EducationalProgramCard"
 
 export const getServerSideProps = async () => {
     const { data: { data, error } } = await getAreas()
+    const { data: areas } = await getAreasJoinEducationalPrograms()
+    console.log(areas)
     return {
         props: {
             areas: data,
-            error
+            error,
+            areastest: areas.data
         }
     }
 }
 
-export default function Areas({ areas: ssrAreas, error }) {
+export default function Areas({ areas: ssrAreas, error, areastest }) {
     const EditModal = useDisclosure()
     const DeleteModal = useDisclosure()
     const { areaState: { areas }, setStoredAreas } = UseSecretary()
@@ -33,7 +37,6 @@ export default function Areas({ areas: ssrAreas, error }) {
             <Button className="bg-utim" onPress={handlePress}>Nueva área</Button>
             <ModalError error={error} />
             <AreasTable
-                areas={areas}
                 onOpenModal={EditModal.onOpen}
                 onOpenDeleteModal={DeleteModal.onOpen}
             />
