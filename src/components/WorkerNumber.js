@@ -4,6 +4,7 @@ import { Chip, Input, Select, SelectItem, SelectSection, Switch } from "@nextui-
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { BarsArrowDown, LockIcon, PencilIcon, UnlockIcon } from "./Icons"
+import { playLevelUpSound } from "@/toast"
 
 export const NtInput = ({ academicWorkers }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()
@@ -17,6 +18,7 @@ export const NtInput = ({ academicWorkers }) => {
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
                 if (data) {
+                    playLevelUpSound()
                     setIdError(false)
                     setStored({ partialTemplate: { ...partialTemplate, nt: data.ide, position: data.position, name: data.name } })
                     setLocked(true)

@@ -40,3 +40,8 @@ export const playNotifySound = () => {
     const audio = new Audio(new URL('/public/sounds/notification-beep-229154.mp3', import.meta.url).toString())
     audio.play()
 }
+
+export const playLevelUpSound = () => {
+    const audio = new Audio(new URL('/public/sounds/level-up-191997.mp3', import.meta.url).toString())
+    audio.play()
+}
