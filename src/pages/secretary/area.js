@@ -3,9 +3,8 @@ import { AreaModal, DeleteAreaModal } from "@/components/area/AreaModal"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
 import { getAreas, getAreasJoinEducationalPrograms } from "@/models/transactions"
-import { Accordion, AccordionItem, Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
+import { Button, useDisclosure } from "@nextui-org/react"
 import { useEffect } from "react"
-import { tableClassNames } from "@/components/educationalProgram/EducationalProgramCard"
 
 export const getServerSideProps = async () => {
     const { data: { data, error } } = await getAreas()

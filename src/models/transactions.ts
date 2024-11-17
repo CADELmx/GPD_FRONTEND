@@ -1,5 +1,7 @@
 import axios from "axios"
 import { getCookie } from "cookies-next"
+import { Activity } from "./types/activity"
+import { Template } from "./types/template"
 
 export const serverClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -8,7 +10,7 @@ export const serverClient = axios.create({
     },
 })
 
-export const getPersonalData = (id) => {
+export const getPersonalData = (id: number) => {
     return serverClient.get('/personal-data', {
         params: {
             id
@@ -20,15 +22,13 @@ export const getAllPersonalData = () => {
     return serverClient.get('/personal-data')
 }
 
-export const insertActivities = (activities) => {
-    return serverClient.post('/activity', activities, {
-        params: {
-            many: true
-        }
-    })
+export const insertActivities = (activities: Activity[]): Promise<{
+    count: number,
+}> => {
+    return serverClient.post('/activity/many', activities)
 }
 
-export const insertTemplate = (template) => {
+export const insertTemplate = (template: Template) => {
     return serverClient.post('/templates', template)
 }
 
@@ -116,12 +116,8 @@ export const updateComment = (partialTemplateId, comment) => {
     })
 }
 
-export const deleteComment = (partialTemplateId) => {
-    return serverClient.delete('/comments', null, {
-        params: {
-            id: partialTemplateId
-        }
-    })
+export const deleteComment = (partialTemplateId: number) => {
+    return serverClient.delete(`/comments/${partialTemplateId}`,)
 }
 
 export const checkExistentComment = (partialTemplateId) => {
@@ -210,8 +206,8 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data: { data, error }, error: axiosError } = await getPartialTemplateJoinActivity(id)
-    if (error || axiosError) {
+    const { data: { data, error } } = await getPartialTemplateJoinActivity(id)
+    if (error) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
             props: {
