@@ -4,6 +4,7 @@ export default function Document() {
   return (
     <Html lang="es-MX">
       <Head title='Gestión de plantillas docentes'/>
+      <link rel="manifest" href="/manifest.json" />
       <body className='bg-background text-foreground min-h-screen relative overflow-y-auto'>
         <Main />
         <NextScript />
