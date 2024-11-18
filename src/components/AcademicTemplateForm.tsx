@@ -31,16 +31,21 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
     }
     const totalHours = sumHours({ activities: activities })
     const handleSubmit = () => {
-        if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
         toast.promise(insertPartialTemplateAndActivities({
             data: { template: partialTemplate, activities }
         }), {
             loading: 'Guardando plantilla...',
-            success: ({ data: { data, error } }) => {
-                if (error) return error
-                setStored({ partialTemplate: data })
+            success: ({ data, error, message }) => {
+                if (error) return message
+                setStored({ partialTemplate: data.template })
                 playNotifySound()
+                if (checkSocketStatus(socket, toast)) {
+                    socket.connect()
+                } else {
+                    socket.emit('createTemplate', data.template)
+                }
+                return 'Plantilla guardada'
             },
             error: 'Error al enviar plantilla'
         })

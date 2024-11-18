@@ -28,35 +28,19 @@ export type GetById = {
 
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
-    if (error) {
-        console.error('#ERROR# Error al obtener datos de plantillas y/o actividades')
-        return {
-            props: {
-                error: 'Error al obtener las plantillas, recarga la página'
-            }
-        }
-    }
     return {
         props: {
-            templates: data,
+            partialTemplates: data,
+            error: error ? 'Error al obtener las plantillas, recarga la página' : null
         }
     }
 }
 
 export const generateSingleRecord = async ({ id }: GetById) => {
     const { data: { data, error } } = await getPartialTemplateJoinActivity({ id })
-    if (error) {
-        console.error('#ERROR# Error al obtener datos de plantilla')
-        return {
-            props: {
-                error: 'Error al obtener la plantilla, recarga la página',
-                template: null,
-            }
-        }
-    }
     return {
         props: {
-            error: null,
+            error: error ? 'Error al obtener la plantilla, recarga la página' : null,
             template: data,
         }
     }

@@ -122,7 +122,7 @@ export const generateTemplateObject = (record) => {
  */
 export const checkSocketStatus = (socket, toast) => {
     if (socket.disconnected) {
-        toast.error('No hay conexión con el servidor', {
+        toast.error('No hay conexión en tiempo real', {
             id: 'no-connection'
         })
         return true
