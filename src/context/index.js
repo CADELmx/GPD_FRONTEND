@@ -63,3 +63,25 @@ export const ContextProvider = ({ children }) => {
         </Context.Provider>
     )
 }
+
+const AreaContext = createContext()
+
+export const UseAreas = () => useContext(AreaContext)
+
+export const AreasProvider = ({ children }) => {
+    const [areaState, setAreaState] = useState({
+        areas: [],
+        selectedArea: null
+    })
+    const setStoredAreas = (prop) => {
+        setAreaState((areaState) => ({ ...areaState, ...prop }))
+    }
+    return (
+        <AreaContext.Provider value={{
+            areaState,
+            setStoredAreas
+        }}>
+            {children}
+        </AreaContext.Provider>
+    )
+}
