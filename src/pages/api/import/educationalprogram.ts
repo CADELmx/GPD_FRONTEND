@@ -9,12 +9,15 @@ export const config = {
     }
 }
 
-const formidableParse = async (req) =>
+const formidableParse = async (req: Request) =>
     new Promise((resolve, reject) =>
         new IncomingForm().parse(req, (err, fields, files) => err ? reject(err) : resolve([fields, files]))
     )
 
-async function readAndWriteFile({ originalFilename, filepath }, newPath) {
+async function readAndWriteFile({ originalFilename, filepath }:{
+    originalFilename: string,
+    filepath: string
+}, newPath: string) {
     try {
         const path = `${newPath}/${originalFilename}`
         const data = await readFile(filepath)
@@ -26,7 +29,7 @@ async function readAndWriteFile({ originalFilename, filepath }, newPath) {
     }
 }
 
-export default async function (req, res) {
+export default async function (req: Request, res: Response) {
     const [_, { file }] = await formidableParse(req)
     const status = await readAndWriteFile(file[0], './public/uploads')
     if (status === 'error') {

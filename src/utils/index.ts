@@ -1,5 +1,7 @@
-import { Activity } from "../models/types/activity"
-import { PartialTemplate } from "../models/types/partial-template"
+import { Socket } from "socket.io"
+import { Activity, CreateActivity } from "../models/types/activity"
+import { CreatePartialTemplate, PartialTemplate } from "../models/types/partial-template"
+import { Toast,toast } from "react-hot-toast"
 export const promiseResolver = async<T>(promises: Promise<T>[]) => {
     const result = await Promise.all(promises)
     return result
@@ -38,10 +40,10 @@ export const modalidades = [
     'Ingeniería Escolarizada',
     'Ingeniería Mixta',
 ]
-export const defaultActivity: Activity = {
+export const defaultActivity: CreateActivity = {
     id: crypto.randomUUID(),
-    partialTemplateId: null,
-    educationalProgramId: null,
+    partialTemplateId: undefined,
+    educationalProgramId: undefined,
     activityDistribution: "",
     managementType: "",
     stayType: "",
@@ -52,7 +54,7 @@ export const defaultActivity: Activity = {
     subtotalClassification: 0,
 }
 
-export const defaultPartialTemplate: PartialTemplate = {
+export const defaultPartialTemplate: CreatePartialTemplate = {
     nt: 0,
     name: "",
     gender: "",
@@ -92,20 +94,20 @@ export const generatePeriods = ({
     })
 }
 
-export const checkEmptyStringOption = (string: string) => string === "" ? [] : [string]
+export const checkEmptyStringOption = (string: string | undefined) => string === "" || string === undefined ? [] : [string]
 
 export const getFirstSetValue = <T>(set: Set<T>) => {
     return Array.from(set)[0]
 }
 
-export const sumHours = ({ activities }: { activities: Activity[] }) => {
+export const sumHours = ({ activities }: { activities: CreateActivity[] }) => {
     if (activities?.length) {
         return activities.map(activity => activity.subtotalClassification).reduce((p, c) => p + c, 0)
     }
     return 0
 }
 
-export const generateTemplateObject = (record) => {
+export const generateTemplateObject = (record: any) => {
     const template = Object.fromEntries(Object.entries(record).filter(([k, v]) => {
         if (k != 'activities') {
             return true
@@ -114,13 +116,14 @@ export const generateTemplateObject = (record) => {
     )
     return template
 }
+type toasttype = typeof toast
 /**
  * 
  * @param {Socket} socket 
- * @param {*} toast 
+ * @param {toasttype} toast 
  * @returns 
  */
-export const checkSocketStatus = (socket, toast) => {
+export const checkSocketStatus = (socket: Socket, toast: toasttype) => {
     if (socket.disconnected) {
         toast.error('No hay conexión en tiempo real', {
             id: 'no-connection'

@@ -13,7 +13,7 @@ export const NtInput = ({ academicWorkers }: { academicWorkers: PersonalData[] }
     const [idError, setIdError] = useState(false)
     const [locked, setLocked] = useState(false)
     const [selectorActive, setSelectorActive] = useState(false)
-    const handleChangeFromBackend = async (newValue) => {
+    const handleChangeFromBackend = async (newValue: string) => {
         if (newValue === '' || !newValue) return
         toast.promise(getPersonalData({ id: Number(newValue) }), {
             loading: 'Buscando número de trabajador',

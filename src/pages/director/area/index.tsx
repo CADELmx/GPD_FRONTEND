@@ -2,14 +2,20 @@
 import { tableClassNames } from "@/components/educationalProgram/EducationalProgramCard"
 import { ModalError } from "@/components/ModalError"
 import { getAreasJoinEducationalPrograms } from "@/models/transactions/area"
-import { Area, AreaJoinEducationalPrograms } from "@/models/types/area"
+import { AreaJoinEducationalPrograms } from "@/models/types/area"
 import { Accordion, AccordionItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 
 export const getStaticProps = async () => {
     const { data } = await getAreasJoinEducationalPrograms()
+    const sortedEducaitonalPrograms = data.data.sort((area, nextArea) => {
+        return nextArea.educationalPrograms.length - area.educationalPrograms.length
+    })
     return {
         revalidate: 3,
-        props: data
+        props: {
+            data: sortedEducaitonalPrograms,
+            error: data.error || null
+        }
     }
 }
 
@@ -20,9 +26,12 @@ export default function AreaIndex({ error, data: areas }: { error: string | null
             <ModalError error={error} />
             <section>
 
-                <Accordion variant="splitted" title="Acordeones de areas" items={areas}>
+                <Accordion variant="splitted" title="Acordeones de areas" itemClasses={{
+                    base: 'p-2 py-0',
+                    title: 'text-sm p-2 py-0',
+                }}>
                     {
-                        (area) => (
+                        areas.map((area) => (
                             <AccordionItem title={area.name} key={area.name}>
                                 <Table classNames={tableClassNames}>
                                     <TableHeader>
@@ -33,7 +42,7 @@ export default function AreaIndex({ error, data: areas }: { error: string | null
                                             Descripción
                                         </TableColumn>
                                     </TableHeader>
-                                    <TableBody items={area.educationalPrograms}>
+                                    <TableBody items={area.educationalPrograms} emptyContent='Sin programas educativos'>
                                         {
                                             (educationalProgram) => (
                                                 <TableRow key={educationalProgram.id}>
@@ -49,7 +58,7 @@ export default function AreaIndex({ error, data: areas }: { error: string | null
                                     </TableBody>
                                 </Table>
                             </AccordionItem>
-                        )
+                        ))
                     }
                 </Accordion>
             </section>

@@ -8,8 +8,11 @@ import toast from "react-hot-toast"
 import { LoginButton } from "./LoginButton"
 import { AcademicHatIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
 import { UseTemplates } from "../context"
+import { Template } from "@/models/types/template"
 
-export const Layout = ({ children }) => {
+export const Layout = ({ children }: {
+    children: React.ReactNode
+}) => {
     const navBarMenuItems = [
         { name: "Inicio", href: "/" },
         { name: "Secretaría", href: "/secretary" },
@@ -57,15 +60,15 @@ export const Layout = ({ children }) => {
             setIsConnected(false)
             setTransport("N/A")
         }
-        function onTemplateError(data) {
+        function onTemplateError(data: Template) {
             if (router.pathname === "/") {
-                toast.error(data, {
+                toast.error('Error al crear un plantilla', {
                     id: "template-error",
                     duration: 5000,
                 })
             }
         }
-        function onCreatedTemplate(data) {
+        function onCreatedTemplate(data: Template) {
             if (router.pathname === "/secretary") {
                 toast.success('Plantilla docente recibida', {
                     id: "template-created",
@@ -73,9 +76,9 @@ export const Layout = ({ children }) => {
                 })
             }
         }
-        function onStatusUpdate(data) {
+        function onStatusUpdate(data: Template) {
             if (router.pathname === "/") {
-                toast.success(`Estado de la plantilla ${data.id} cambiado a ${data.status}`, {
+                toast.success(`Estado de la plantilla ${data.id} cambiado a ${data.state}`, {
                     id: "status",
                     duration: 5000,
                 })

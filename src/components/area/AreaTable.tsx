@@ -2,15 +2,19 @@ import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow
 import { PencilIcon, TrashIcon } from "../Icons"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 import { UseSecretary } from "../../context"
+import { CreateArea } from "@/models/types/area"
 
-export const AreasTable = ({ onOpenModal, onOpenDeleteModal }) => {
+export const AreasTable = ({ onOpenModal, onOpenDeleteModal }: {
+    onOpenModal: () => void,
+    onOpenDeleteModal: () => void
+}) => {
 
     const { setStoredAreas, areaState: { areas } } = UseSecretary()
-    const handlePress = (area) => {
+    const handlePress = (area: CreateArea) => {
         setStoredAreas({ selectedArea: area })
         onOpenModal()
     }
-    const handleDeleteModal = (area) => {
+    const handleDeleteModal = (area: CreateArea) => {
         setStoredAreas({ selectedArea: area })
         onOpenDeleteModal()
     }

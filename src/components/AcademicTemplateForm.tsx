@@ -21,13 +21,13 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
 }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
     const [loading, setLoading] = useState(false)
-    const getPosition = (position) => {
+    const getPosition = (position: string) => {
         if (position === "") return []
         if (!positions.includes(position)) {
             positions.push(position)
             return [position]
         }
-        return [partialTemplate.position]
+        return [partialTemplate?.position]
     }
     const totalHours = sumHours({ activities: activities })
     const handleSubmit = () => {
@@ -38,13 +38,9 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
             loading: 'Guardando plantilla...',
             success: ({ data, error, message }) => {
                 if (error) return message
-                setStored({ partialTemplate: data.template })
+                setStored({ partialTemplate: data?.template })
                 playNotifySound()
-                if (checkSocketStatus(socket, toast)) {
-                    socket.connect()
-                } else {
-                    socket.emit('createTemplate', data.template)
-                }
+                socket.emit('createTemplate', data?.template)
                 return 'Plantilla guardada'
             },
             error: 'Error al enviar plantilla'

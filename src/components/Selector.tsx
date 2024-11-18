@@ -1,13 +1,13 @@
 
 import { Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
-import { useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { LockIcon } from "./Icons"
 import { UseTemplates } from "../context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "../utils"
 import { EducationalProgram } from "../models/types/educational-program"
-import { Activity } from "../models/types/activity"
+import { Activity, CreateActivity } from "../models/types/activity"
 
-const YearSelector = ({ selectedYear, setState }) => {
+const YearSelector = ({ selectedYear, setState }: { selectedYear: string, setState: any }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()
     const year = new Date().getFullYear()
     const yearList = Array.from({ length: 3 }, (_, k) => `${year - k + 1}`)
@@ -37,7 +37,7 @@ const YearSelector = ({ selectedYear, setState }) => {
     )
 }
 
-const PeriodSelector = ({ selectedYear }) => {
+const PeriodSelector = ({ selectedYear }: { selectedYear: string }) => {
     const { setStored, memory: { partialTemplate } } = UseTemplates()
     const periods = [
         {
@@ -56,13 +56,13 @@ const PeriodSelector = ({ selectedYear }) => {
             months: ['septiembre', 'octubre', 'noviembre', 'diciembre']
         }
     ]
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) => {
         const option = e.target.value
         const groups = periods.find(opt => {
             return option.includes(opt.period)
         })
         const defaultGroups = option === "" ? [] :
-            groups.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
+            groups?.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
         setStored({
             defaultGroups,
             partialTemplate: {
@@ -74,9 +74,9 @@ const PeriodSelector = ({ selectedYear }) => {
     }
     const actualMonth = new Date().toLocaleString('es-MX', { month: 'long' })
     const actualPeriod = periods.find(p => p.months.includes(actualMonth))
-    const defaultPeriod = `${actualPeriod.period} ${selectedYear}: Ordinario`
+    const defaultPeriod = `${actualPeriod?.period} ${selectedYear}: Ordinario`
     useEffect(() => {
-        if (!partialTemplate.period) {
+        if (!partialTemplate?.period) {
             handleChange({ target: { value: defaultPeriod } })
         }
     }, [])
@@ -91,7 +91,7 @@ const PeriodSelector = ({ selectedYear }) => {
         >
             <SelectSection title={'Ordinario'}>
                 {
-                    generatePeriods({ year: selectedYear, ordinary: true }).map(p => {
+                    generatePeriods({ year: Number(selectedYear), ordinary: true }).map(p => {
                         return <SelectItem key={p} variant="flat">{p}</SelectItem>
                     })
                 }
@@ -99,7 +99,7 @@ const PeriodSelector = ({ selectedYear }) => {
             <SelectSection title={'Extraordinario'}>
                 {
                     generatePeriods({
-                        year: selectedYear,
+                        year: Number(selectedYear),
                         ordinary: false
                     }).map(p => {
                         return <SelectItem key={p} variant="flat">{p}</SelectItem>
@@ -111,7 +111,7 @@ const PeriodSelector = ({ selectedYear }) => {
 }
 
 interface SelectorProps {
-    activity: Activity
+    activity: CreateActivity
     handler: any
 }
 
@@ -147,7 +147,7 @@ export const ActTypeSelector = ({ activity, handler }: SelectorProps) => {
 
 export const ManagementTypeSelector = ({ activity, handler }: SelectorProps) => {
     return (
-        <Select className='md:w-2/4' name='managementType' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={[activity?.managementType]}>
+        <Select className='md:w-2/4' name='managementType' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={checkEmptyStringOption(activity?.managementType)}>
             <SelectItem key={'INST'} variant="flat">Institucional</SelectItem>
             <SelectItem key={'ACAD'} variant="flat">Académica</SelectItem>
             <SelectItem key={'ASES'} variant='flat'>Asesoría</SelectItem>
@@ -175,7 +175,14 @@ export const GroupSelector = ({ activity, handler }: SelectorProps) => {
     const { memory: { defaultGroups } } = UseTemplates()
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
-            <Select isDisabled={!activity.educationalProgramId} label="Grados y grupos" name="gradeGroups" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={activity.gradeGroups} onSelectionChange={handler}
+            <Select
+                isDisabled={!activity.educationalProgramId}
+                label="Grados y grupos"
+                name="gradeGroups"
+                selectionMode="multiple"
+                description="Selección múltiple"
+                defaultSelectedKeys={activity.gradeGroups}
+                onSelectionChange={handler}
             >
                 {
                     defaultGroups.map((grupo) => (

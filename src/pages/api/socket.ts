@@ -1,16 +1,11 @@
 
+import { Area } from "@/models/types/area";
+import { EducationalProgram } from "@/models/types/educational-program";
+import { PartialTemplate } from "@/models/types/partial-template";
+import { Template } from "@/models/types/template";
 import { Server } from "socket.io";
-import { insertPartialTemplate, setPartialTemplateStatus } from "../../models/transactions/partial-template";
-import { deleteComment, getComment, insertComment, updateComment } from "../../models/transactions/comment";
-import { insertActivities } from "../../models/transactions/activity";
-import { generateTemplateObject } from "../../utils";
-import { PartialTemplate } from "../../models/types/partial-template";
-import { Comment } from "../../models/types/comment";
-import { Template } from "../../models/types/template";
-import { Area } from "../../models/types/area";
-import { EducationalProgram } from "../../models/types/educational-program";
 
-const iohandler = (_, res) => {
+const iohandler = (_: any, res: any) => {
     if (!res.socket.server.io) {
         const io = new Server(res.socket.server, {
             cors: {

@@ -1,20 +1,22 @@
 
-import { Button, Input, Textarea } from '@nextui-org/react'
+import { Button, Input, Selection, SharedSelection, Textarea } from '@nextui-org/react'
 import toast from 'react-hot-toast'
 import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementTypeSelector, StayTypeSelector } from './Selector'
 import { useEffect } from 'react'
 import { PlusIcon } from './Icons'
 import { UseTemplates } from '../context'
 import { defaultActivity } from '../utils'
-import { Activity } from '../models/types/activity'
+import { Activity, CreateActivity } from '../models/types/activity'
 import { EducationalProgram } from '../models/types/educational-program'
 
+type Event = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+
 export const ActivityCard = ({ activity, educationalPrograms }: {
-    activity: Activity,
+    activity: CreateActivity,
     educationalPrograms: EducationalProgram[]
 }) => {
     const { memory: { partialTemplate, activities, selectedActivity }, setStored } = UseTemplates()
-    const handleChange = (e) => {
+    const handleChange = (e: Event) => {
         setStored({
             selectedActivity: { ...selectedActivity, [e.target.name]: e.target.value }
         })
@@ -27,7 +29,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             activities: newActivities
         })
     }
-    const changeManagementType = (e) => {
+    const changeManagementType = (e: SharedSelection) => {
         setStored({
             selectedActivity: {
                 ...selectedActivity,
@@ -41,7 +43,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             selectedActivity: {
                 ...selectedActivity,
                 weeklyHours,
-                subtotalClassification: weeklyHours * activity.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
+                subtotalClassification: weeklyHours * (activity?.numberStudents || 0), stayType: e.size === 0 ? '' : e.anchorKey
             }
         })
     }

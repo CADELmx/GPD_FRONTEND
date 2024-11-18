@@ -1,5 +1,5 @@
 import { ApiResponse, serverClient } from "../apiClient"
-import { Activity } from "../types/activity"
+import { Activity, CreateActivity } from "../types/activity"
 import { getTemplates } from "./templates"
 
 export interface ActivityResult extends ApiResponse {
@@ -10,7 +10,7 @@ export interface ActivitiesResult extends ApiResponse {
     data: Activity[]
 }
 
-export const insertActivities = ({ data }: { data: Activity[] }) => {
+export const insertActivities = ({ data }: { data: CreateActivity[] }) => {
     return serverClient.post<ActivitiesResult>('/activity/many', data)
 }
 

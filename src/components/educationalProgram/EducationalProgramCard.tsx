@@ -3,6 +3,7 @@ import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../
 import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
 import { useState } from "react"
 import { UseSecretary } from "../../context"
+import { CreateEducationalProgram } from "@/models/types/educational-program"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',
@@ -10,17 +11,20 @@ export const tableClassNames = {
     th: 'text-xs p-2',
 }
 
-export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }) => {
+export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
+    onOpenModal: () => void,
+    onOpenDeleteModal: () => void
+}) => {
     const { setStoredEducationalPrograms, areaState: { areas }, educationalState: { educationalPrograms } } = UseSecretary()
     const [editmode, setEditmode] = useState(false);
-    const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState(new Set([]));
+    const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState<any>(new Set([]));
     const ChangeFromAreaModal = useDisclosure()
     const DeleteEducativeProgramsModal = useDisclosure()
-    const handlePress = (educationalProgram) => {
+    const handlePress = (educationalProgram: CreateEducationalProgram) => {
         setStoredEducationalPrograms({ selectedEducationalProgram: educationalProgram })
         onOpenModal()
     }
-    const handleDeleteModal = (educationalProgram) => {
+    const handleDeleteModal = (educationalProgram: CreateEducationalProgram) => {
         setStoredEducationalPrograms({ selectedEducationalProgram: educationalProgram })
         onOpenDeleteModal()
     }
@@ -119,7 +123,7 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }) => 
                                 {educationalProgram.description}
                             </TableCell>
                             <TableCell>
-                                {areas.find(area => area.id === educationalProgram.areaId).name}
+                                {areas.find(area => area.id === educationalProgram.areaId)?.name}
                             </TableCell>
                             <TableCell>
                                 {

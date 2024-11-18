@@ -1,6 +1,6 @@
 import { ApiResponse, GetById, serverClient } from "../apiClient";
-import { Activity } from "../types/activity";
-import { PartialTemplate, PartialTemplateJoinActivity, PartialTemplateJoinComment } from "../types/partial-template";
+import { Activity, CreateActivity } from "../types/activity";
+import { CreatePartialTemplate, PartialTemplate, PartialTemplateJoinActivity, PartialTemplateJoinComment } from "../types/partial-template";
 import { insertActivities } from "./activity";
 
 
@@ -29,7 +29,7 @@ export interface PartialTemplatesJoinCommentsResult extends ApiResponse {
 }
 
 export const insertPartialTemplate = (
-    { data }: { data: PartialTemplate }
+    { data }: { data: CreatePartialTemplate }
 ) => {
     return serverClient.post<PartialTemplateResult>('/templates', data)
 }
@@ -88,8 +88,8 @@ export const insertPartialTemplateAndActivities = async (
         template
     } }: {
         data: {
-            activities: Activity[],
-            template: PartialTemplate
+            activities: CreateActivity[],
+            template: CreatePartialTemplate
         }
     }) => {
     const {
@@ -105,7 +105,7 @@ export const insertPartialTemplateAndActivities = async (
         message: templateMessage
     }
     const { id } = templateData
-    const newActivities: Activity[] = activities.map(activity => ({ ...activity, partialTemplateId: id }))
+    const newActivities: CreateActivity[] = activities.map(activity => ({ ...activity, partialTemplateId: id }))
     const {
         data: {
             data: activitiesData,

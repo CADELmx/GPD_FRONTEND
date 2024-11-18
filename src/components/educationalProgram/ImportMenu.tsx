@@ -1,29 +1,30 @@
 import { Button, Chip, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { UploadIcon } from "../Icons"
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { UseSecretary } from "@/context";
+import { CreateEducationalProgram } from "@/models/types/educational-program";
+import { createManyEducationalPrograms, EducationalProgramsImportResult } from "@/models/transactions/educational-program";
+import { getFirstSetValue } from "@/utils";
+import { playNotifySound } from "@/toast";
 import { tableClassNames } from "./EducationalProgramCard";
-import { UseSecretary } from "../../context";
-import { getFirstSetValue } from "../../utils";
-import { createManyEducationalPrograms } from "../../models/transactions/educational-program";
-import { EducationalProgram } from "../../models/types/educational-program";
-import { playNotifySound } from "../../toast";
+
 
 export const ExportEducationalProgramsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
-    const [file, setFile] = useState(null);
-    const [educationalPrograms, setEducationalPrograms] = useState([]);
+    const [file, setFile] = useState<File>(new File([], ''));
+    const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState<any>(new Set<any>([]));
     const [selectedArea, setSelectedArea] = useState<any>(new Set<any>([]));
-    const handleFileChange = (e) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFile(e.target.files[0])
         }
     }
     const handleExport = async () => {
-        if (file) {
+        if (file.name) {
             setLoading(true)
             const formData = new FormData();
             formData.append('file', file);
@@ -31,13 +32,13 @@ export const ExportEducationalProgramsMenu = () => {
             if (status === 200) {
                 const { data } = await axios.get(`/api/import/${file.name}`)
                 const newEducationalPrograms = JSON.parse(data)
-                    .sort((a, b) => a.abbreviation.localeCompare(b.abbreviation))
-                    .map((e, i) => ({
+                    .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
+                    .map((e: CreateEducationalProgram, i: number) => ({
                         ...e,
                         index: i
                     }))
                 setEducationalPrograms(newEducationalPrograms)
-                setFile(null)
+                setFile(new File([], ''))
             }
             setLoading(false)
         }
@@ -45,11 +46,11 @@ export const ExportEducationalProgramsMenu = () => {
     const handleSubmit = async () => {
         if (selectedEductationalPrograms.size > 0) {
             setLoading(true)
-            const newEducationalPrograms: EducationalProgram[] = Array.from(selectedEductationalPrograms).map((index: string) => {
+            const newEducationalPrograms: CreateEducationalProgram[] = Array.from(selectedEductationalPrograms).map((index) => {
                 const { abbreviation, description }: {
                     abbreviation: string,
                     description: string
-                } = educationalPrograms[index]
+                } = educationalPrograms[Number(index)]
                 return ({
                     abbreviation,
                     description
@@ -119,7 +120,7 @@ export const ExportEducationalProgramsMenu = () => {
                 color="primary"
                 fullWidth
                 onPress={handleExport}
-                isLoading={loading && file}
+                isLoading={loading && file.name !== ''}
             >
                 Importar programas educativos
             </Button>

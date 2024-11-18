@@ -34,7 +34,7 @@ export const getStaticProps = async () => {
 
 export default function EducativeProgram({ areas, ssrEducationalPrograms, error }: { areas: Area[], ssrEducationalPrograms: EducationalProgram[], error: string | null }) {
     const { setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
-    const [selectedKeys, setSelectedKeys] = useState<any>(new Set([]));
+    const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]));
     const EducativeProgramModal = useDisclosure()
     const DeleteModal = useDisclosure()
     const handleOpen = () => {

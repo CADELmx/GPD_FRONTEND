@@ -9,6 +9,10 @@ export interface EducationalProgramsResult extends ApiResponse {
     data: EducationalProgram[]
 }
 
+export interface EducationalProgramsImportResult {
+    data: EducationalProgram[]
+}
+
 export const getEducationalPrograms = () => {
     return serverClient.get<EducationalProgramsResult>('/educational-programs')
 }
@@ -25,7 +29,7 @@ export const createManyEducationalPrograms = ({ areaId, data }: { areaId: number
     })
 }
 
-export const updateEducationalProgram = ({ id, data }: { id: number, data: EducationalProgram }) => {
+export const updateEducationalProgram = ({ id, data }: { id: number, data: CreateEducationalProgram }) => {
     return serverClient.put<EducationalProgramResult>(`/educational-programs/${id}`, data)
 }
 
