@@ -8,9 +8,10 @@ import { AreasTable } from "../../components/area/AreaTable"
 import { AreaModal, DeleteAreaModal } from "../../components/area/AreaModal"
 import { Area } from "../../models/types/area"
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
     const { data: { data, error } } = await getAreas()
     return {
+        revalidate: 3,
         props: {
             areas: data,
             error,

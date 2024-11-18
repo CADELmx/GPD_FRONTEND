@@ -10,7 +10,7 @@ import { ExportEducationalProgramsMenu } from "../../components/educationalProgr
 import { EducationalProgramsTable } from "../../components/educationalProgram/EducationalProgramCard"
 import { EducationalProgramDeleteModal, EducationalProgramModal } from "../../components/educationalProgram/EducationalProgramModal"
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
     const { data: {
         data: areas,
         error: areasError
@@ -30,7 +30,7 @@ export const getServerSideProps = async () => {
 }
 
 export default function EducativeProgram({ areas, ssrEducationalPrograms, error }) {
-    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
+    const { setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
     const [selectedKeys, setSelectedKeys] = useState<any>(new Set([]));
     const EducativeProgramModal = useDisclosure()
     const DeleteModal = useDisclosure()

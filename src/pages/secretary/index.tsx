@@ -8,9 +8,9 @@ import { generateRecords } from "../../models/apiClient";
 import { PartialTemplate } from "../../models/types/partial-template";
 import { ChangeStatus } from "../../components/ChangeStatus";
 import { MoreOptions } from "../../components/DownloadButton";
+import { tableClassNames } from "../../components/educationalProgram/EducationalProgramCard";
 
 export default function Secretary({ partialTemplates, error }: { partialTemplates: PartialTemplate[], error: string }) {
-  console.log(partialTemplates)
   const { memory: { socket } } = UseTemplates()
   const [templates, setTemplates] = useState<PartialTemplate[]>(partialTemplates);
   useEffect(() => {
@@ -36,18 +36,14 @@ export default function Secretary({ partialTemplates, error }: { partialTemplate
       socket.off('existentComment')
     };
   }, []);
-  const columns = ['Nombre', 'Actividades', 'Horas', 'Estado', 'Más'].map((c, i) => ({
-    key: i,
-    title: c
-  }))
   return (
     <>
       <ModalError error={error} />
       <h1 className="text-2xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Secretaría académica</h1>
       <p className="tracking-widest p-2 m-2">Formatos recibidos</p>
       <section className="flex-col">
-        <Table itemScope aria-label="tabla de plantillas">
-          <TableHeader aria-label="cabecera de la tabla" columns={columns}>
+        <Table classNames={tableClassNames} aria-label="tabla de plantillas">
+          <TableHeader aria-label="cabecera de la tabla">
             <TableColumn>
               Nombre
             </TableColumn>

@@ -13,14 +13,13 @@ const colors = {
     'Pendiente': 'warning'
 }
 
-export default function TemplatesStatus({ templates: ssrTemplates, error }: {
-    templates: PartialTemplate[],
+export default function TemplatesStatus({ partialTemplates: ssrTemplates, error }: {
+    partialTemplates: PartialTemplate[],
     error: string | null
 }) {
     const { memory: { socket } } = UseTemplates()
-    const [templates, setTemplates] = useState<PartialTemplate[]>()
+    const [templates, setTemplates] = useState<PartialTemplate[]>(ssrTemplates)
     useEffect(() => {
-        setTemplates(ssrTemplates)
         const onUpdateStatus = (newTemplate: PartialTemplate) => {
             setTemplates((templates) => templates.map((template) => {
                 if (template.id === newTemplate.id) {
@@ -78,7 +77,7 @@ export const getStaticProps = async () => {
     return {
         revalidate: 3,
         props: {
-            templates: data,
+            partialTemplates: data,
             error: error ? 'Error al obtener las plantillas, recarga la página' : null
         }
     }
