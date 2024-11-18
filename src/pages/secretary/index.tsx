@@ -5,11 +5,20 @@ import toast from "react-hot-toast";
 import { UseTemplates } from "../../context";
 import { ModalError } from "../../components/ModalError";
 import { generateRecords } from "../../models/apiClient";
+import { PartialTemplate } from "../../models/types/partial-template";
+import { ChangeStatus } from "../../components/ChangeStatus";
+import { MoreOptions } from "../../components/DownloadButton";
 
-export default function Secretary({ plantillas, error }) {
+export const useSocket = () => {
   const { memory: { socket } } = UseTemplates()
-  const [templates, setTemplates] = useState(plantillas || []);
+  return socket
+}
+
+export default function Secretary({ plantillas, error }: { plantillas: PartialTemplate[], error: string }) {
+  const { memory: { socket } } = UseTemplates()
+  const [templates, setTemplates] = useState<PartialTemplate[]>();
   useEffect(() => {
+    setTemplates(plantillas)
     const onCreatedTemplate = (templateObject) => {
       setTemplates((templates) => ([...templates, templateObject]))
     }
@@ -62,14 +71,14 @@ export default function Secretary({ plantillas, error }) {
             {
               (template) => (
                 <TableRow key={template.id}>
-                  <TableCell aria-label="nombre">{template.nombre}</TableCell>
-                  <TableCell aria-label="numero de actividades">{template.actividad.length}</TableCell>
+                  <TableCell aria-label="nombre">{template.name}</TableCell>
+                  <TableCell aria-label="numero de actividades">{template.activities.length}</TableCell>
                   <TableCell aria-label="total horas">{template.total}</TableCell>
                   <TableCell className="p-0 m-0" aria-label="estado">
                     <ChangeStatus status={template.status} templateid={template.id} />
                   </TableCell>
                   <TableCell aria-label="descargar">
-                    <MoreOptions templateid={template.id} templatename={template.nombre} />
+                    <MoreOptions templateid={template.id} templatename={template.name} />
                   </TableCell>
                 </TableRow>
               )

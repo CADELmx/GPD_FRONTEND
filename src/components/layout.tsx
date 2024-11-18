@@ -162,10 +162,16 @@ export const Layout = ({ children }) => {
                             <Chip
                                 variant="dot"
                                 className="hidden sm:flex"
-                                color={isConnected ? "success" : "error"}
+                                color={isConnected ? "success" : "danger"}
                             >{isConnected ? "Conectado" : "Desconectado"}
                             </Chip>
-                            <Chip variant="dot" radius="full" className="flex sm:hidden" color={isConnected ? "success" : "danger"}>.</Chip>
+                            <Chip
+                                variant="dot"
+                                radius="full"
+                                className="flex sm:hidden"
+                                color={isConnected ? "success" : "danger"}
+                            >.
+                            </Chip>
                         </NavbarContent>
                     )
                 }

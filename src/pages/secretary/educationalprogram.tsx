@@ -1,12 +1,14 @@
-import { EducationalProgramCards, EducationalProgramsTable } from "@/components/educationalProgram/EducationalProgramCard"
-import { EducationalProgramDeleteModal, EducationalProgramModal } from "@/components/educationalProgram/EducationalProgramModal"
-import { ExportEducationalProgramsMenu } from "@/components/educationalProgram/ImportMenu"
-import { TrashIcon, UploadIcon } from "@/components/Icons"
-import { ModalError } from "@/components/ModalError"
-import { UseSecretary } from "@/context"
-import { getAreas, getEducationalPrograms } from "@/models/transactions"
+
 import { Accordion, AccordionItem, Button, useDisclosure } from "@nextui-org/react"
 import { useEffect, useState } from "react"
+import { getAreas } from "../../models/transactions/area"
+import { getEducationalPrograms } from "../../models/transactions/educational-program"
+import { UseSecretary } from "../../context"
+import { ModalError } from "../../components/ModalError"
+import { UploadIcon } from "../../components/Icons"
+import { ExportEducationalProgramsMenu } from "../../components/educationalProgram/ImportMenu"
+import { EducationalProgramsTable } from "../../components/educationalProgram/EducationalProgramCard"
+import { EducationalProgramDeleteModal, EducationalProgramModal } from "../../components/educationalProgram/EducationalProgramModal"
 
 export const getServerSideProps = async () => {
     const { data: {
@@ -29,7 +31,7 @@ export const getServerSideProps = async () => {
 
 export default function EducativeProgram({ areas, ssrEducationalPrograms, error }) {
     const { educationalState: { educationalPrograms }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
-    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    const [selectedKeys, setSelectedKeys] = useState<any>(new Set([]));
     const EducativeProgramModal = useDisclosure()
     const DeleteModal = useDisclosure()
     const handleOpen = () => {
@@ -67,7 +69,6 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
                             Nuevo programa educativo
                         </Button>
                         <EducationalProgramsTable
-                            educationalPrograms={educationalPrograms}
                             onOpenModal={handleOpen}
                             onOpenDeleteModal={DeleteModal.onOpen}
                         />

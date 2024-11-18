@@ -1,21 +1,22 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 import { defaultActivity, defaultPartialTemplate } from '../utils'
 import { Activity } from '../models/types/activity'
 import { PartialTemplate } from '../models/types/partial-template'
 import { EducationalProgram } from '../models/types/educational-program'
 import { Area } from '../models/types/area'
+import axios from 'axios'
 
-type MemoryState = {
+interface MemoryState {
     memory: {
-        partialTemplate: PartialTemplate,
-        activities: Activity[],
-        selectedActivity: Activity,
-        defaultGroups: any[],
-        socket: any,
-        user: any | null
+        partialTemplate?: PartialTemplate,
+        activities?: Activity[],
+        selectedActivity?: Activity,
+        defaultGroups?: string[],
+        socket: Socket,
+        user: string | null
     },
     setStored: (prop: any) => void,
     handleGlobalChange: (event: any) => void,
@@ -37,19 +38,15 @@ export const TemplatesProvider = ({ children }) => {
         user: getCookie('user', { secure: true })
     })
     const login = async (email, password) => {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
+        const { data: { error, user } } = await axios.post('/api/login', {
+            email, password
         })
-        const { error, user } = await res.json()
         if (error) {
-            return { error }
+            return { error, user: null }
         }
         setMemory({ ...memory, user })
         setCookie('user', user, { secure: true })
+        return { user, error: null }
     }
     const logout = async () => {
         await fetch('/api/logout')
@@ -85,7 +82,7 @@ export const TemplatesProvider = ({ children }) => {
     )
 }
 
-type AreaState = {
+interface AreaState {
     areaState: {
         areas: Area[],
         selectedArea: Area

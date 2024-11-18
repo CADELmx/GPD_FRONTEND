@@ -1,8 +1,11 @@
-import { UseTemplates } from "@/context"
-import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "@/utils"
+
 import { Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 import { LockIcon } from "./Icons"
+import { UseTemplates } from "../context"
+import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "../utils"
+import { EducationalProgram } from "../models/types/educational-program"
+import { Activity } from "../models/types/activity"
 
 const YearSelector = ({ selectedYear, setState }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()
@@ -83,19 +86,22 @@ const PeriodSelector = ({ selectedYear }) => {
             autoCapitalize="words"
             isRequired
             onChange={handleChange}
-            disallowEmptySelectio
+            disallowEmptySelection
             defaultSelectedKeys={[defaultPeriod]}
         >
             <SelectSection title={'Ordinario'}>
                 {
-                    generatePeriods(selectedYear, true).map(p => {
+                    generatePeriods({ year: selectedYear, ordinary: true }).map(p => {
                         return <SelectItem key={p} variant="flat">{p}</SelectItem>
                     })
                 }
             </SelectSection>
             <SelectSection title={'Extraordinario'}>
                 {
-                    generatePeriods(selectedYear, false).map(p => {
+                    generatePeriods({
+                        year: selectedYear,
+                        ordinary: false
+                    }).map(p => {
                         return <SelectItem key={p} variant="flat">{p}</SelectItem>
                     })
                 }
@@ -134,9 +140,9 @@ export const ActTypeSelector = ({ act, handler }) => {
     )
 }
 
-export const ManagementTypeSelector = ({ act, handler }) => {
+export const ManagementTypeSelector = ({ activity, handler }) => {
     return (
-        <Select className='md:w-2/4' name='managementType' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={[act?.managementType]}>
+        <Select className='md:w-2/4' name='managementType' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={[activity?.managementType]}>
             <SelectItem key={'INST'} variant="flat">Institucional</SelectItem>
             <SelectItem key={'ACAD'} variant="flat">Académica</SelectItem>
             <SelectItem key={'ASES'} variant='flat'>Asesoría</SelectItem>
@@ -144,14 +150,14 @@ export const ManagementTypeSelector = ({ act, handler }) => {
     )
 }
 
-export const StayTypeSelector = ({ act, handler }) => {
+export const StayTypeSelector = ({ activity, handler }) => {
     return (
         <Select
             className=''
             onSelectionChange={handler}
             name='stayType'
             label='Tipo de estadía'
-            defaultSelectedKeys={checkEmptyStringOption(act.stayType)}
+            defaultSelectedKeys={checkEmptyStringOption(activity.stayType)}
             disallowEmptySelection
         >
             <SelectItem key='TSU'>TSU</SelectItem>
@@ -160,11 +166,11 @@ export const StayTypeSelector = ({ act, handler }) => {
     )
 }
 
-export const GroupSelector = ({ act, handler }) => {
+export const GroupSelector = ({ activity, handler }: { activity: Activity, handler: any }) => {
     const { memory: { defaultGroups } } = UseTemplates()
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
-            <Select isDisabled={!act.educationalProgramId} label="Grados y grupos" name="gradeGroups" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={act.gradeGroups} onSelectionChange={handler}
+            <Select isDisabled={!activity.educationalProgramId} label="Grados y grupos" name="gradeGroups" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={activity.gradeGroups} onSelectionChange={handler}
             >
                 {
                     defaultGroups.map((grupo) => (
@@ -172,22 +178,41 @@ export const GroupSelector = ({ act, handler }) => {
                     ))
                 }
             </Select>
-            <Input className="md:w-1/3" isReadOnly label='Nº de grupos' value={act.gradeGroups.length === 0 ? '' : act.gradeGroups.length} isDisabled />
+            <Input className="md:w-1/3" isReadOnly label='Nº de grupos' value={activity.gradeGroups.length === 0 ? '' : `${activity.gradeGroups.length}`} isDisabled />
         </div>
     )
 }
 
-export const AcademicProgramSelector = ({ act, educationalPrograms, handler }) => {
+export const AcademicProgramSelector = (
+    { activity, educationalPrograms, handler }: { activity: Activity, educationalPrograms: EducationalProgram[], handler: (e: any) => void }
+) => {
     return (
         <div className="flex flex-col md:flex-row gap-2">
-            <Select isDisabled={act?.activityDistribution === ""} className="md:w-2/5" label='Programa educativo' name='educationalProgramId' defaultSelectedKeys={act.educationalProgramId ? [act.educationalProgramId] : []} onSelectionChange={handler} items={educationalPrograms}>
+            <Select
+                isDisabled={activity?.activityDistribution === ""}
+                className="md:w-2/5"
+                label='Programa educativo'
+                name='educationalProgramId'
+                defaultSelectedKeys={activity.educationalProgramId ? [activity.educationalProgramId] : []}
+                onSelectionChange={handler}
+                items={educationalPrograms}
+            >
                 {
                     (educationalProgram) => (
-                        <SelectItem key={educationalProgram.id} variant="flat">{educationalProgram.abbreviation}</SelectItem>
+                        <SelectItem
+                            key={educationalProgram.id} variant="flat">{educationalProgram.abbreviation}</SelectItem>
                     )
                 }
             </Select>
-            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={educationalPrograms.find(e => e.id == act.educationalProgramId)?.description} />
+            <Textarea
+                minRows={1}
+                size="sm"
+                radius="md"
+                isReadOnly
+                label='Detalles PE'
+                isDisabled
+                value={educationalPrograms.find(educationalProgram => educationalProgram.id == activity.educationalProgramId)?.description}
+            />
         </div>
     )
 }
@@ -196,13 +221,21 @@ export const YearSelectorAlter = () => {
     const defaultYear = String(new Date().getFullYear())
     const [year, setYear] = useState(defaultYear)
     const yearList = Array.from({ length: 3 }, (_, k) => ({
-        key: `${defaultYear - k + 1}`,
-        value: `${defaultYear - k + 1}`
+        key: `${Number(defaultYear) - k + 1}`,
+        value: `${Number(defaultYear) - k + 1}`
     }))
     const [isDisabled, setIsDisabled] = useState(true);
     return (
         <div className="flex sm:flex gap-2 items-center">
-            <Select className="w-full" isDisabled={isDisabled} label='Año' disallowEmptySelection selectedKeys={[year]} onChange={e => setYear(e.target.value)} items={yearList}>
+            <Select
+                className="w-full"
+                isDisabled={isDisabled}
+                label='Año'
+                disallowEmptySelection
+                selectedKeys={[year]}
+                onChange={e => setYear(e.target.value)}
+                items={yearList}
+            >
                 {
                     ({ value, key }) => <SelectItem key={key} variant="flat">{value}</SelectItem>
                 }

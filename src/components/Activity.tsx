@@ -1,12 +1,18 @@
-import { StoredContext, UseTemplates } from '@/context'
-import { defaultActivity } from '@/utils'
+
 import { Button, Input, Textarea } from '@nextui-org/react'
 import toast from 'react-hot-toast'
 import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementTypeSelector, StayTypeSelector } from './Selector'
 import { useEffect } from 'react'
 import { PlusIcon } from './Icons'
+import { UseTemplates } from '../context'
+import { defaultActivity } from '../utils'
+import { Activity } from '../models/types/activity'
+import { EducationalProgram } from '../models/types/educational-program'
 
-export const Activity = ({ act, educationalPrograms }) => {
+export const ActivityCard = ({ activity, educationalPrograms }: {
+    activity: Activity,
+    educationalPrograms: EducationalProgram[]
+}) => {
     const { memory: { partialTemplate, activities, selectedActivity }, setStored } = UseTemplates()
     const handleChange = (e) => {
         setStored({
@@ -35,7 +41,7 @@ export const Activity = ({ act, educationalPrograms }) => {
             selectedActivity: {
                 ...selectedActivity,
                 weeklyHours,
-                subtotalClassification: weeklyHours * act.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
+                subtotalClassification: weeklyHours * activity.numberStudents, stayType: e.size === 0 ? '' : e.anchorKey
             }
         })
     }
@@ -44,33 +50,36 @@ export const Activity = ({ act, educationalPrograms }) => {
             selectedActivity: {
                 ...selectedActivity,
                 gradeGroups: Array.from(e),
-                subtotalClassification: Array.from(e).length * act.weeklyHours
+                subtotalClassification: Array.from(e).length * activity.weeklyHours
             }
         })
     }
     const changeWeeklyHours = (e) => {
-        if (act.activityDistribution === "Estadía técnica") {
+        if (activity.activityDistribution === "Estadía técnica") {
             setStored({
                 selectedActivity: {
-                    ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.numberStudents || 1)
+                    ...selectedActivity, [e.target.name]: Number(e.target.value),
+                    subtotalClassification: Number(e.target.value) * (activity.numberStudents || 1)
                 }
             })
             return
         }
         if (
-            act.activityDistribution === "Docencia"
-            || act.activityDistribution === "Tutorías"
+            activity.activityDistribution === "Docencia"
+            || activity.activityDistribution === "Tutorías"
         ) {
-            const subtotalClassification = act.gradeGroups.length === 0 || e.target.value === '' ? '' : act.gradeGroups.length * Number(e.target.value)
+            const subtotalClassification = activity.gradeGroups.length === 0 || e.target.value === '' ? '' : activity.gradeGroups.length * Number(e.target.value)
             setStored({
                 selectedActivity: {
-                    ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification
+                    ...selectedActivity, [e.target.name]: Number(e.target.value),
+                    subtotalClassification
                 }
             })
         } else {
             setStored({
                 selectedActivity: {
-                    ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value)
+                    ...selectedActivity, [e.target.name]: Number(e.target.value),
+                    subtotalClassification: Number(e.target.value)
                 }
             })
         }
@@ -78,14 +87,16 @@ export const Activity = ({ act, educationalPrograms }) => {
     const changeActivityProgram = (e) => {
         setStored({
             selectedActivity: {
-                ...selectedActivity, educationalProgramId: e.size === 0 ? "" : e.anchorKey
+                ...selectedActivity,
+                educationalProgramId: e.size === 0 ? "" : e.anchorKey
             }
         })
     }
     const changeStudentsNumber = (e) => {
         setStored({
             selectedActivity: {
-                ...selectedActivity, [e.target.name]: Number(e.target.value), subtotalClassification: Number(e.target.value) * (act.weeklyHours || 1)
+                ...selectedActivity, [e.target.name]: Number(e.target.value),
+                subtotalClassification: Number(e.target.value) * (activity.weeklyHours || 1)
             }
         })
     }
@@ -102,7 +113,7 @@ export const Activity = ({ act, educationalPrograms }) => {
     }
     useEffect(() => {
         updateTotal()
-    }, [act.subtotalClassification])
+    }, [activity.subtotalClassification])
 
     useEffect(() => {
         setStored({
@@ -113,18 +124,18 @@ export const Activity = ({ act, educationalPrograms }) => {
     return (
         <div className='flex flex-col gap-2'>
             <div className='flex flex-col md:flex-row gap-2'>
-                <ActTypeSelector act={act} handler={handleChange} />
+                <ActTypeSelector act={activity} handler={handleChange} />
                 {
                     (
-                        act.activityDistribution === "Gestión"
+                        activity.activityDistribution === "Gestión"
                     ) && (
-                        <ManagementTypeSelector act={act} handler={changeManagementType} />
+                        <ManagementTypeSelector activity={activity} handler={changeManagementType} />
                     )
                 }
                 {
                     !(
-                        act.activityDistribution === "Estadía técnica"
-                        || act.activityDistribution === "Tutorías"
+                        activity.activityDistribution === "Estadía técnica"
+                        || activity.activityDistribution === "Tutorías"
                     ) && (
                         <Textarea
                             minRows={1}
@@ -135,56 +146,56 @@ export const Activity = ({ act, educationalPrograms }) => {
                             name="activityName"
                             onChange={handleChange}
                             isRequired
-                            defaultValue={act?.activityName}
+                            defaultValue={activity?.activityName}
                         />
                     )
                 }
                 {
                     (
-                        act.activityDistribution === "Estadía técnica"
+                        activity.activityDistribution === "Estadía técnica"
                     ) && (
-                        <StayTypeSelector act={act} handler={changeStayType} />
+                        <StayTypeSelector activity={activity} handler={changeStayType} />
                     )
                 }
             </div>
             {
                 !(
-                    act.activityDistribution === "Estadía técnica"
-                    || act.activityDistribution === "Gestión"
-                    || act.activityDistribution === "LIIAD"
+                    activity.activityDistribution === "Estadía técnica"
+                    || activity.activityDistribution === "Gestión"
+                    || activity.activityDistribution === "LIIAD"
                 ) && (
-                    <AcademicProgramSelector act={act} educationalPrograms={educationalPrograms} handler={changeActivityProgram} />
+                    <AcademicProgramSelector activity={activity} educationalPrograms={educationalPrograms} handler={changeActivityProgram} />
                 )
             }
             {
                 !(
-                    act.activityDistribution === "LIIAD"
-                    || act.activityDistribution === "Estadía técnica"
-                    || act.activityDistribution === "Gestión"
+                    activity.activityDistribution === "LIIAD"
+                    || activity.activityDistribution === "Estadía técnica"
+                    || activity.activityDistribution === "Gestión"
                 ) && (
-                    <GroupSelector act={act} handler={changeGroup} />
+                    <GroupSelector activity={activity} handler={changeGroup} />
                 )
             }
             <div className='flex gap-2'>
                 {
-                    (act.activityDistribution === "Estadía técnica") && (
+                    (activity.activityDistribution === "Estadía técnica") && (
                         <Input
                             label="Número de estudiantes"
                             type="number"
-                            defaultValue={act.numberStudents}
+                            defaultValue={`${activity.numberStudents}`}
                             name="numberStudents"
                             onChange={changeStudentsNumber}
                             min={1}
                         />
                     )
                 }
-                <Input label="Horas semanales" type="number" name="weeklyHours" min={1} value={act?.weeklyHours === 0 ? '' : act?.weeklyHours} onChange={changeWeeklyHours} />
+                <Input label="Horas semanales" type="number" name="weeklyHours" min={1} value={activity?.weeklyHours === 0 ? '' : `${activity?.weeklyHours}`} onChange={changeWeeklyHours} />
             </div>
             <Input
                 label="Subtotal por clasificación"
                 type="number"
                 name="subtotalClassification"
-                value={act?.subtotalClassification === 0 ? '' : act?.subtotalClassification}
+                value={activity?.subtotalClassification === 0 ? '' : `${activity?.subtotalClassification}`}
                 isDisabled
             />
             {
@@ -196,7 +207,7 @@ export const Activity = ({ act, educationalPrograms }) => {
     )
 }
 
-export const AddActivityButton = ({ isDisabled }) => {
+export const AddActivityButton = ({ isDisabled }: { isDisabled: boolean }) => {
     const { memory: { activities }, setStored } = UseTemplates()
     const handleCreate = () => {
         if (activities.length >= 10) {
