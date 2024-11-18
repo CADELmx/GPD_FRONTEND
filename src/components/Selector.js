@@ -1,17 +1,30 @@
-import { StoredContext } from "@/context"
+import { UseTemplates } from "@/context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "@/utils"
-import { Input, Select, SelectItem, SelectSection, Textarea } from "@nextui-org/react"
+import { Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
 import { useEffect, useState } from "react"
+import { LockIcon } from "./Icons"
 
 const YearSelector = ({ selectedYear, setState }) => {
-    const { memory: { record }, setStored } = StoredContext()
+    const { memory: { partialTemplate }, setStored } = UseTemplates()
     const year = new Date().getFullYear()
     const yearList = Array.from({ length: 3 }, (_, k) => `${year - k + 1}`)
     return (
-        <Select label='Año' disallowEmptySelection defaultSelectedKeys={[selectedYear]} className="md:w-2/5" onChange={e => {
-            setState(e.target.value)
-            setStored({ record: { ...record, year: e.target.value } })
-        }}>
+        <Select
+            label='Año'
+            disallowEmptySelection
+            defaultSelectedKeys={[selectedYear]}
+            className="md:w-2/5"
+            isRequired
+            onChange={e => {
+                setState(e.target.value)
+                setStored({
+                    partialTemplate: {
+                        ...partialTemplate,
+                        year: e.target.value
+                    }
+                })
+            }}
+        >
             {
                 yearList.map((year) => {
                     return <SelectItem key={year} variant="flat">{year}</SelectItem>
@@ -22,7 +35,7 @@ const YearSelector = ({ selectedYear, setState }) => {
 }
 
 const PeriodSelector = ({ selectedYear }) => {
-    const { setStored, memory: { record } } = StoredContext()
+    const { setStored, memory: { partialTemplate } } = UseTemplates()
     const periods = [
         {
             period: "enero - abril",
@@ -47,18 +60,32 @@ const PeriodSelector = ({ selectedYear }) => {
         })
         const defaultGroups = option === "" ? [] :
             groups.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
-        setStored({ defaultGroups, record: { ...record, period: option, year: selectedYear } })
+        setStored({
+            defaultGroups,
+            partialTemplate: {
+                ...partialTemplate,
+                period: option,
+                year: selectedYear
+            }
+        })
     }
     const actualMonth = new Date().toLocaleString('es-MX', { month: 'long' })
     const actualPeriod = periods.find(p => p.months.includes(actualMonth))
     const defaultPeriod = `${actualPeriod.period} ${selectedYear}: Ordinario`
     useEffect(() => {
-        if (!record.period) {
+        if (!partialTemplate.period) {
             handleChange({ target: { value: defaultPeriod } })
         }
     }, [])
     return (
-        <Select label='Periodo' autoCapitalize="words" onChange={handleChange} disallowEmptySelection defaultSelectedKeys={[defaultPeriod]}>
+        <Select
+            label='Periodo'
+            autoCapitalize="words"
+            isRequired
+            onChange={handleChange}
+            disallowEmptySelectio
+            defaultSelectedKeys={[defaultPeriod]}
+        >
             <SelectSection title={'Ordinario'}>
                 {
                     generatePeriods(selectedYear, true).map(p => {
@@ -90,7 +117,14 @@ export const YearAndPeriodSelector = () => {
 
 export const ActTypeSelector = ({ act, handler }) => {
     return (
-        <Select className={act?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'} label="Distribución" onChange={handler} name="activityDistribution" defaultSelectedKeys={checkEmptyStringOption(act?.activityDistribution)}>
+        <Select
+            className={act?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'}
+            label="Distribución"
+            onChange={handler}
+            name="activityDistribution"
+            isRequired
+            defaultSelectedKeys={checkEmptyStringOption(act?.activityDistribution)}
+        >
             {
                 activitiesDistribution.map((a) => {
                     return <SelectItem key={a} variant="flat">{a}</SelectItem>
@@ -112,7 +146,14 @@ export const ManagementTypeSelector = ({ act, handler }) => {
 
 export const StayTypeSelector = ({ act, handler }) => {
     return (
-        <Select className='' onSelectionChange={handler} name='stayType' label='Tipo de estadía' defaultSelectedKeys={checkEmptyStringOption(act.stayType)}>
+        <Select
+            className=''
+            onSelectionChange={handler}
+            name='stayType'
+            label='Tipo de estadía'
+            defaultSelectedKeys={checkEmptyStringOption(act.stayType)}
+            disallowEmptySelection
+        >
             <SelectItem key='TSU'>TSU</SelectItem>
             <SelectItem key='ING'>ING</SelectItem>
         </Select>
@@ -120,7 +161,7 @@ export const StayTypeSelector = ({ act, handler }) => {
 }
 
 export const GroupSelector = ({ act, handler }) => {
-    const { memory: { defaultGroups } } = StoredContext()
+    const { memory: { defaultGroups } } = UseTemplates()
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
             <Select isDisabled={!act.educationalProgramId} label="Grados y grupos" name="gradeGroups" selectionMode="multiple" description="Selección múltiple" defaultSelectedKeys={act.gradeGroups} onSelectionChange={handler}
@@ -136,16 +177,40 @@ export const GroupSelector = ({ act, handler }) => {
     )
 }
 
-export const AcademicProgramSelector = ({ act, eduPrograms, handler }) => {
+export const AcademicProgramSelector = ({ act, educationalPrograms, handler }) => {
     return (
         <div className="flex flex-col md:flex-row gap-2">
-            <Select isDisabled={act?.activityDistribution === ""} className="md:w-2/5" label='Programa educativo' name='educationalProgramId' defaultSelectedKeys={act.educationalProgramId ? [act.educationalProgramId] : []} onSelectionChange={handler} >
-                {eduPrograms.length === 0 ? null :
-                    eduPrograms.map((e) =>
-                        <SelectItem key={e.id} variant="flat">{e.abbreviation}</SelectItem>)
+            <Select isDisabled={act?.activityDistribution === ""} className="md:w-2/5" label='Programa educativo' name='educationalProgramId' defaultSelectedKeys={act.educationalProgramId ? [act.educationalProgramId] : []} onSelectionChange={handler} items={educationalPrograms}>
+                {
+                    (educationalProgram) => (
+                        <SelectItem key={educationalProgram.id} variant="flat">{educationalProgram.abbreviation}</SelectItem>
+                    )
                 }
             </Select>
-            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={eduPrograms.find(e => e.id == act.educationalProgramId)?.description} />
+            <Textarea minRows={1} size="sm" radius="md" isReadOnly label='Detalles PE' isDisabled value={educationalPrograms.find(e => e.id == act.educationalProgramId)?.description} />
+        </div>
+    )
+}
+
+export const YearSelectorAlter = () => {
+    const defaultYear = String(new Date().getFullYear())
+    const [year, setYear] = useState(defaultYear)
+    const yearList = Array.from({ length: 3 }, (_, k) => ({
+        key: `${defaultYear - k + 1}`,
+        value: `${defaultYear - k + 1}`
+    }))
+    const [isDisabled, setIsDisabled] = useState(true);
+    return (
+        <div className="flex sm:flex gap-2 items-center">
+            <Select className="w-full" isDisabled={isDisabled} label='Año' disallowEmptySelection selectedKeys={[year]} onChange={e => setYear(e.target.value)} items={yearList}>
+                {
+                    ({ value, key }) => <SelectItem key={key} variant="flat">{value}</SelectItem>
+                }
+            </Select>
+            <Switch
+                thumbIcon={LockIcon}
+                onChange={() => setIsDisabled(!isDisabled)}
+            />
         </div>
     )
 }

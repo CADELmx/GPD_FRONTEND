@@ -62,9 +62,6 @@ export const defaultPartialTemplate = {
     position: "",
     year: new Date().getFullYear(),
     period: "",
-    activities: [
-        defaultActivity
-    ],
     total: 0,
 }
 
@@ -92,6 +89,10 @@ export const generatePeriods = (year, ordinary) => {
 }
 
 export const checkEmptyStringOption = (string) => string === "" ? [] : [string]
+
+export const getFirstSetValue = (set) => {
+    return Array.from(set)[0]
+}
 
 export const sumHours = (activities) => {
     if (activities?.length) {

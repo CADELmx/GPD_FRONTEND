@@ -13,6 +13,7 @@
     "axios": "^1.7.7",
     "cookies-next": "^4.2.1",
     "excel4node": "^1.8.2",
+    "formidable": "^3.5.2",
     "framer-motion": "^11.0.8",
     "next": "^14.2.16",
     "next-pwa": "^5.6.0",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "@types/react": "18.3.12",
     "autoprefixer": "^10",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",

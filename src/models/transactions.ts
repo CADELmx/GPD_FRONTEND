@@ -1,14 +1,16 @@
 import axios from "axios"
 import { getCookie } from "cookies-next"
+import { Activity } from "./types/activity"
+import { Template } from "./types/template"
 
-const serverClient = axios.create({
+export const serverClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
         Authorization: `Bearer ${getCookie('token')}`
     },
 })
 
-export const getPersonalData = (id) => {
+export const getPersonalData = (id: number) => {
     return serverClient.get('/personal-data', {
         params: {
             id
@@ -20,20 +22,18 @@ export const getAllPersonalData = () => {
     return serverClient.get('/personal-data')
 }
 
-export const insertActivities = (activities) => {
-    return serverClient.post('/activity', activities, {
-        params: {
-            many: true
-        }
-    })
+export const insertActivities = (activities: Activity[]): Promise<{
+    count: number,
+}> => {
+    return serverClient.post('/activity/many', activities)
 }
 
-export const insertTemplate = (template) => {
-    return serverClient.post('/template', template)
+export const insertTemplate = (template: Template) => {
+    return serverClient.post('/templates', template)
 }
 
 export const insertPartialTemplate = (template) => {
-    return serverClient.post('/template', template)
+    return serverClient.post('/templates', template)
 }
 
 export const getAcademicPrograms = () => {
@@ -45,7 +45,7 @@ export const getTemplates = async () => {
 }
 
 export const getTemplate = (id) => {
-    return serverClient.get('/templates/', {
+    return serverClient.get('/templates', {
         params: {
             id
         }
@@ -57,7 +57,7 @@ export const getPartialTemplates = () => {
 }
 
 export const getPartialTemplate = (id) => {
-    return serverClient.get('/partial-templates/', {
+    return serverClient.get('/partial-templates', {
         params: {
             id
         }
@@ -65,7 +65,7 @@ export const getPartialTemplate = (id) => {
 }
 
 export const setPartialTemplateStatus = (id, status) => {
-    return serverClient.put('partial-template', status, {
+    return serverClient.put('/partial-template', status, {
         params: {
             id
         }
@@ -84,12 +84,17 @@ export const getPartialTemplateJoinActivity = (id) => {
     })
 }
 
+export const insertPartialTemplateAndActivities = async (template, activities) => {
+    const { data: { data, error } } = await insertPartialTemplate(template)
+
+}
+
 export const getActivities = () => {
     return serverClient.get('/activity')
 }
 
 export const getActivitiesByPartialTemplate = (id) => {
-    return serverClient.get('/activity/', {
+    return serverClient.get('/activity', {
         params: {
             template: id
         }
@@ -111,12 +116,8 @@ export const updateComment = (partialTemplateId, comment) => {
     })
 }
 
-export const deleteComment = (partialTemplateId) => {
-    return serverClient.delete('/comments', null, {
-        params: {
-            id: partialTemplateId
-        }
-    })
+export const deleteComment = (partialTemplateId: number) => {
+    return serverClient.delete(`/comments/${partialTemplateId}`,)
 }
 
 export const checkExistentComment = (partialTemplateId) => {
@@ -147,6 +148,10 @@ export const getAreas = () => {
     return serverClient.get('/areas')
 }
 
+export const getAreasJoinEducationalPrograms = () => {
+    return serverClient.get('/areas/educational-programs')
+}
+
 export const createArea = (area) => {
     return serverClient.post('/areas', area)
 }
@@ -165,6 +170,14 @@ export const getEducationalPrograms = () => {
 
 export const createEducationalProgram = (educationalProgram) => {
     return serverClient.post('/educational-programs', educationalProgram)
+}
+
+export const createManyEducationalPrograms = (areaId, educationalPrograms) => {
+    return serverClient.post('/educational-programs/many', educationalPrograms, {
+        params: {
+            id: areaId
+        }
+    })
 }
 
 export const updateEducationalProgram = (id, newEducationalProgram) => {
@@ -193,8 +206,8 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data: { data, error }, error: axiosError } = await getPartialTemplateJoinActivity(id)
-    if (error || axiosError) {
+    const { data: { data, error } } = await getPartialTemplateJoinActivity(id)
+    if (error) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
             props: {

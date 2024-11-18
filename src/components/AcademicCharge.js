@@ -1,11 +1,10 @@
 import { Accordion, AccordionItem, Badge, BreadcrumbItem, Breadcrumbs, Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react"
 import { Activity } from "./Activity"
-import { StoredContext } from "@/context"
-import { useEffect, useState } from "react"
+import { UseTemplates } from "@/context"
+import { HorizontalDostIcon, StackIcon } from "./Icons"
 
-export const AcademicCharge = ({ academicPrograms }) => {
-    const { memory: { record: { activities }, selectedItem }, setStored } = StoredContext()
-    const visibleActivities = activities.filter(({ id }) => id === selectedItem)
+export const AcademicCharge = ({ educationalPrograms }) => {
+    const { memory: { activities, selectedActivity }, setStored } = UseTemplates()
     return (
         <Accordion aria-label="Academic Details" showDivider={false} isCompact fullWidth selectionMode="multiple">
             <AccordionItem
@@ -23,9 +22,7 @@ export const AcademicCharge = ({ academicPrograms }) => {
                         color="primary"
                         content={activities.length}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
-                        </svg>
+                        {StackIcon}
                     </Badge>
                 }
             >
@@ -48,7 +45,7 @@ export const AcademicCharge = ({ academicPrograms }) => {
                                         <Button
                                             isIconOnly
                                             color={
-                                                items.some(e => e.accessKey === selectedItem) ? 'primary' : 'default'
+                                                items.some(e => e.accessKey === selectedActivity.id) ? 'primary' : 'default'
                                             }
                                             className="min-w-unit-6 w-unit-6 h-unit-6" size="sm"
                                             variant="solid"
@@ -61,20 +58,21 @@ export const AcademicCharge = ({ academicPrograms }) => {
                                         className="m-0"
                                         key={'DropdownSelectItem'}
                                         aria-label="Dropdown actividades"
+                                        items={items}
                                     >
                                         {
-                                            items.map((e, i) => {
+                                            (item) => {
                                                 return (
                                                     <DropdownItem
-                                                        key={e.accessKey}
+                                                        key={item.accessKey}
                                                         className="p-0 my-1 w-full grid"
                                                         color="primary"
-                                                        aria-label={`Select act ${i}`}
+                                                        aria-label={`Select act ${item.accessKey}`}
                                                     >
-                                                        {e.children}
+                                                        {item.children}
                                                     </DropdownItem>
                                                 )
-                                            })
+                                            }
                                         }
                                     </DropdownMenu>
                                 </Dropdown>
@@ -85,16 +83,15 @@ export const AcademicCharge = ({ academicPrograms }) => {
                     {
                         activities.map(({ id }, i) => {
                             return (
-                                <BreadcrumbItem key={id} accessKey={id} isCurrent={id === selectedItem}>
+                                <BreadcrumbItem key={id} accessKey={id} isCurrent={id === selectedActivity.id}>
                                     <Chip
                                         size="sm"
                                         key={id}
                                         accessKey={id}
                                         onClick={() => {
-                                            setStored({ selectedItem: id })
-                                            console.log('Activity selected', id)
+                                            setStored({ selectedActivity: activities.find(activity => activity.id === id) })
                                         }}
-                                        color={id === selectedItem ? 'primary' : 'default'}
+                                        color={id === selectedActivity.id ? 'primary' : 'default'}
                                     >
                                         {
                                             `Actividad ${i + 1}`
@@ -108,18 +105,10 @@ export const AcademicCharge = ({ academicPrograms }) => {
             </AccordionItem>
             <AccordionItem
                 aria-label="Activity Details"
-                startContent={
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                    </svg>
-                }
+                startContent={HorizontalDostIcon}
                 title='Detalles de carga académica'
             >
-                {
-                    visibleActivities.map((activity, i) => {
-                        return <Activity key={activity.id} act={activity} eduPrograms={academicPrograms} />
-                    })
-                }
+                <Activity act={selectedActivity} educationalPrograms={educationalPrograms} key={selectedActivity.id} />
             </AccordionItem>
         </Accordion>
     )

@@ -1,14 +1,14 @@
 import { AcademicTemplateForm } from "@/components/AcademicTemplateForm";
 import { ModalError } from "@/components/ModalError";
-import { AxiosAbtraction, getAcademicPrograms, getAllPersonalData } from "@/models/transactions";
+import { getAcademicPrograms, getAllPersonalData } from "@/models/transactions";
 import { promiseResolver } from "@/utils";
 
-export default function Index({ academicPrograms, academicWorkers, getSsrError }) {
+export default function Index({ educationalPrograms, academicWorkers, getSsrError }) {
   return (
     <>
-      <h1 className="text-2xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Crear plantilla</h1>
+      <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">llenado de plantilla</h1>
       <ModalError error={getSsrError} />
-      <AcademicTemplateForm academicPrograms={academicPrograms} academicWorkers={academicWorkers} />
+      <AcademicTemplateForm educationalPrograms={educationalPrograms} academicWorkers={academicWorkers} />
     </>
   )
 }
@@ -28,7 +28,7 @@ export const getStaticProps = async () => {
     revalidate: 3,
     props: {
       getSsrError: error ? 'Algo salió mal, recarga la página' : null,
-      academicPrograms: educationalData.data,
+      educationalPrograms: educationalData.data,
       academicWorkers: academicData.data,
     }
   }

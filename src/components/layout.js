@@ -1,5 +1,5 @@
-import { StoredContext } from "@/context"
-import { Chip, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
+import { StoredContext, UseTemplates } from "@/context"
+import { Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -7,6 +7,7 @@ import logo from "/public/utim.png"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { LoginButton } from "./LoginButton"
+import { AcademicHatIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
 
 export const Layout = ({ children }) => {
     const navBarMenuItems = [
@@ -14,7 +15,30 @@ export const Layout = ({ children }) => {
         { name: "Secretaría", href: "/secretary" },
         { name: "Estado de plantillas", href: "/templatestatus" },
     ]
-    const { memory: { socket, user } } = StoredContext()
+    const secretaryItems = [
+        {
+            name: "Plantillas", href: "/secretary", icon: InboxIcon
+        },
+        {
+            name: "Areas", href: "/secretary/area", icon: AcademicHatIcon
+        },
+        {
+            name: "Programas educativos", href: "/secretary/educationalprogram", icon: AcademicHatIcon
+        },
+    ]
+    const programDirectorItems = [
+        {
+            name: "Ver estado de plantillas parciales", href: "/director/partialtemplate", icon: EyeIcon
+        },
+        {
+            name: 'Ver estado de plantillas', href: '/director/template', icon: EyeIcon
+        },
+        {
+            name: 'Crear nueva plantilla', href: '/director', icon: PlusIcon
+
+        }
+    ]
+    const { memory: { socket, user } } = UseTemplates()
     const [isConnected, setIsConnected] = useState(false);
     const [transport, setTransport] = useState("N/A");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -83,17 +107,53 @@ export const Layout = ({ children }) => {
                     </NavbarBrand>
                 </NavbarContent>
                 <NavbarContent className="hidden sm:flex" justify="center">
-                    {
-                        navBarMenuItems.map((item) => (
-                            <NavbarItem key={item.name} isActive={router.pathname === item.href}>
-                                <Link
-                                    href={item.href}
-                                    className={router.pathname === item.href ? 'text-utim' : ''}>
-                                    {item.name}
-                                </Link>
-                            </NavbarItem>
-                        ))
-                    }
+
+                    <Dropdown>
+                        <NavbarItem>
+                            <DropdownTrigger>
+                                <Button variant="light">Dirección de carrera</Button>
+                            </DropdownTrigger>
+                        </NavbarItem>
+                        <DropdownMenu variant="solid" color="primary" aria-label="academic items" items={programDirectorItems}>
+                            {
+                                (directorItem) => (
+                                    <DropdownItem
+                                        startContent={directorItem.icon
+                                        }
+                                        textValue={directorItem.name}
+                                        key={directorItem.name}
+                                    >
+                                        <Link passHref href={directorItem.href}>
+                                            {directorItem.name}
+                                        </Link>
+                                    </DropdownItem>
+                                )
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
+                    <Dropdown>
+                        <NavbarItem>
+                            <DropdownTrigger>
+                                <Button variant="light">Secretaría</Button>
+                            </DropdownTrigger>
+                        </NavbarItem>
+                        <DropdownMenu variant="solid" color="primary" aria-label="secretary items" items={secretaryItems}>
+                            {
+                                (secretaryItem) => (
+                                    <DropdownItem
+                                        startContent={secretaryItem.icon
+                                        }
+                                        textValue={secretaryItem.name}
+                                        key={secretaryItem.name}
+                                    >
+                                        <Link passHref href={secretaryItem.href}>
+                                            {secretaryItem.name}
+                                        </Link>
+                                    </DropdownItem>
+                                )
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
                 </NavbarContent>
                 {
                     !isMenuOpen && (
@@ -105,24 +165,63 @@ export const Layout = ({ children }) => {
                     )
                 }
                 <NavbarMenu>
-                    {
-                        navBarMenuItems.map((item) => (
-                            <NavbarItem key={item.name} isActive={router.pathname === item.href}>
-                                <Link
-                                    href={item.href}
-                                    className={router.pathname === item.href ? 'text-utim' : ''}>
-                                    {item.name}
-                                </Link>
-                            </NavbarItem>
-                        ))
-                    }
+                    <Dropdown>
+                        <NavbarItem>
+                            <DropdownTrigger>
+                                <Button variant="light" size="lg">Dirección de carrera</Button>
+                            </DropdownTrigger>
+                        </NavbarItem>
+                        <DropdownMenu variant="solid" color="primary" aria-label="academic items" items={programDirectorItems}>
+                            {
+                                (directorItem) => (
+                                    <DropdownItem
+                                        startContent={directorItem.icon
+                                        }
+                                        textValue={directorItem.name}
+                                        key={directorItem.name}
+                                    >
+                                        <Link passHref href={directorItem.href}>
+                                            {directorItem.name}
+                                        </Link>
+                                    </DropdownItem>
+                                )
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
+                    <Dropdown>
+                        <NavbarItem>
+                            <DropdownTrigger>
+                                <Button variant="light" size="lg">Secretaría</Button>
+                            </DropdownTrigger>
+                        </NavbarItem>
+                        <DropdownMenu variant="solid" color="primary" aria-label="secretary items" items={secretaryItems}>
+                            {
+                                (secretaryItem) => (
+                                    <DropdownItem
+                                        startContent={secretaryItem.icon
+                                        }
+                                        textValue={secretaryItem.name}
+                                        key={secretaryItem.name}
+                                    >
+                                        <Link passHref href={secretaryItem.href}>
+                                            {secretaryItem.name}
+                                        </Link>
+                                    </DropdownItem>
+                                )
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
                     <LoginButton />
                     <Chip variant="dot" color={isConnected ? "success" : "danger"}>
                         {isConnected ? "Conectado" : "Desconectado"}
                     </Chip>
                 </NavbarMenu>
             </Navbar>
-                {children}
+            <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col gap-2 object-fill w-5/6 sm:w-2/3">
+                    {children}
+                </div>
+            </div>
         </>
     )
 }

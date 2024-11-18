@@ -11,7 +11,6 @@ export default function Notify() {
                     icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
-
                 },
                 style: {
                     backgroundColor: 'background',
@@ -25,8 +24,24 @@ export default function Notify() {
                 loading: {
                     icon: <CircularProgress aria-label='progress' size='sm' className='h-4' />
                 },
-                duration: 5000
+                custom: {
+                    icon: () => {
+                        console.log('custom icon')
+                        return '🔥'
+                    }
+                },
+                duration: 5000,
             }}></Toaster>
         </div>
     )
+}
+
+export const playNotifySound = () => {
+    const audio = new Audio(new URL('/public/sounds/notification-beep-229154.mp3', import.meta.url).toString())
+    audio.play()
+}
+
+export const playLevelUpSound = () => {
+    const audio = new Audio(new URL('/public/sounds/level-up-191997.mp3', import.meta.url).toString())
+    audio.play()
 }

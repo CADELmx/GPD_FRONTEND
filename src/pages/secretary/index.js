@@ -1,15 +1,14 @@
 import { ChangeStatus } from "@/components/ChangeStatus";
 import { MoreOptions } from "@/components/DownloadButton";
 import { ModalError } from "@/components/ModalError";
-import { StoredContext } from "@/context";
+import { UseTemplates } from "@/context";
 import { generateRecords } from "@/models/transactions";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Secretary({ plantillas, error }) {
-  console.log(plantillas)
-  const { memory: { socket } } = StoredContext()
+  const { memory: { socket } } = UseTemplates()
   const [templates, setTemplates] = useState(plantillas || []);
   useEffect(() => {
     const onCreatedTemplate = (templateObject) => {
@@ -47,7 +46,7 @@ export default function Secretary({ plantillas, error }) {
     };
   }, []);
   return (
-    <div className="grid content-center justify-center">
+    <>
       <ModalError error={error} />
       <h1 className="text-2xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Secretaría académica</h1>
       <p className="tracking-widest p-2 m-2">Formatos recibidos</p>
@@ -60,7 +59,7 @@ export default function Secretary({ plantillas, error }) {
             <TableColumn aria-label="columna estado">Estado</TableColumn>
             <TableColumn aria-label="columna descargar">Más</TableColumn>
           </TableHeader>
-          <TableBody aria-label="cuerpo de la tabla" items={templates} emptyContent={<h1 className="tracking-widest p-2 m-2">Nada recibido aún</h1>}>
+          <TableBody aria-label="cuerpo de la tabla" items={templates} emptyContent={'Sin plantillas aún'}>
             {
               (template) => (
                 <TableRow key={template.id}>
@@ -79,7 +78,7 @@ export default function Secretary({ plantillas, error }) {
           </TableBody>
         </Table>
       </section>
-    </div>
+    </>
   )
 }
 

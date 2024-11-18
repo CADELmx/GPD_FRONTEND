@@ -1,11 +1,11 @@
-import { StoredContext } from '@/context'
+import { UseTemplates } from '@/context'
 import { Avatar, Button, Chip } from '@nextui-org/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 export const LoginButton = () => {
     const router = useRouter()
-    const { memory: { user } } = StoredContext()
+    const { memory: { user } } = UseTemplates()
     if (router.pathname === '/user') {
         return null
     }

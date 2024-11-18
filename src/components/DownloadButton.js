@@ -1,6 +1,7 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { DownloadIcon, RightArrowIcon, VericalDotsIcon } from './Icons'
 
 export const MoreOptions = ({ templateid, templatename }) => {
     const download = async (data) => {
@@ -43,9 +44,7 @@ export const MoreOptions = ({ templateid, templatename }) => {
         <Dropdown>
             <DropdownTrigger>
                 <Button variant="light" isIconOnly aria-label="opciones">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                    </svg>
+                    <VericalDotsIcon />
                 </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -53,18 +52,18 @@ export const MoreOptions = ({ templateid, templatename }) => {
                 className='p-0 m-0'
                 onAction={key => key === 'descargar' && onDownload()}
             >
-                <DropdownItem key={'descargar'} aria-label='descargar' startContent={
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                }>
+                <DropdownItem
+                    key={'descargar'}
+                    aria-label='descargar'
+                    startContent={DownloadIcon}
+                >
                     Descargar excel
                 </DropdownItem>
-                <DropdownItem key={'ver'} aria-label='ver' startContent={
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                    </svg>
-                }>
+                <DropdownItem
+                    key={'ver'}
+                    aria-label='ver'
+                    startContent={RightArrowIcon}
+                >
                     <Link legacyBehavior passHref href={`/plantilla/${templateid}`}>
                         Ver plantilla
                     </Link>
