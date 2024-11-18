@@ -1,37 +1,28 @@
-import { ChangeStatus } from "@/components/ChangeStatus";
-import { MoreOptions } from "@/components/DownloadButton";
-import { ModalError } from "@/components/ModalError";
-import { UseTemplates } from "@/context";
-import { generateRecords } from "@/models/transactions";
+
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { UseTemplates } from "../../context";
+import { ModalError } from "../../components/ModalError";
+import { generateRecords } from "../../models/apiClient";
+import { PartialTemplate } from "../../models/types/partial-template";
+import { ChangeStatus } from "../../components/ChangeStatus";
+import { MoreOptions } from "../../components/DownloadButton";
+import { tableClassNames } from "../../components/educationalProgram/EducationalProgramCard";
 
-export default function Secretary({ plantillas, error }) {
+export default function Secretary({ partialTemplates, error }: { partialTemplates: PartialTemplate[], error: string }) {
   const { memory: { socket } } = UseTemplates()
-  const [templates, setTemplates] = useState(plantillas || []);
+  const [templates, setTemplates] = useState<PartialTemplate[]>(partialTemplates);
   useEffect(() => {
-    const onCreatedTemplate = (templateObject) => {
-      setTemplates((templates) => ([...templates, templateObject]))
+    const onCreatedTemplate = (tamplate: PartialTemplate) => {
+      setTemplates((templates) => ([...templates, tamplate]))
     }
-    const onCreateComment = (data) => {
-      if (data.error) {
-        toast.error('Error al enviar comentario', {
-          id: 'comment-insert'
-        })
-        return
-      }
+    const onCreateComment = (comment) => {
       toast('Comentario enviado', {
         id: 'comment-insert'
       })
     }
-    const onExistentComment = (data) => {
-      if (data.error) {
-        toast.error('Error al editar comentario', {
-          id: 'comment-update'
-        })
-        return
-      }
+    const onExistentComment = (comment) => {
       toast('Comentario editado', {
         id: 'comment-update'
       })
@@ -51,26 +42,36 @@ export default function Secretary({ plantillas, error }) {
       <h1 className="text-2xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Secretaría académica</h1>
       <p className="tracking-widest p-2 m-2">Formatos recibidos</p>
       <section className="flex-col">
-        <Table aria-label="tabla de plantillas">
+        <Table classNames={tableClassNames} aria-label="tabla de plantillas">
           <TableHeader aria-label="cabecera de la tabla">
-            <TableColumn aria-label="columna nombre">Nombre</TableColumn>
-            <TableColumn aria-label="columna actividades">Actividades</TableColumn>
-            <TableColumn aria-label="columna horas">Horas</TableColumn>
-            <TableColumn aria-label="columna estado">Estado</TableColumn>
-            <TableColumn aria-label="columna descargar">Más</TableColumn>
+            <TableColumn>
+              Nombre
+            </TableColumn>
+            <TableColumn>
+              Actividades
+            </TableColumn>
+            <TableColumn>
+              Horas
+            </TableColumn>
+            <TableColumn>
+              Estado
+            </TableColumn>
+            <TableColumn>
+              Más
+            </TableColumn>
           </TableHeader>
-          <TableBody aria-label="cuerpo de la tabla" items={templates} emptyContent={'Sin plantillas aún'}>
+          <TableBody aria-label="cuerpo de la tabla" items={templates} emptyContent='Sin plantillas aún'>
             {
               (template) => (
                 <TableRow key={template.id}>
-                  <TableCell aria-label="nombre">{template.nombre}</TableCell>
-                  <TableCell aria-label="numero de actividades">{template.actividad.length}</TableCell>
+                  <TableCell aria-label="nombre">{template.name}</TableCell>
+                  <TableCell aria-label="numero de actividades">{template.activities.length}</TableCell>
                   <TableCell aria-label="total horas">{template.total}</TableCell>
                   <TableCell className="p-0 m-0" aria-label="estado">
                     <ChangeStatus status={template.status} templateid={template.id} />
                   </TableCell>
                   <TableCell aria-label="descargar">
-                    <MoreOptions templateid={template.id} templatename={template.nombre} />
+                    <MoreOptions templateid={template.id} templatename={template.name} />
                   </TableCell>
                 </TableRow>
               )
@@ -86,8 +87,6 @@ export const getStaticProps = async () => {
   const { props } = await generateRecords()
   return {
     revalidate: 3,
-    props: {
-      ...props
-    }
+    props
   }
 }

@@ -1,17 +1,24 @@
-import { checkSocketStatus, positions, sumHours } from '@/utils'
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
 import { YearAndPeriodSelector } from './Selector'
 import { Button, Input, Select, SelectItem, Textarea } from '@nextui-org/react'
 import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
-import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
-import { insertPartialTemplate, insertPartialTemplateAndActivities } from '@/models/transactions'
 import { CheckIcon } from './Icons'
-import { playNotifySound } from '@/toast'
+import { UseTemplates } from '../context'
+import { checkSocketStatus, positions, sumHours } from '../utils'
+import { insertPartialTemplateAndActivities } from '../models/transactions/partial-template'
+import { playNotifySound } from '../toast'
+import { EducationalProgram } from '../models/types/educational-program'
+import { PersonalData } from '../models/types/personal-data'
+import { PartialTemplate } from '../models/types/partial-template'
 
-export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
+export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }: {
+    educationalPrograms: EducationalProgram[],
+    academicWorkers: PersonalData[],
+    template?: PartialTemplate
+}) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
     const [loading, setLoading] = useState(false)
     const getPosition = (position) => {
@@ -22,16 +29,23 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
         }
         return [partialTemplate.position]
     }
-    const totalHours = sumHours(activities)
+    const totalHours = sumHours({ activities: activities })
     const handleSubmit = () => {
-        if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
-        toast.promise(insertPartialTemplateAndActivities(partialTemplate, activities), {
+        toast.promise(insertPartialTemplateAndActivities({
+            data: { template: partialTemplate, activities }
+        }), {
             loading: 'Guardando plantilla...',
-            success: ({ data: { data, error } }) => {
-                if (error) return error
-                setStored({ partialTemplate: data })
+            success: ({ data, error, message }) => {
+                if (error) return message
+                setStored({ partialTemplate: data.template })
                 playNotifySound()
+                if (checkSocketStatus(socket, toast)) {
+                    socket.connect()
+                } else {
+                    socket.emit('createTemplate', data.template)
+                }
+                return 'Plantilla guardada'
             },
             error: 'Error al enviar plantilla'
         })
@@ -100,14 +114,14 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
             </Select>
             <YearAndPeriodSelector />
             <AcademicCharge educationalPrograms={educationalPrograms} />
-            <AddActivityButton isDisabled={partialTemplate?.id} />
+            <AddActivityButton isDisabled={Boolean(partialTemplate.id)} />
             <Input
                 label="Total"
                 type="number"
                 min={0}
                 name="total"
-                value={totalHours == 0 ? '' : totalHours}
-                defaultValue={partialTemplate?.total}
+                value={`${totalHours == 0 ? '' : totalHours}`}
+                defaultValue={`${partialTemplate?.total}`}
                 isDisabled
                 onChange={handleGlobalChange}
             />
@@ -116,7 +130,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                 className="w-full bg-utim"
                 variant="solid"
                 onPress={handleSubmit}
-                isDisabled={(partialTemplate?.id) || (totalHours < 32)}
+                isDisabled={Boolean((partialTemplate?.id) || (totalHours < 32))}
                 isLoading={loading}
             >
                 Guardar

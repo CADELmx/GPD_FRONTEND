@@ -24,12 +24,6 @@ export default function Notify() {
                 loading: {
                     icon: <CircularProgress aria-label='progress' size='sm' className='h-4' />
                 },
-                custom: {
-                    icon: () => {
-                        console.log('custom icon')
-                        return '🔥'
-                    }
-                },
                 duration: 5000,
             }}></Toaster>
         </div>

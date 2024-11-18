@@ -1,10 +1,33 @@
-import { defaultActivity, defaultPartialTemplate } from '@/utils'
-import { createContext, useContext, useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
-import { deleteCookie, getCookie, setCookie } from 'cookies-next'
-import toast from 'react-hot-toast'
 
-const TemplateContext = createContext()
+import { createContext, useContext, useEffect, useState } from 'react'
+import { io, Socket } from 'socket.io-client'
+import { deleteCookie, getCookie, setCookie } from 'cookies-next'
+import { defaultActivity, defaultPartialTemplate } from '../utils'
+import { Activity } from '../models/types/activity'
+import { PartialTemplate } from '../models/types/partial-template'
+import { EducationalProgram } from '../models/types/educational-program'
+import { Area } from '../models/types/area'
+import axios from 'axios'
+
+interface MemoryState {
+    memory: {
+        partialTemplate?: PartialTemplate,
+        activities?: Activity[],
+        selectedActivity?: Activity,
+        defaultGroups?: string[],
+        socket: Socket,
+        user: string | null
+    },
+    setStored: (prop: any) => void,
+    handleGlobalChange: (event: any) => void,
+    login: (email: string, password: string) => Promise<{
+        error: string | null,
+        user: string | null
+    }>,
+    logout: () => Promise<void>
+}
+
+const TemplateContext = createContext<MemoryState>({} as any)
 
 export const UseTemplates = () => useContext(TemplateContext)
 
@@ -17,20 +40,16 @@ export const TemplatesProvider = ({ children }) => {
         socket: io(),
         user: getCookie('user', { secure: true })
     })
-    const login = async (email, password) => {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
+    const login = async (email: string, password: string) => {
+        const { data: { error, user } } = await axios.post('/api/login', {
+            email, password
         })
-        const { error, user } = await res.json()
         if (error) {
-            return { error }
+            return { error, user: null }
         }
         setMemory({ ...memory, user })
         setCookie('user', user, { secure: true })
+        return { error: null, user }
     }
     const logout = async () => {
         await fetch('/api/logout')
@@ -44,13 +63,6 @@ export const TemplatesProvider = ({ children }) => {
             [event.target?.name]: event.target?.value
         }
     })
-    const ctx = {
-        memory,
-        setStored,
-        handleGlobalChange,
-        login,
-        logout,
-    }
     useEffect(() => {
         const setupSocket = async () => {
             await fetch('/api/socket')
@@ -61,18 +73,44 @@ export const TemplatesProvider = ({ children }) => {
         setupSocket()
     }, [])
     return (
-        <TemplateContext.Provider value={ctx}>
+        <TemplateContext.Provider value={{
+            memory,
+            setStored,
+            handleGlobalChange,
+            login,
+            logout,
+        }}>
             {children}
         </TemplateContext.Provider>
     )
 }
 
-const AreaContext = createContext()
+interface AreaState {
+    areaState: {
+        areas: Area[],
+        selectedArea: Area
+    },
+    setStoredAreas: (prop: any) => void,
+    educationalState: {
+        educationalPrograms: EducationalProgram[],
+        selectedEducationalProgram: EducationalProgram
+    },
+    setStoredEducationalPrograms: (prop: any) => void,
+    subjectState: {
+        subjects: any[],
+        selectedSubject: any
+    },
+    setStoredSubjects: (prop: any) => void
+}
 
-export const UseSecretary = () => useContext(AreaContext)
+const AreaContext = createContext({} as any)
+
+export const UseSecretary = () => useContext<AreaState>(AreaContext)
 
 export const AreasProvider = ({ children }) => {
-    const [areaState, setAreaState] = useState({
+    const [areaState, setAreaState] = useState<{
+        areas: Area[], selectedArea: Area
+    }>({
         areas: [],
         selectedArea: {
             name: '',

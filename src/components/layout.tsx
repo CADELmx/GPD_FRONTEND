@@ -1,4 +1,3 @@
-import { StoredContext, UseTemplates } from "@/context"
 import { Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuToggle } from "@nextui-org/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -8,6 +7,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { LoginButton } from "./LoginButton"
 import { AcademicHatIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
+import { UseTemplates } from "../context"
 
 export const Layout = ({ children }) => {
     const navBarMenuItems = [
@@ -159,8 +159,19 @@ export const Layout = ({ children }) => {
                     !isMenuOpen && (
                         <NavbarContent justify="end">
                             <LoginButton />
-                            <Chip variant="dot" className="hidden sm:flex" color={isConnected ? "success" : "error"}>{isConnected ? "Conectado" : "Desconectado"}</Chip>
-                            <Chip variant="dot" radius="full" className="flex sm:hidden" color={isConnected ? "success" : "danger"}>.</Chip>
+                            <Chip
+                                variant="dot"
+                                className="hidden sm:flex"
+                                color={isConnected ? "success" : "danger"}
+                            >{isConnected ? "Conectado" : "Desconectado"}
+                            </Chip>
+                            <Chip
+                                variant="dot"
+                                radius="full"
+                                className="flex sm:hidden"
+                                color={isConnected ? "success" : "danger"}
+                            >.
+                            </Chip>
                         </NavbarContent>
                     )
                 }

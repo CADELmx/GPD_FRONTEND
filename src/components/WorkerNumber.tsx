@@ -1,19 +1,21 @@
-import { UseTemplates } from "@/context"
-import { getPersonalData } from "@/models/transactions"
 import { Chip, Input, Select, SelectItem, SelectSection, Switch } from "@nextui-org/react"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { BarsArrowDown, LockIcon, PencilIcon, UnlockIcon } from "./Icons"
-import { playLevelUpSound } from "@/toast"
+import { UseTemplates } from "../context"
+import { getPersonalData } from "../models/transactions/personal-data"
+import { playLevelUpSound } from "../toast"
+import { PersonalData } from "../models/types/personal-data"
 
-export const NtInput = ({ academicWorkers }) => {
+
+export const NtInput = ({ academicWorkers }: { academicWorkers: PersonalData[] }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()
     const [idError, setIdError] = useState(false)
     const [locked, setLocked] = useState(false)
     const [selectorActive, setSelectorActive] = useState(false)
     const handleChangeFromBackend = async (newValue) => {
         if (newValue === '' || !newValue) return
-        toast.promise(getPersonalData(Number(newValue)), {
+        toast.promise(getPersonalData({ id: Number(newValue) }), {
             loading: 'Buscando número de trabajador',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
@@ -54,23 +56,35 @@ export const NtInput = ({ academicWorkers }) => {
                             onChange={(e) => handleChangeFromBackend(e.target.value)}
                         >
                             <SelectSection
-                                items={academicWorkers.filter(w => w.area === 'P.E. de Tecnologías de la Información')}
                                 title="Tecnologías de la Información"
                             >
                                 {
-                                    w => (
-                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.name}</SelectItem>
-                                    )
+                                    academicWorkers.filter(w => w.area === 'P.E. de Tecnologías de la Información').map((personalData): JSX.Element => {
+                                        return (
+                                            <SelectItem
+                                                key={personalData.ide}
+                                                variant="flat"
+                                                endContent={<p className="text-utim">{personalData.ide}</p>}
+                                            >
+                                                {personalData.name}
+                                            </SelectItem>
+                                        )
+                                    })
                                 }
                             </SelectSection>
                             <SelectSection
-                                items={academicWorkers.filter(w => w.area === 'P.E. de Lengua Inglesa')}
                                 title="Lengua Inglesa"
                             >
                                 {
-                                    w => (
-                                        <SelectItem key={w.ide} variant="flat" endContent={<p className="text-utim">{w.ide}</p>}>{w.name}</SelectItem>
-                                    )
+                                    academicWorkers.filter(w => w.area === 'P.E. de Lengua Inglesa').map((personalData) => (
+                                        <SelectItem
+                                            key={personalData.ide}
+                                            variant="flat"
+                                            endContent={<p className="text-utim">{personalData.ide}</p>}
+                                        >
+                                            {personalData.name}
+                                        </SelectItem>
+                                    ))
                                 }
                             </SelectSection>
                         </Select>

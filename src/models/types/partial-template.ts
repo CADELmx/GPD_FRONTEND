@@ -1,7 +1,8 @@
 import { Activity } from "./activity";
+import { Comment } from "./comment";
 
 export type PartialTemplate = {
-    id: number;
+    id?: number;
     nt: number;
     name: string;
     gender?: string;
@@ -10,6 +11,7 @@ export type PartialTemplate = {
     status: string;
     year: string;
     period: string;
-    templateId: number;
+    templateId?: number;
     activities?: Activity[];
+    comments?: Comment[];
 }

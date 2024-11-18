@@ -1,46 +1,24 @@
-import { tableClassNames } from "@/components/educationalProgram/EducationalProgramCard"
-import { serverClient } from "@/models/transactions"
+
 import { Accordion, AccordionItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { getAreasJoinEducationalPrograms } from "../../../models/transactions/area"
+import { Area } from "../../../models/types/area"
+import { tableClassNames } from "../../../components/educationalProgram/EducationalProgramCard"
+import { ModalError } from "../../../components/ModalError"
 
-type Area = {
-    name: string
-    educationalPrograms?: {
-        id: number
-        abbreviation: string
-        description: string
-    }[]
-}
 
-type AreaProps = {
-    error: string
-    data: Area[]
-}
 
-type SSrProps = {
-    props: {
-        data: Area[]
-        error: string
-    }
-}
-export const getAreasJoinEducationalPrograms = () => {
-    return serverClient.get('/areas/educational-programs')
-}
-
-export const getServerSideProps = async (): SSrProps => {
-    const { data: { data: areas, error } }: {
-        data: AreaProps
-    } = await getAreasJoinEducationalPrograms()
+export const getServerSideProps = async () => {
+    const { data } = await getAreasJoinEducationalPrograms()
     return {
-        props: {
-            error: error,
-            data: areas
-        }
+        props: data
     }
 }
 
-export default function Area({ error, data: areas }: AreaProps): JSX.Element {
+export default function AreaIndex({ error, data: areas }: { error: string | null, data: Area[] }) {
     return (
         <>
+            <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Areas</h1>
+            <ModalError error={error} />
             <Accordion variant="splitted" title="sss">
                 {
                     areas.map((area) => {
