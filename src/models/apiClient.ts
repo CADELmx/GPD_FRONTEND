@@ -38,24 +38,26 @@ export const generateRecords = async () => {
     }
     return {
         props: {
-            plantillas: data,
+            templates: data,
         }
     }
 }
 
-export const generateSingleRecord = async (id) => {
-    const { data: { data, error } } = await getPartialTemplateJoinActivity(id)
+export const generateSingleRecord = async ({ id }: GetById) => {
+    const { data: { data, error } } = await getPartialTemplateJoinActivity({ id })
     if (error) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
             props: {
-                error: 'Error al obtener la plantilla, recarga la página'
+                error: 'Error al obtener la plantilla, recarga la página',
+                template: null,
             }
         }
     }
     return {
         props: {
-            plantilla: data,
+            error: null,
+            template: data,
         }
     }
 }

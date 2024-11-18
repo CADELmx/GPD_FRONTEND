@@ -1,6 +1,6 @@
 export type EducationalProgram = {
-    id: number;
+    id?: number;
     abbreviation: string;
     description: string;
-    areaId: number;
+    areaId?: number;
 }

@@ -1,12 +1,12 @@
-import { UseSecretary } from "@/context"
-import { createEducationalProgram, deleteEducationalProgram, updateEducationalProgram } from "@/models/transactions"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { tableClassNames } from "./EducationalProgramCard"
 import { ArrowRight } from "../Icons"
-import { getFirstSetValue } from "@/utils"
-import { playNotifySound } from "@/toast"
+import { createEducationalProgram, deleteEducationalProgram, updateEducationalProgram } from "../../models/transactions/educational-program"
+import { UseSecretary } from "../../context"
+import { getFirstSetValue } from "../../utils"
+import { playNotifySound } from "../../toast"
 
 export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
     const { educationalState: { selectedEducationalProgram, educationalPrograms }, areaState: { areas }, setStoredEducationalPrograms } = UseSecretary()
@@ -23,7 +23,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
         onOpenChange()
     }
     const handleUpdate = async (id, newEducationalProgram) => {
-        toast.promise(updateEducationalProgram(id, newEducationalProgram), {
+        toast.promise(updateEducationalProgram({ id, data: newEducationalProgram }), {
             loading: 'Actualizando programa educativo...',
             success: ({ data: { message, data, error } }) => {
                 if (error) return message
@@ -38,7 +38,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
         })
     }
     const handleCreate = async (educationalProgram) => {
-        toast.promise(createEducationalProgram(educationalProgram), {
+        toast.promise(createEducationalProgram({ data: educationalProgram }), {
             loading: 'Creando programa educativo...',
             success: ({ data: { message, data, error } }) => {
                 if (error) return message
@@ -56,7 +56,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
         console.log('submit', selectedEducationalProgram)
         const newEducationalProgram = {
             ...selectedEducationalProgram,
-            areaId: parseInt(selectedEducationalProgram.areaId)
+            areaId: selectedEducationalProgram.areaId
         }
         if (selectedEducationalProgram?.id) {
             handleUpdate(selectedEducationalProgram.id, newEducationalProgram)
@@ -117,7 +117,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
 export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }) => {
     const { educationalState: { selectedEducationalProgram, educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const handleDelete = async () => {
-        toast.promise(deleteEducationalProgram(parseInt(selectedEducationalProgram.id)), {
+        toast.promise(deleteEducationalProgram({ id: selectedEducationalProgram.id }), {
             loading: 'Eliminando programa educativo...',
             success: ({ data: { message, error } }) => {
                 if (error) return message
@@ -159,21 +159,19 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }) 
 
 export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }) => {
     const { areaState: { areas }, educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
-    const [selectedAreas, setSelectedAreas] = useState(new Set([]));
+    const [selectedAreas, setSelectedAreas] = useState<any>(new Set([]));
     const handleUpdateMany = () => {
         const programsToUpdate = educationalPrograms.filter((program) => selectedEducationalPrograms.has(program.id))
         const newAreaId = Number(getFirstSetValue(selectedAreas))
         const programPromises = programsToUpdate.map((program) => {
-            return updateEducationalProgram(program.id, { ...program, areaId: newAreaId })
+            return updateEducationalProgram({ id: program.id, data: { ...program, areaId: newAreaId } })
         })
-        toast.promise(Promise.allSettled(programPromises), {
+        toast.promise(Promise.all(programPromises), {
             loading: 'Actualizando programas educativos...',
             success: (results) => {
                 onOpenChange()
-                const promisesData = results.map(({ value }) => ({
-                    data: value.data,
-                }))
-                if (promisesData.some(({ data }) => data.error)) {
+                const promisesData = results.map(({ data }) => (data))
+                if (promisesData.some(({ error }) => error)) {
                     return 'Error al actualizar programas educativos'
                 }
                 playNotifySound()
@@ -187,10 +185,11 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                         return updatedProgram ? updatedProgram.data : program
                     })
                 })
-                const success = promisesData.filter(({ data }) => !data.error)
+                const success = promisesData.filter(({ error }) => error)
                 const successLen = success.length
                 return `${successLen} programas educativos actualizados`
-            }
+            },
+            error: 'Error al actualizar programas educativos'
         })
 
     }
@@ -272,26 +271,25 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
     const handleDeleteMany = () => {
         const programsToDelete = educationalPrograms.filter((program) => selectedEducationalPrograms.has(program.id))
         const programPromises = programsToDelete.map((program) => {
-            return deleteEducationalProgram(program.id)
+            return deleteEducationalProgram({ id: program.id })
         })
-        toast.promise(Promise.allSettled(programPromises), {
+        toast.promise(Promise.all(programPromises), {
             loading: 'Eliminando programas educativos...',
             success: (results) => {
                 onOpenChange()
-                const promisesData = results.map(({ value }) => ({
-                    data: value.data,
-                }))
-                if (promisesData.some(({ data }) => data.error)) {
+                const promisesData = results.map(({ data }) => (data))
+                if (promisesData.some(({ error }) => error)) {
                     return 'Error al eliminar programas educativos'
                 }
                 playNotifySound()
                 setStoredEducationalPrograms({
                     educationalPrograms: educationalPrograms.filter((program) => !selectedEducationalPrograms.has(program.id))
                 })
-                const success = promisesData.filter(({ data }) => !data.error)
+                const success = promisesData.filter(({ error }) => !error)
                 const successLen = success.length
                 return `${successLen} programas educativos eliminados`
-            }
+            },
+            error: 'Error al eliminar programas educativos'
         })
     }
     return (

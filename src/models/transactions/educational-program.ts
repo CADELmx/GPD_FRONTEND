@@ -1,30 +1,34 @@
-import { ApiResponse, CreateManyResult, serverClient } from "../apiClient";
+import { ApiResponse, CreateManyResult, GetById, serverClient } from "../apiClient";
 import { EducationalProgram } from "../types/educational-program";
 
 export interface EducationalProgramResult extends ApiResponse {
+    data: EducationalProgram
+}
+
+export interface EducationalProgramsResult extends ApiResponse {
     data: EducationalProgram[]
 }
 
 export const getEducationalPrograms = () => {
-    return serverClient.get<EducationalProgramResult>('/educational-programs')
+    return serverClient.get<EducationalProgramsResult>('/educational-programs')
 }
 
-export const createEducationalProgram = (educationalProgram: EducationalProgram) => {
-    return serverClient.post<EducationalProgramResult>('/educational-programs', educationalProgram)
+export const createEducationalProgram = ({ data }: { data: EducationalProgram }) => {
+    return serverClient.post<EducationalProgramResult>('/educational-programs', data)
 }
 
-export const createManyEducationalPrograms = (areaId: number, educationalPrograms: EducationalProgram[]) => {
-    return serverClient.post<CreateManyResult>('/educational-programs/many', educationalPrograms, {
+export const createManyEducationalPrograms = ({ areaId, data }: { areaId: number, data: EducationalProgram[] }) => {
+    return serverClient.post<CreateManyResult>('/educational-programs/many', data, {
         params: {
             id: areaId
         }
     })
 }
 
-export const updateEducationalProgram = (id: number, newEducationalProgram) => {
-    return serverClient.put(`/educational-programs/${id}`, newEducationalProgram)
+export const updateEducationalProgram = ({ id, data }: { id: number, data: EducationalProgram }) => {
+    return serverClient.put<EducationalProgramResult>(`/educational-programs/${id}`, data)
 }
 
-export const deleteEducationalProgram = (id) => {
-    return serverClient.delete(`/educational-programs/${id}`)
+export const deleteEducationalProgram = ({ id }: GetById) => {
+    return serverClient.delete<EducationalProgramResult>(`/educational-programs/${id}`)
 }

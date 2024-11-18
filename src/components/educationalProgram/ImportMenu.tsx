@@ -2,20 +2,21 @@ import { Button, Chip, Select, SelectItem, Table, TableBody, TableCell, TableCol
 import { UploadIcon } from "../Icons"
 import { useState } from "react";
 import axios from "axios";
-import { UseSecretary } from "@/context";
-import { createManyEducationalPrograms } from "@/models/transactions";
 import toast from "react-hot-toast";
 import { tableClassNames } from "./EducationalProgramCard";
-import { getFirstSetValue } from "@/utils";
-import { playNotifySound } from "@/toast";
+import { UseSecretary } from "../../context";
+import { getFirstSetValue } from "../../utils";
+import { createManyEducationalPrograms } from "../../models/transactions/educational-program";
+import { EducationalProgram } from "../../models/types/educational-program";
+import { playNotifySound } from "../../toast";
 
 export const ExportEducationalProgramsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
-    const [file, setFile] = useState();
+    const [file, setFile] = useState(null);
     const [educationalPrograms, setEducationalPrograms] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState(new Set([]));
-    const [selectedArea, setSelectedArea] = useState(new Set([]));
+    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState<any>(new Set<any>([]));
+    const [selectedArea, setSelectedArea] = useState<any>(new Set<any>([]));
     const handleFileChange = (e) => {
         if (e.target.files) {
             setFile(e.target.files[0])
@@ -44,14 +45,20 @@ export const ExportEducationalProgramsMenu = () => {
     const handleSubmit = async () => {
         if (selectedEductationalPrograms.size > 0) {
             setLoading(true)
-            const newEducationalPrograms = Array.from(selectedEductationalPrograms).map((index) => {
-                const { abbreviation, description } = educationalPrograms[index]
+            const newEducationalPrograms: EducationalProgram[] = Array.from(selectedEductationalPrograms).map((index: string) => {
+                const { abbreviation, description }: {
+                    abbreviation: string,
+                    description: string
+                } = educationalPrograms[index]
                 return ({
                     abbreviation,
                     description
                 })
             })
-            toast.promise(createManyEducationalPrograms(Number(getFirstSetValue(selectedArea)), newEducationalPrograms), {
+            toast.promise(createManyEducationalPrograms({
+                areaId: getFirstSetValue(selectedArea),
+                data: newEducationalPrograms
+            }), {
                 loading: 'Registrando programas educativos...',
                 success: ({ data: { data, error, message } }) => {
                     setLoading(false)

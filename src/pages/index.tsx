@@ -1,16 +1,23 @@
 
 import { getEducationalPrograms } from "../models/transactions/educational-program";
 import { getAllPersonalData } from "../models/transactions/personal-data";
-import { promiseResolver } from "../utils";
 import { ModalError } from "../components/ModalError";
 import { AcademicTemplateForm } from "../components/AcademicTemplateForm";
+import { EducationalProgram } from "../models/types/educational-program";
+import { PersonalData } from "../models/types/personal-data";
 
-export default function Index({ educationalPrograms, academicWorkers, getSsrError }) {
+export default function Index(
+  { educationalPrograms, academicWorkers, getSsrError }: {
+    educationalPrograms: EducationalProgram[],
+    academicWorkers: PersonalData[],
+    getSsrError: string | null
+  }
+) {
   return (
     <>
       <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">llenado de plantilla</h1>
       <ModalError error={getSsrError} />
-      <AcademicTemplateForm educationalPrograms={educationalPrograms} academicWorkers={academicWorkers} template={null} />
+      <AcademicTemplateForm educationalPrograms={educationalPrograms} academicWorkers={academicWorkers} />
     </>
   )
 }
@@ -18,7 +25,7 @@ export default function Index({ educationalPrograms, academicWorkers, getSsrErro
 export const getStaticProps = async () => {
   const eduPromise = getEducationalPrograms()
   const acaPromise = getAllPersonalData()
-  const [educationalResponse, academicResponse] = await promiseResolver([eduPromise, acaPromise])
+  const [educationalResponse, academicResponse] = await Promise.all([eduPromise, acaPromise])
   const { data: academicData } = academicResponse
   const { data: educationalData } = educationalResponse
   console.log(educationalData, academicData)

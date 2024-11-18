@@ -124,7 +124,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
     return (
         <div className='flex flex-col gap-2'>
             <div className='flex flex-col md:flex-row gap-2'>
-                <ActTypeSelector act={activity} handler={handleChange} />
+                <ActTypeSelector activity={activity} handler={handleChange} />
                 {
                     (
                         activity.activityDistribution === "Gestión"

@@ -10,8 +10,15 @@ import { UseTemplates } from '../context'
 import { checkSocketStatus, positions, sumHours } from '../utils'
 import { insertPartialTemplateAndActivities } from '../models/transactions/partial-template'
 import { playNotifySound } from '../toast'
+import { EducationalProgram } from '../models/types/educational-program'
+import { PersonalData } from '../models/types/personal-data'
+import { PartialTemplate } from '../models/types/partial-template'
 
-export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
+export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }: {
+    educationalPrograms: EducationalProgram[],
+    academicWorkers: PersonalData[],
+    template?: PartialTemplate
+}) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
     const [loading, setLoading] = useState(false)
     const getPosition = (position) => {
@@ -102,7 +109,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
             </Select>
             <YearAndPeriodSelector />
             <AcademicCharge educationalPrograms={educationalPrograms} />
-            <AddActivityButton isDisabled={partialTemplate?.id} />
+            <AddActivityButton isDisabled={Boolean(partialTemplate.id)} />
             <Input
                 label="Total"
                 type="number"

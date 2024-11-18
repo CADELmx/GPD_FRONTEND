@@ -20,8 +20,11 @@ interface MemoryState {
     },
     setStored: (prop: any) => void,
     handleGlobalChange: (event: any) => void,
-    login: (email: string, password: string) => void,
-    logout: () => void
+    login: (email: string, password: string) => Promise<{
+        error: string | null,
+        user: string | null
+    }>,
+    logout: () => Promise<void>
 }
 
 const TemplateContext = createContext<MemoryState>({} as any)
@@ -37,7 +40,7 @@ export const TemplatesProvider = ({ children }) => {
         socket: io(),
         user: getCookie('user', { secure: true })
     })
-    const login = async (email, password) => {
+    const login = async (email: string, password: string) => {
         const { data: { error, user } } = await axios.post('/api/login', {
             email, password
         })
@@ -46,7 +49,7 @@ export const TemplatesProvider = ({ children }) => {
         }
         setMemory({ ...memory, user })
         setCookie('user', user, { secure: true })
-        return { user, error: null }
+        return { error: null, user }
     }
     const logout = async () => {
         await fetch('/api/logout')

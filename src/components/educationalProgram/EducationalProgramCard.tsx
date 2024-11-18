@@ -1,9 +1,8 @@
-import { UseSecretary } from "@/context"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
-import { useEffect, useState } from "react"
-import { getEducationalPrograms } from "@/models/transactions"
+import { useState } from "react"
+import { UseSecretary } from "../../context"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',

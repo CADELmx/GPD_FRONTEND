@@ -110,6 +110,11 @@ const PeriodSelector = ({ selectedYear }) => {
     )
 }
 
+interface SelectorProps {
+    activity: Activity
+    handler: any
+}
+
 export const YearAndPeriodSelector = () => {
     const year = new Date().getFullYear()
     const [selectedYear, setSelectedYear] = useState(`${year}`)
@@ -121,15 +126,15 @@ export const YearAndPeriodSelector = () => {
     )
 }
 
-export const ActTypeSelector = ({ act, handler }) => {
+export const ActTypeSelector = ({ activity, handler }: SelectorProps) => {
     return (
         <Select
-            className={act?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'}
+            className={activity?.activityDistribution === "Tutorías" ? '' : 'md:w-3/5'}
             label="Distribución"
             onChange={handler}
             name="activityDistribution"
             isRequired
-            defaultSelectedKeys={checkEmptyStringOption(act?.activityDistribution)}
+            defaultSelectedKeys={checkEmptyStringOption(activity?.activityDistribution)}
         >
             {
                 activitiesDistribution.map((a) => {
@@ -140,7 +145,7 @@ export const ActTypeSelector = ({ act, handler }) => {
     )
 }
 
-export const ManagementTypeSelector = ({ activity, handler }) => {
+export const ManagementTypeSelector = ({ activity, handler }: SelectorProps) => {
     return (
         <Select className='md:w-2/4' name='managementType' label='Tipo de gestión' onSelectionChange={handler} defaultSelectedKeys={[activity?.managementType]}>
             <SelectItem key={'INST'} variant="flat">Institucional</SelectItem>
@@ -150,7 +155,7 @@ export const ManagementTypeSelector = ({ activity, handler }) => {
     )
 }
 
-export const StayTypeSelector = ({ activity, handler }) => {
+export const StayTypeSelector = ({ activity, handler }: SelectorProps) => {
     return (
         <Select
             className=''
@@ -166,7 +171,7 @@ export const StayTypeSelector = ({ activity, handler }) => {
     )
 }
 
-export const GroupSelector = ({ activity, handler }: { activity: Activity, handler: any }) => {
+export const GroupSelector = ({ activity, handler }: SelectorProps) => {
     const { memory: { defaultGroups } } = UseTemplates()
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -183,8 +188,12 @@ export const GroupSelector = ({ activity, handler }: { activity: Activity, handl
     )
 }
 
+interface AcademicProgramSelectorProps extends SelectorProps {
+    educationalPrograms: EducationalProgram[]
+}
+
 export const AcademicProgramSelector = (
-    { activity, educationalPrograms, handler }: { activity: Activity, educationalPrograms: EducationalProgram[], handler: (e: any) => void }
+    { activity, educationalPrograms, handler }: AcademicProgramSelectorProps
 ) => {
     return (
         <div className="flex flex-col md:flex-row gap-2">

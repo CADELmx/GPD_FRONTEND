@@ -5,7 +5,7 @@ export type Template = {
     state: string;
     areaId: number;
     period: string;
-    responsibleId: number;
-    revisedById: number;
+    responsibleId?: number;
+    revisedById?: number;
     partialTemplate?: PartialTemplate[];
 }
