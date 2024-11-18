@@ -1,10 +1,29 @@
-import { defaultActivity, defaultPartialTemplate } from '@/utils'
+
 import { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
-import toast from 'react-hot-toast'
+import { defaultActivity, defaultPartialTemplate } from '../utils'
+import { Activity } from '../models/types/activity'
+import { PartialTemplate } from '../models/types/partial-template'
+import { EducationalProgram } from '../models/types/educational-program'
+import { Area } from '../models/types/area'
 
-const TemplateContext = createContext()
+type MemoryState = {
+    memory: {
+        partialTemplate: PartialTemplate,
+        activities: Activity[],
+        selectedActivity: Activity,
+        defaultGroups: any[],
+        socket: any,
+        user: any | null
+    },
+    setStored: (prop: any) => void,
+    handleGlobalChange: (event: any) => void,
+    login: (email: string, password: string) => void,
+    logout: () => void
+}
+
+const TemplateContext = createContext<MemoryState>({} as any)
 
 export const UseTemplates = () => useContext(TemplateContext)
 
@@ -44,13 +63,6 @@ export const TemplatesProvider = ({ children }) => {
             [event.target?.name]: event.target?.value
         }
     })
-    const ctx = {
-        memory,
-        setStored,
-        handleGlobalChange,
-        login,
-        logout,
-    }
     useEffect(() => {
         const setupSocket = async () => {
             await fetch('/api/socket')
@@ -61,15 +73,39 @@ export const TemplatesProvider = ({ children }) => {
         setupSocket()
     }, [])
     return (
-        <TemplateContext.Provider value={ctx}>
+        <TemplateContext.Provider value={{
+            memory,
+            setStored,
+            handleGlobalChange,
+            login,
+            logout,
+        }}>
             {children}
         </TemplateContext.Provider>
     )
 }
 
-const AreaContext = createContext()
+type AreaState = {
+    areaState: {
+        areas: Area[],
+        selectedArea: Area
+    },
+    setStoredAreas: (prop: any) => void,
+    educationalState: {
+        educationalPrograms: EducationalProgram[],
+        selectedEducationalProgram: EducationalProgram
+    },
+    setStoredEducationalPrograms: (prop: any) => void,
+    subjectState: {
+        subjects: any[],
+        selectedSubject: any
+    },
+    setStoredSubjects: (prop: any) => void
+}
 
-export const UseSecretary = () => useContext(AreaContext)
+const AreaContext = createContext({} as any)
+
+export const UseSecretary = () => useContext<AreaState>(AreaContext)
 
 export const AreasProvider = ({ children }) => {
     const [areaState, setAreaState] = useState({

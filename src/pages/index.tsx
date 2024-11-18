@@ -1,20 +1,22 @@
-import { AcademicTemplateForm } from "@/components/AcademicTemplateForm";
-import { ModalError } from "@/components/ModalError";
-import { getAcademicPrograms, getAllPersonalData } from "@/models/transactions";
-import { promiseResolver } from "@/utils";
+
+import { getEducationalPrograms } from "../models/transactions/educational-program";
+import { getAllPersonalData } from "../models/transactions/personal-data";
+import { promiseResolver } from "../utils";
+import { ModalError } from "../components/ModalError";
+import { AcademicTemplateForm } from "../components/AcademicTemplateForm";
 
 export default function Index({ educationalPrograms, academicWorkers, getSsrError }) {
   return (
     <>
       <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">llenado de plantilla</h1>
       <ModalError error={getSsrError} />
-      <AcademicTemplateForm educationalPrograms={educationalPrograms} academicWorkers={academicWorkers} />
+      <AcademicTemplateForm educationalPrograms={educationalPrograms} academicWorkers={academicWorkers} template={null} />
     </>
   )
 }
 
 export const getStaticProps = async () => {
-  const eduPromise = getAcademicPrograms()
+  const eduPromise = getEducationalPrograms()
   const acaPromise = getAllPersonalData()
   const [educationalResponse, academicResponse] = await promiseResolver([eduPromise, acaPromise])
   const { data: academicData } = academicResponse

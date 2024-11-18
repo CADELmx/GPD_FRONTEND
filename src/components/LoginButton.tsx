@@ -1,7 +1,7 @@
-import { UseTemplates } from '@/context'
 import { Avatar, Button, Chip } from '@nextui-org/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { UseTemplates } from '../context'
 
 export const LoginButton = () => {
     const router = useRouter()
@@ -10,6 +10,6 @@ export const LoginButton = () => {
         return null
     }
     return (
-        user ? <Chip avatar={<Avatar color="primary" />}>{user}</Chip> : <Link href="/user" passHref legacyBehavior><Button size='' variant='bordered'>Iniciar sesión</Button></Link>
+        user ? <Chip avatar={<Avatar color="primary" />}>{user}</Chip> : <Link href="/user" passHref legacyBehavior><Button variant='bordered'>Iniciar sesión</Button></Link>
     )
 }

@@ -1,13 +1,9 @@
-import { Socket } from "socket.io-client"
-
-export const promiseResolver = async (promiseList) => {
-    const results = await Promise.allSettled(promiseList)
-    const data = results.map(r => r.value)
-    return data
+import { Activity } from "../models/types/activity"
+import { PartialTemplate } from "../models/types/partial-template"
+export const promiseResolver = async<T>(promises: Promise<T>[]) => {
+    const result = await Promise.all(promises)
+    return result
 }
-
-export const singlePromiseResolver = async (promise) => await promise
-
 export const positions = [
     'Profesor de Tiempo Completo Titular "A"',
     'Profesor de Tiempo Completo Titular "B"',
@@ -42,8 +38,9 @@ export const modalidades = [
     'Ingeniería Escolarizada',
     'Ingeniería Mixta',
 ]
-export const defaultActivity = {
+export const defaultActivity: Activity = {
     id: crypto.randomUUID(),
+    partialTemplateId: null,
     educationalProgramId: null,
     activityDistribution: "",
     managementType: "",
@@ -55,30 +52,37 @@ export const defaultActivity = {
     subtotalClassification: 0,
 }
 
-export const defaultPartialTemplate = {
+export const defaultPartialTemplate: PartialTemplate = {
     nt: 0,
     name: "",
     gender: "",
     position: "",
-    year: new Date().getFullYear(),
+    status: "Pendiente",
+    year: `${new Date().getFullYear()}`,
     period: "",
     total: 0,
 }
 
-export const defaultValidation = {
-    reviewed: false,
-    approved: false,
-    reviewed_by: "",
-    approved_by: "",
-}
-
-export const generatePeriods = (year, ordinary) => {
+export const generatePeriods = ({
+    year, ordinary
+}: {
+    year: number,
+    ordinary: boolean
+}) => {
     const period = 4
-    const generateMonthName = (m, y = year) => {
+    const generateMonthName = (
+        m: number,
+        y: number = year
+    ) => {
         const date = new Date(y, m)
         return date.toLocaleString('es-MX', { month: 'long' })
     }
-    const generateFormat = (month1, month2, o = ordinary, y = year) => {
+    const generateFormat = (
+        month1: string,
+        month2: string,
+        o: boolean = ordinary,
+        y: number = year
+    ) => {
         return `${month1} - ${month2} ${y}: ${o ? 'Ordinario' : 'Extraordinario'}`
     }
     return Array.from({ length: 3 }, (_, k) => {
@@ -88,15 +92,15 @@ export const generatePeriods = (year, ordinary) => {
     })
 }
 
-export const checkEmptyStringOption = (string) => string === "" ? [] : [string]
+export const checkEmptyStringOption = (string: string) => string === "" ? [] : [string]
 
-export const getFirstSetValue = (set) => {
+export const getFirstSetValue = <T>(set: Set<T>) => {
     return Array.from(set)[0]
 }
 
-export const sumHours = (activities) => {
+export const sumHours = ({ activities }: { activities: Activity[] }) => {
     if (activities?.length) {
-        return activities.map(e => e.subtotalClassification).reduce((p, c) => p + c, 0)
+        return activities.map(activity => activity.subtotalClassification).reduce((p, c) => p + c, 0)
     }
     return 0
 }

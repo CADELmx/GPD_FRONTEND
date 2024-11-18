@@ -1,7 +1,7 @@
-import { UseSecretary } from "@/context"
 import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { PencilIcon, TrashIcon } from "../Icons"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
+import { UseSecretary } from "../../context"
 
 export const AreasTable = ({ onOpenModal, onOpenDeleteModal }) => {
 

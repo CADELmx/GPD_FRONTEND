@@ -1,9 +1,8 @@
-import { Layout } from '@/components/layout'
-import { AreasProvider, TemplatesProvider } from '@/context'
-import '@/styles/globals.css'
-import Notify from '@/toast'
 import { NextUIProvider } from '@nextui-org/react'
 import { ThemeProvider } from 'next-themes'
+import Notify from '../toast'
+import { AreasProvider, TemplatesProvider } from '../context'
+import { Layout } from '../components/layout'
 
 export default function App({ Component, pageProps }) {
   return (

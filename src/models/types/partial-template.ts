@@ -1,7 +1,7 @@
 import { Activity } from "./activity";
 
 export type PartialTemplate = {
-    id: number;
+    id?: number;
     nt: number;
     name: string;
     gender?: string;
@@ -10,6 +10,6 @@ export type PartialTemplate = {
     status: string;
     year: string;
     period: string;
-    templateId: number;
+    templateId?: number;
     activities?: Activity[];
 }

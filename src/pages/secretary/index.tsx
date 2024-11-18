@@ -1,11 +1,10 @@
-import { ChangeStatus } from "@/components/ChangeStatus";
-import { MoreOptions } from "@/components/DownloadButton";
-import { ModalError } from "@/components/ModalError";
-import { UseTemplates } from "@/context";
-import { generateRecords } from "@/models/transactions";
+
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { UseTemplates } from "../../context";
+import { ModalError } from "../../components/ModalError";
+import { generateRecords } from "../../models/apiClient";
 
 export default function Secretary({ plantillas, error }) {
   const { memory: { socket } } = UseTemplates()

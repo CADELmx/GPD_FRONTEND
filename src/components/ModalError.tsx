@@ -1,7 +1,7 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
 import { useRouter } from "next/router"
 
-export const ModalError = ({ error }) => {
+export const ModalError = ({ error }: { error: string }) => {
     const router = useRouter()
     return (
         error &&

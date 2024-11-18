@@ -1,7 +1,7 @@
 import { PartialTemplate } from "./partial-template";
 
 export type Template = {
-    id: number;
+    id?: number;
     state: string;
     areaId: number;
     period: string;

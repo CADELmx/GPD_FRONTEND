@@ -1,15 +1,15 @@
-import { checkSocketStatus, positions, sumHours } from '@/utils'
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
 import { YearAndPeriodSelector } from './Selector'
 import { Button, Input, Select, SelectItem, Textarea } from '@nextui-org/react'
 import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
-import { UseTemplates } from '@/context'
 import toast from 'react-hot-toast'
-import { insertPartialTemplate, insertPartialTemplateAndActivities } from '@/models/transactions'
 import { CheckIcon } from './Icons'
-import { playNotifySound } from '@/toast'
+import { UseTemplates } from '../context'
+import { checkSocketStatus, positions, sumHours } from '../utils'
+import { insertPartialTemplateAndActivities } from '../models/transactions/partial-template'
+import { playNotifySound } from '../toast'
 
 export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
@@ -22,11 +22,13 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
         }
         return [partialTemplate.position]
     }
-    const totalHours = sumHours(activities)
+    const totalHours = sumHours({ activities: activities })
     const handleSubmit = () => {
         if (checkSocketStatus(socket, toast)) return socket.connect()
         setLoading(true)
-        toast.promise(insertPartialTemplateAndActivities(partialTemplate, activities), {
+        toast.promise(insertPartialTemplateAndActivities({
+            data: { template: partialTemplate, activities }
+        }), {
             loading: 'Guardando plantilla...',
             success: ({ data: { data, error } }) => {
                 if (error) return error
@@ -106,8 +108,8 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                 type="number"
                 min={0}
                 name="total"
-                value={totalHours == 0 ? '' : totalHours}
-                defaultValue={partialTemplate?.total}
+                value={`${totalHours == 0 ? '' : totalHours}`}
+                defaultValue={`${partialTemplate?.total}`}
                 isDisabled
                 onChange={handleGlobalChange}
             />
@@ -116,7 +118,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                 className="w-full bg-utim"
                 variant="solid"
                 onPress={handleSubmit}
-                isDisabled={(partialTemplate?.id) || (totalHours < 32)}
+                isDisabled={Boolean((partialTemplate?.id) || (totalHours < 32))}
                 isLoading={loading}
             >
                 Guardar

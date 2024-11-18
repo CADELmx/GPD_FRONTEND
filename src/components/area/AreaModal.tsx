@@ -1,7 +1,7 @@
-import { UseSecretary } from "@/context"
-import { createArea, deleteArea, updateArea } from "@/models/transactions"
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
 import toast from "react-hot-toast"
+import { UseSecretary } from "../../context"
+import { createArea, deleteArea, updateArea } from "../../models/transactions/area"
 
 export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
     const { areaState: { selectedArea, areas }, setStoredAreas } = UseSecretary()
