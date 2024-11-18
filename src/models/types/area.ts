@@ -1,7 +1,16 @@
 import { EducationalProgram } from "./educational-program";
 
-export type Area = {
+
+export type CreateArea = {
     id?: number;
     name: string;
     educationalPrograms?: EducationalProgram[];
+}
+
+export type Area = CreateArea & {
+    id: number;
+}
+
+export type AreaJoinEducationalPrograms = Area & {
+    educationalPrograms: EducationalProgram[];
 }

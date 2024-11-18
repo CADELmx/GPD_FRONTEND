@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "paths": {
+      "react": [
+        "node_modules/@types/react"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "lib": [
       "dom",
       "dom.iterable",
@@ -7,7 +15,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "noEmit": true,
     "incremental": true,
     "module": "esnext",

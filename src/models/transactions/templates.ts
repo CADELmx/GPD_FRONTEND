@@ -1,5 +1,5 @@
 import { ApiResponse, GetById, serverClient } from "../apiClient";
-import { Template } from "../types/template";
+import { CreateTemplate, Template } from "../types/template";
 
 export interface TemplatesResult extends ApiResponse {
     data: Template[]
@@ -13,7 +13,7 @@ export const getTemplates = async () => {
     return serverClient.get<TemplatesResult>('/templates')
 }
 
-export const insertTemplate = ({ data }: { data: Template }) => {
+export const insertTemplate = ({ data }: { data: CreateTemplate }) => {
     return serverClient.post<TemplateResult>('/templates', data)
 }
 

@@ -1,17 +1,15 @@
-import { AcademicTemplateForm } from "../../../components/AcademicTemplateForm"
-import { ModalError } from "../../../components/ModalError"
-import { generateSingleRecord } from "../../../models/apiClient"
-import { getEducationalPrograms } from "../../../models/transactions/educational-program"
-import { getAllPersonalData } from "../../../models/transactions/personal-data"
-import { getTemplates } from "../../../models/transactions/templates"
-import { EducationalProgram } from "../../../models/types/educational-program"
-import { PartialTemplate } from "../../../models/types/partial-template"
-import { PersonalData } from "../../../models/types/personal-data"
+import { AcademicTemplateForm } from "@/components/AcademicTemplateForm"
+import { ModalError } from "@/components/ModalError"
+import { generateSingleRecord } from "@/models/apiClient"
+import { getEducationalPrograms } from "@/models/transactions/educational-program"
+import { getAllPersonalData } from "@/models/transactions/personal-data"
+import { getTemplates } from "@/models/transactions/templates"
+import { EducationalProgram } from "@/models/types/educational-program"
+import { PartialTemplate } from "@/models/types/partial-template"
+import { PersonalData } from "@/models/types/personal-data"
 
-
-export default function TemplateById({ template, error, educationalPrograms, academicWorkers }: {
+export default function SecretaryPartialTemplate({ template, error, educationalPrograms, academicWorkers }: {
     template: PartialTemplate,
-    getSsrError: string | null,
     error: string | null,
     educationalPrograms: EducationalProgram[],
     academicWorkers: PersonalData[],
@@ -39,13 +37,13 @@ export const getStaticPaths = async () => {
     }
 }
 
-export const getStaticProps = async ({ params: { id } }) => {
+export const getStaticProps = async ({ params: { id } }: { params: { id: number } }) => {
     const eduPromise = getEducationalPrograms()
     const acaPromise = getAllPersonalData()
     const [educationalResponse, academicResponse] = await Promise.all([eduPromise, acaPromise])
     const { data: educationalData } = educationalResponse
     const { data: academicData } = academicResponse
-    const { props } = await generateSingleRecord(id)
+    const { props } = await generateSingleRecord({ id })
     const error = educationalData.error || academicData.error || props.error
     return {
         revalidate: 3,

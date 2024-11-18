@@ -1,7 +1,7 @@
 import { Activity } from "./activity";
 import { Comment } from "./comment";
 
-export type PartialTemplate = {
+export type CreatePartialTemplate = {
     id?: number;
     nt: number;
     name: string;
@@ -14,4 +14,20 @@ export type PartialTemplate = {
     templateId?: number;
     activities?: Activity[];
     comments?: Comment[];
+}
+
+export type PartialTemplate = CreatePartialTemplate & {
+    id: number;
+}
+
+export type PartialTemplateJoinActivity = PartialTemplate & {
+    id: number,
+    partialTemplateId: number,
+    activities: Activity[]
+}
+
+export type PartialTemplateJoinComment = PartialTemplate & {
+    id: number,
+    partialTemplateId: number,
+    comments: Comment[]
 }

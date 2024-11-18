@@ -1,14 +1,19 @@
-import { EducationalProgramCards, EducationalProgramsTable } from "@/components/educationalProgram/EducationalProgramCard"
+
+import { EducationalProgramsTable } from "@/components/educationalProgram/EducationalProgramCard"
 import { EducationalProgramDeleteModal, EducationalProgramModal } from "@/components/educationalProgram/EducationalProgramModal"
 import { ExportEducationalProgramsMenu } from "@/components/educationalProgram/ImportMenu"
-import { TrashIcon, UploadIcon } from "@/components/Icons"
+import { UploadIcon } from "@/components/Icons"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
-import { getAreas, getEducationalPrograms } from "@/models/transactions"
+import { getAreas } from "@/models/transactions/area"
+import { getEducationalPrograms } from "@/models/transactions/educational-program"
+import { Area } from "@/models/types/area"
+import { EducationalProgram } from "@/models/types/educational-program"
 import { Accordion, AccordionItem, Button, useDisclosure } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 
-export const getServerSideProps = async () => {
+
+export const getStaticProps = async () => {
     const { data: {
         data: areas,
         error: areasError
@@ -27,9 +32,9 @@ export const getServerSideProps = async () => {
     }
 }
 
-export default function EducativeProgram({ areas, ssrEducationalPrograms, error }) {
-    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
-    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+export default function EducativeProgram({ areas, ssrEducationalPrograms, error }: { areas: Area[], ssrEducationalPrograms: EducationalProgram[], error: string | null }) {
+    const { setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
+    const [selectedKeys, setSelectedKeys] = useState<any>(new Set([]));
     const EducativeProgramModal = useDisclosure()
     const DeleteModal = useDisclosure()
     const handleOpen = () => {
@@ -67,7 +72,6 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
                             Nuevo programa educativo
                         </Button>
                         <EducationalProgramsTable
-                            educationalPrograms={educationalPrograms}
                             onOpenModal={handleOpen}
                             onOpenDeleteModal={DeleteModal.onOpen}
                         />

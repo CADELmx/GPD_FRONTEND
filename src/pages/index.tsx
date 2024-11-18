@@ -1,10 +1,10 @@
+import { AcademicTemplateForm } from "@/components/AcademicTemplateForm"
+import { ModalError } from "@/components/ModalError"
+import { getEducationalPrograms } from "@/models/transactions/educational-program"
+import { getAllPersonalData } from "@/models/transactions/personal-data"
+import { EducationalProgram } from "@/models/types/educational-program"
+import { PersonalData } from "@/models/types/personal-data"
 
-import { getEducationalPrograms } from "../models/transactions/educational-program";
-import { getAllPersonalData } from "../models/transactions/personal-data";
-import { ModalError } from "../components/ModalError";
-import { AcademicTemplateForm } from "../components/AcademicTemplateForm";
-import { EducationalProgram } from "../models/types/educational-program";
-import { PersonalData } from "../models/types/personal-data";
 
 export default function Index(
   { educationalPrograms, academicWorkers, getSsrError }: {
@@ -28,7 +28,6 @@ export const getStaticProps = async () => {
   const [educationalResponse, academicResponse] = await Promise.all([eduPromise, acaPromise])
   const { data: academicData } = academicResponse
   const { data: educationalData } = educationalResponse
-  console.log(educationalData, academicData)
   const error = educationalData.error || academicData.error
   if (error) {
     console.error('#ERROR# Error al obtener datos de programas educativos y/o trabajadores')

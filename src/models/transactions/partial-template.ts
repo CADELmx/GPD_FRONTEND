@@ -1,7 +1,8 @@
 import { ApiResponse, GetById, serverClient } from "../apiClient";
 import { Activity } from "../types/activity";
-import { PartialTemplate } from "../types/partial-template";
+import { PartialTemplate, PartialTemplateJoinActivity, PartialTemplateJoinComment } from "../types/partial-template";
 import { insertActivities } from "./activity";
+
 
 export interface PartialTemplateResult extends ApiResponse {
     data: PartialTemplate
@@ -9,6 +10,22 @@ export interface PartialTemplateResult extends ApiResponse {
 
 export interface PartialTemplatesResult extends ApiResponse {
     data: PartialTemplate[]
+}
+
+export interface PartialTemplateJoinActivityResult extends ApiResponse {
+    data: PartialTemplateJoinActivity
+}
+
+export interface PartialTemplatesJoinActivitiesResult extends ApiResponse {
+    data: PartialTemplateJoinActivity[]
+}
+
+export interface PartialTemplateJoinCommentResult extends ApiResponse {
+    data: PartialTemplateJoinComment
+}
+
+export interface PartialTemplatesJoinCommentsResult extends ApiResponse {
+    data: PartialTemplateJoinComment[]
 }
 
 export const insertPartialTemplate = (
@@ -42,7 +59,7 @@ export const setPartialTemplateStatus = (
 }
 
 export const getPartialTemplateJoinActivity = ({ id }: GetById) => {
-    return serverClient.get<PartialTemplateResult>('/partial-templates/activities', {
+    return serverClient.get<PartialTemplateJoinActivityResult>('/partial-templates/activities', {
         params: {
             id
         }
@@ -50,15 +67,15 @@ export const getPartialTemplateJoinActivity = ({ id }: GetById) => {
 }
 
 export const getPartialTemplatesJoinActivities = () => {
-    return serverClient.get<PartialTemplatesResult>('/partial-templates/activities')
+    return serverClient.get<PartialTemplatesJoinActivitiesResult>('/partial-templates/activities')
 }
 
 export const getPartialTemplatesJoinComments = () => {
-    return serverClient.get<PartialTemplatesResult>('/partial-templates/comments')
+    return serverClient.get<PartialTemplateJoinCommentResult>('/partial-templates/comments')
 }
 
 export const getPartialTemplateJoinComment = ({ id }: GetById) => {
-    return serverClient.get('/partial-templates/comments', {
+    return serverClient.get<PartialTemplatesJoinCommentsResult>('/partial-templates/comments', {
         params: {
             id
         }
@@ -88,7 +105,7 @@ export const insertPartialTemplateAndActivities = async (
         message: templateMessage
     }
     const { id } = templateData
-    const newActivities = activities.map(activity => ({ ...activity, partialTemplateId: id }))
+    const newActivities: Activity[] = activities.map(activity => ({ ...activity, partialTemplateId: id }))
     const {
         data: {
             data: activitiesData,

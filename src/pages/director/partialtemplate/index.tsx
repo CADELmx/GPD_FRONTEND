@@ -3,7 +3,7 @@ import { Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow }
 import { useEffect, useState } from "react"
 import { UseTemplates } from "../../../context"
 import { getPartialTemplatesJoinComments } from "../../../models/transactions/partial-template"
-import { PartialTemplate } from "../../../models/types/partial-template"
+import { PartialTemplateJoinComment } from "../../../models/types/partial-template"
 import { ModalError } from "../../../components/ModalError"
 import { tableClassNames } from "../../../components/educationalProgram/EducationalProgramCard"
 
@@ -13,14 +13,14 @@ const colors = {
     'Pendiente': 'warning'
 }
 
-export default function TemplatesStatus({ partialTemplates: ssrTemplates, error }: {
-    partialTemplates: PartialTemplate[],
+export default function DirectorPartialTemplates({ partialTemplates: ssrTemplates, error }: {
+    partialTemplates: PartialTemplateJoinComment[],
     error: string | null
 }) {
     const { memory: { socket } } = UseTemplates()
-    const [templates, setTemplates] = useState<PartialTemplate[]>(ssrTemplates)
+    const [templates, setTemplates] = useState<PartialTemplateJoinComment[]>(ssrTemplates)
     useEffect(() => {
-        const onUpdateStatus = (newTemplate: PartialTemplate) => {
+        const onUpdateStatus = (newTemplate: PartialTemplateJoinComment) => {
             setTemplates((templates) => templates.map((template) => {
                 if (template.id === newTemplate.id) {
                     return {
