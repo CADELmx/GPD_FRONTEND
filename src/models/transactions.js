@@ -159,6 +159,21 @@ export const deleteArea = (id) => {
     return serverClient.delete(`/areas/${id}`)
 }
 
+export const getEducationalPrograms = () => {
+    return serverClient.get('/educational-programs')
+}
+
+export const createEducationalProgram = (educationalProgram) => {
+    return serverClient.post('/educational-programs', educationalProgram)
+}
+
+export const updateEducationalProgram = (id, newEducationalProgram) => {
+    return serverClient.put(`/educational-programs/${id}`, newEducationalProgram)
+}
+
+export const deleteEducationalProgram = (id) => {
+    return serverClient.delete(`/educational-programs/${id}`)
+}
 
 export const generateRecords = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinActivities()
@@ -178,8 +193,8 @@ export const generateRecords = async () => {
 }
 
 export const generateSingleRecord = async (id) => {
-    const { data: { data, error } } = await getPartialTemplateJoinActivity(id)
-    if (error) {
+    const { data: { data, error }, error: axiosError } = await getPartialTemplateJoinActivity(id)
+    if (error || axiosError) {
         console.error('#ERROR# Error al obtener datos de plantilla')
         return {
             props: {

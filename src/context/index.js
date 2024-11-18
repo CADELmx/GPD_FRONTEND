@@ -1,4 +1,4 @@
-import { defaultRecord } from '@/utils'
+import { defaultPartialTemplate } from '@/utils'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
@@ -8,10 +8,10 @@ export const StoredContext = () => useContext(Context)
 
 export const ContextProvider = ({ children }) => {
     const [memory, setMemory] = useState({
-        record: defaultRecord,
+        record: defaultPartialTemplate,
         defaultGroups: [],
         socket: io(),
-        selectedItem: defaultRecord.actividad[0].id,
+        selectedItem: defaultPartialTemplate.activities[0].id,
         user: getCookie('user', { secure: true })
     })
     const login = async (email, password) => {
@@ -66,20 +66,44 @@ export const ContextProvider = ({ children }) => {
 
 const AreaContext = createContext()
 
-export const UseAreas = () => useContext(AreaContext)
+export const UseSecretary = () => useContext(AreaContext)
 
 export const AreasProvider = ({ children }) => {
     const [areaState, setAreaState] = useState({
         areas: [],
-        selectedArea: null
+        selectedArea: {
+            name: '',
+        }
     })
+    const [educationalState, setEducationalState] = useState({
+        educationalPrograms: [],
+        selectedEducationalProgram: {
+            areaId: '',
+            name: '',
+            description: ''
+        }
+    })
+    const [subjectState, setSubjectState] = useState({
+        subjects: [],
+        selectedSubject: null
+    })
+    const setStoredEducationalPrograms = (prop) => {
+        setEducationalState((educationalState) => ({ ...educationalState, ...prop }))
+    }
     const setStoredAreas = (prop) => {
         setAreaState((areaState) => ({ ...areaState, ...prop }))
+    }
+    const setStoredSubjects = (prop) => {
+        setSubjectState((areaState) => ({ ...areaState, ...prop }))
     }
     return (
         <AreaContext.Provider value={{
             areaState,
-            setStoredAreas
+            setStoredAreas,
+            educationalState,
+            setStoredEducationalPrograms,
+            subjectState,
+            setStoredSubjects
         }}>
             {children}
         </AreaContext.Provider>

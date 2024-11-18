@@ -6,9 +6,9 @@ export const promiseResolver = async (promiseList) => {
     return data
 }
 
-export const singlePromiseResolver = async (promise) =>  await promise
+export const singlePromiseResolver = async (promise) => await promise
 
-export const puestos = [
+export const positions = [
     'Profesor de Tiempo Completo Titular "A"',
     'Profesor de Tiempo Completo Titular "B"',
     'Profesor de Tiempo Completo Asociado "A"',
@@ -18,7 +18,7 @@ export const puestos = [
     'Técnico de Apoyo',
 ]
 
-export const titulos = [
+export const titles = [
     'Sin título',
     'T.S.U.',
     'Licenciatura',
@@ -26,7 +26,7 @@ export const titulos = [
     'Doctorado',
 ]
 
-export const distribucionActividades = [
+export const activitiesDistribution = [
     'Docencia',
     'LIIAD',
     'Tutorías',
@@ -44,25 +44,25 @@ export const modalidades = [
 ]
 export const defaultActivity = {
     id: crypto.randomUUID(),
-    pe: null,
-    distribucion_actividades: "",
-    tipo_gestion: "",
-    tipo_estadia: "",
-    numero_estudiantes: 0,
-    nombre_actividades: "",
-    grados_grupos: [],
-    horas_semanales: 0,
-    subtotal_clasificacion: 0,
+    educationalProgramId: null,
+    activityDistribution: "",
+    managementType: "",
+    stayType: "",
+    numberStudents: 0,
+    activityName: "",
+    gradeGroups: [],
+    weeklyHours: 0,
+    subtotalClassification: 0,
 }
 
-export const defaultRecord = {
+export const defaultPartialTemplate = {
     nt: 0,
-    nombre: "",
-    sexo: "",
-    puesto: "",
-    anio: new Date().getFullYear(),
-    periodo: "",
-    actividad: [
+    name: "",
+    gender: "",
+    position: "",
+    year: new Date().getFullYear(),
+    period: "",
+    activities: [
         defaultActivity
     ],
     total: 0,
@@ -75,13 +75,13 @@ export const defaultValidation = {
     approved_by: "",
 }
 
-export const generatePeriods = (year, ordinario) => {
+export const generatePeriods = (year, ordinary) => {
     const period = 4
     const generateMonthName = (m, y = year) => {
         const date = new Date(y, m)
         return date.toLocaleString('es-MX', { month: 'long' })
     }
-    const generateFormat = (month1, month2, o = ordinario, y = year) => {
+    const generateFormat = (month1, month2, o = ordinary, y = year) => {
         return `${month1} - ${month2} ${y}: ${o ? 'Ordinario' : 'Extraordinario'}`
     }
     return Array.from({ length: 3 }, (_, k) => {
@@ -93,21 +93,21 @@ export const generatePeriods = (year, ordinario) => {
 
 export const checkEmptyStringOption = (string) => string === "" ? [] : [string]
 
-export const sumHoras = (activities) => {
-    if (activities?.length){
-        return activities.map(e => e.subtotal_clasificacion).reduce((p, c) => p + c, 0)
+export const sumHours = (activities) => {
+    if (activities?.length) {
+        return activities.map(e => e.subtotalClassification).reduce((p, c) => p + c, 0)
     }
     return 0
 }
 
 export const generateTemplateObject = (record) => {
-    const plantilla = Object.fromEntries(Object.entries(record).filter(([k, v]) => {
-        if (k != 'actividades') {
+    const template = Object.fromEntries(Object.entries(record).filter(([k, v]) => {
+        if (k != 'activities') {
             return true
         }
     })
     )
-    return plantilla
+    return template
 }
 /**
  * 
@@ -115,7 +115,7 @@ export const generateTemplateObject = (record) => {
  * @param {*} toast 
  * @returns 
  */
-export const checkSocketStatus = (socket,toast) => {
+export const checkSocketStatus = (socket, toast) => {
     if (socket.disconnected) {
         toast.error('No hay conexión con el servidor', {
             id: 'no-connection'

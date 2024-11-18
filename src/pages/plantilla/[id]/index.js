@@ -1,6 +1,6 @@
 import { AcademicTemplateForm } from "@/components/AcademicTemplateForm"
 import { ModalError } from "@/components/ModalError"
-import { generateSingleRecord, getAcademicPrograms, getAllAcademicWorkers, getTemplates } from "@/models/transactions"
+import { generateSingleRecord, getAcademicPrograms, getAllPersonalData, getTemplates } from "@/models/transactions"
 import { promiseResolver } from "@/utils"
 
 export default function TemplateById({ plantilla, getSsrError, academicPrograms, academicWorkers }) {
@@ -13,8 +13,8 @@ export default function TemplateById({ plantilla, getSsrError, academicPrograms,
 }
 
 export const getStaticPaths = async () => {
-    const { data, error } = await getTemplates()
-    if (error) {
+    const { data: { data, error }, error: axiosError } = await getTemplates()
+    if (error || axiosError) {
         return {
             paths: [],
             fallback: true,
@@ -29,17 +29,19 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params: { id } }) => {
     const eduPromise = getAcademicPrograms()
-    const acaPromise = getAllAcademicWorkers()
-    const [eduData, acaData] = await promiseResolver([eduPromise, acaPromise])
+    const acaPromise = getAllPersonalData()
+    const [educationalResponse, academicResponse] = await promiseResolver([eduPromise, acaPromise])
+    const { data: educationalData } = educationalResponse
+    const { data: academicData } = academicResponse
     const { props } = await generateSingleRecord(id)
-    const error = eduData.error || acaData.error || props.error
+    const error = educationalData.error || academicData.error || props.error
     return {
         revalidate: 3,
         props: {
             ...props,
             getSsrError: error ? 'Algo salió mal, recarga la página' : null,
-            academicWorkers: acaData.data,
-            academicPrograms: eduData.data,
+            academicWorkers: academicData.data,
+            academicPrograms: educationalData.data,
         }
     }
 }

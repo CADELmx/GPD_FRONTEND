@@ -1,4 +1,4 @@
-import { checkExistentComment, deleteComment, insertActivities, insertComment, insertPartialTemplate, setTemplateStatus, updateComment } from "@/models/transactions";
+import { checkExistentComment, deleteComment, insertActivities, insertComment, insertPartialTemplate, setPartialTemplateStatus, updateComment } from "@/models/transactions";
 import { generateTemplateObject } from "@/utils";
 import { Server } from "socket.io";
 
@@ -13,7 +13,7 @@ const iohandler = (_, res) => {
             transports: ['websocket', 'polling']
         })
         const onUpdateStatus = async statusObject => {
-            const { error } = await setTemplateStatus(statusObject.id, statusObject.status.name)
+            const { error } = await setPartialTemplateStatus(statusObject.id, statusObject.status.name)
             io.emit('updateStatus', { error, ...statusObject })
         }
         const onCreateComment = async commentObject => {
@@ -33,7 +33,7 @@ const iohandler = (_, res) => {
                 io.emit('templateError', 'Error al guardar plantilla')
                 return
             }
-            const activities = templateObject.actividades.map(p => ({
+            const activities = templateObject.activities.map(p => ({
                 ...p,
                 plantilla_id: data[0]?.id,
             }))
