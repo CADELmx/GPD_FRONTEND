@@ -94,8 +94,6 @@ export const getStaticProps = async () => {
   const { props } = await generateRecords()
   return {
     revalidate: 3,
-    props: {
-      ...props
-    }
+    props
   }
 }

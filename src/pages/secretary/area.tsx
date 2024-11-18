@@ -1,34 +1,35 @@
-import { AreasTable } from "@/components/area/AreaTable"
-import { AreaModal, DeleteAreaModal } from "@/components/area/AreaModal"
-import { ModalError } from "@/components/ModalError"
-import { UseSecretary } from "@/context"
-import { getAreas, getAreasJoinEducationalPrograms } from "@/models/transactions"
+
 import { Button, useDisclosure } from "@nextui-org/react"
 import { useEffect } from "react"
+import { UseSecretary } from "../../context"
+import { getAreas, getAreasJoinEducationalPrograms } from "../../models/transactions/area"
+import { ModalError } from "../../components/ModalError"
+import { AreasTable } from "../../components/area/AreaTable"
+import { AreaModal, DeleteAreaModal } from "../../components/area/AreaModal"
+import { Area } from "../../models/types/area"
 
 export const getServerSideProps = async () => {
     const { data: { data, error } } = await getAreas()
-    const { data: areas } = await getAreasJoinEducationalPrograms()
-    console.log(areas)
     return {
         props: {
             areas: data,
             error,
-            areastest: areas.data
         }
     }
 }
 
-export default function Areas({ areas: ssrAreas, error, areastest }) {
+export default function AreasIndex({ areas: ssrAreas, error }: { areas: Area[], error: string | null }) {
     const EditModal = useDisclosure()
     const DeleteModal = useDisclosure()
     const { areaState: { areas }, setStoredAreas } = UseSecretary()
     const handlePress = () => {
         setStoredAreas({ selectedArea: null })
-        onOpen()
+        EditModal.onOpen()
     }
     useEffect(() => {
-        setStoredAreas({ areas: ssrAreas })
+        if (areas.length === 0) {
+            setStoredAreas({ areas: ssrAreas })
+        }
     }, [])
     return (
         <>

@@ -53,6 +53,10 @@ export const getPartialTemplatesJoinActivities = () => {
     return serverClient.get<PartialTemplatesResult>('/partial-templates/activities')
 }
 
+export const getPartialTemplatesJoinComments = () => {
+    return serverClient.get<PartialTemplatesResult>('/partial-templates/comments')
+}
+
 export const getPartialTemplateJoinComment = ({ id }: GetById) => {
     return serverClient.get('/partial-templates/comments', {
         params: {

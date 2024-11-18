@@ -4,6 +4,11 @@ import { insertPartialTemplate, setPartialTemplateStatus } from "../../models/tr
 import { deleteComment, getComment, insertComment, updateComment } from "../../models/transactions/comment";
 import { insertActivities } from "../../models/transactions/activity";
 import { generateTemplateObject } from "../../utils";
+import { PartialTemplate } from "../../models/types/partial-template";
+import { Comment } from "../../models/types/comment";
+import { Template } from "../../models/types/template";
+import { Area } from "../../models/types/area";
+import { EducationalProgram } from "../../models/types/educational-program";
 
 const iohandler = (_, res) => {
     if (!res.socket.server.io) {
@@ -15,58 +20,66 @@ const iohandler = (_, res) => {
             allowEIO3: true,
             transports: ['websocket', 'polling']
         })
-        const onUpdateStatus = async statusObject => {
-            const { data: { error } } = await setPartialTemplateStatus({
-                id: statusObject.id, status: statusObject.status.name
-            })
-            io.emit('updateStatus', { error, ...statusObject })
+        const onCreateArea = async (area: Area) => {
+            io.emit('createdArea', area)
         }
-        const onCreateComment = async commentObject => {
-            const { data } = await getComment(commentObject.id)
-            if (data) {
-                const { data: { error } } = await updateComment({
-                    partialTemplateId: commentObject.id,
-                    comment: commentObject.comment
-                })
-                io.emit('existentComment', { error })
-                return
-            }
-            const { data: { error } } = await insertComment({
-                partialTemplateId: commentObject.id,
-                comment: commentObject.comment
-            })
-            io.emit('createComment', { error, id: commentObject.id })
+        const onUpdateArea = async (area: Area) => {
+            io.emit('updatedArea', area)
         }
-        const onCreateTemplate = async templateObject => {
-            const template = generateTemplateObject(templateObject)
-            const { data: { error: templateError, data } } = await insertPartialTemplate({ data: template as any })
-            if (templateError) {
-                io.emit('templateError', 'Error al guardar plantilla')
-                return
-            }
-            const activities = templateObject.activities.map(p => ({
-                ...p,
-                plantilla_id: data[0]?.id,
-            }))
-            const { data: { error: actError } } = await insertActivities(activities)
-            const newTemplate = {
-                id: data[0]?.id,
-                ...templateObject,
-            }
-            if (actError) {
-                io.emit('templateError', 'Error al guardar carga académica')
-                return
-            }
-            io.emit('createdTemplate', newTemplate)
+        const onDeleteArea = async (area: Area) => {
+            io.emit('deletedArea', area)
         }
-        const onDeleteComment = async commentObject => {
-            const { data: { error } } = await deleteComment(commentObject.id)
-            io.emit('deleteComment', { error, id: commentObject.id })
+        const onCreateEducationalProgram = async (educationalProgram: EducationalProgram) => {
+            io.emit('createdEducationalProgram', educationalProgram)
+        }
+        const onUpdateEducationalProgram = async (educationalProgram: EducationalProgram) => {
+            io.emit('updatedEducationalProgram', educationalProgram)
+        }
+        const onDeleteEducationalProgram = async (educationalProgram: EducationalProgram) => {
+            io.emit('deletedEducationalProgram', educationalProgram)
+        }
+        const onCreatePartialTemplate = async (partialTemplate: PartialTemplate) => {
+            io.emit('createdPartialTemplate', partialTemplate)
+        }
+        const onCreateTemplate = async (template: Template) => {
+            io.emit('createdTemplate', template)
+        }
+        const onUpdateTemplateStatus = async (template: Template) => {
+            io.emit('templateStatus', template)
+        }
+        const onUpdateTemplate = async (template: Template) => {
+            io.emit('updatedTemplate', template)
+        }
+        const onDeleteTemplate = async (template: Template) => {
+            io.emit('deletedTemplate', template)
+        }
+        const onUpdatePartialTemplateStatus = async (partialTemplate: PartialTemplate) => {
+            io.emit('partialTemplateStatus', partialTemplate)
+        }
+        const onDeletePartialTemplate = async (partialTemplate: PartialTemplate) => {
+            io.emit('deletedPartialTemplate', partialTemplate)
+        }
+        const onCreateComment = async (comment: Comment) => {
+            io.emit('createdComment', comment)
+        }
+        const onDeleteComment = async (comment: Comment) => {
+            io.emit('deletedComment', comment)
         }
         io.on('connection', socket => {
             socket.emit('connection', socket.id)
-            socket.on('updateStatus', onUpdateStatus)
+            socket.on('createArea', onCreateArea)
+            socket.on('updateArea', onUpdateArea)
+            socket.on('deleteArea', onDeleteArea)
+            socket.on('createEducationalProgram', onCreateEducationalProgram)
+            socket.on('updateEducationalProgram', onUpdateEducationalProgram)
+            socket.on('deleteEducationalProgram', onDeleteEducationalProgram)
+            socket.on('createPartialTemplate', onCreatePartialTemplate)
             socket.on('createTemplate', onCreateTemplate)
+            socket.on('deleteTemplate', onDeleteTemplate)
+            socket.on('updateTemplate', onUpdateTemplate)
+            socket.on('partialTemplateStatus', onUpdatePartialTemplateStatus)
+            socket.on('deletePartialTemplate', onDeletePartialTemplate)
+            socket.on('updateTemplateStatus', onUpdateTemplateStatus)
             socket.on('createComment', onCreateComment)
             socket.on('deleteComment', onDeleteComment)
         })

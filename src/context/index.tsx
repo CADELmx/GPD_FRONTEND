@@ -108,7 +108,9 @@ const AreaContext = createContext({} as any)
 export const UseSecretary = () => useContext<AreaState>(AreaContext)
 
 export const AreasProvider = ({ children }) => {
-    const [areaState, setAreaState] = useState({
+    const [areaState, setAreaState] = useState<{
+        areas: Area[], selectedArea: Area
+    }>({
         areas: [],
         selectedArea: {
             name: '',

@@ -14,7 +14,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
         setStoredEducationalPrograms({
             selectedEducationalProgram: {
                 ...selectedEducationalProgram,
-                [e.target.name]: e.target.name === 'areaId' ? parseInt(e.target.value) : e.target.value
+                [e.target.name]: e.target.value
             }
         })
     }
@@ -53,10 +53,9 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }) => {
         })
     }
     const handleSubmit = () => {
-        console.log('submit', selectedEducationalProgram)
         const newEducationalProgram = {
             ...selectedEducationalProgram,
-            areaId: selectedEducationalProgram.areaId
+            areaId: Number(selectedEducationalProgram.areaId)
         }
         if (selectedEducationalProgram?.id) {
             handleUpdate(selectedEducationalProgram.id, newEducationalProgram)
@@ -185,7 +184,7 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                         return updatedProgram ? updatedProgram.data : program
                     })
                 })
-                const success = promisesData.filter(({ error }) => error)
+                const success = promisesData.filter(({ error }) => !error)
                 const successLen = success.length
                 return `${successLen} programas educativos actualizados`
             },

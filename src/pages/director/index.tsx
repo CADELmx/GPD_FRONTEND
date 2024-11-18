@@ -10,6 +10,7 @@ import { YearSelectorAlter } from "../../components/Selector";
 import { ModalError } from "../../components/ModalError";
 import { Area } from "../../models/types/area";
 import { PlusIcon } from "../../components/Icons";
+import { UseSecretary } from "../../context";
 
 export const getServerSideProps = async () => {
     const { data: { data: areas, error } } = await getAreas()
@@ -21,7 +22,8 @@ export const getServerSideProps = async () => {
     }
 }
 
-export default function DirectorIndex({ areas, template: ssrTemplate, error }: { areas: Area[], template: Template, error: string | null }) {
+export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, error }: { areas: Area[], template: Template, error: string | null }) {
+    const { areaState: { areas }, setStoredAreas } = UseSecretary()
     const [template, setTemplate] = useState<Template>({
         areaId: null,
         period: new Date().getFullYear().toString(),
@@ -41,6 +43,9 @@ export default function DirectorIndex({ areas, template: ssrTemplate, error }: {
     }
     const [templateStatus, setTemplateStatus] = useState(statusTypes.find(s => s.name === template?.state) || statusTypes[0])
     useEffect(() => {
+        if (areas.length === 0) {
+            setStoredAreas({ areas: ssrAreas })
+        }
         if (ssrTemplate?.id) {
             setTemplate(ssrTemplate)
             setTemplateStatus(statusTypes.find(s => s.name === ssrTemplate.state) || statusTypes[0])
@@ -83,7 +88,9 @@ export default function DirectorIndex({ areas, template: ssrTemplate, error }: {
                 )
             }
             <Button
-                startContent={PlusIcon}
+                startContent={
+                    PlusIcon
+                }
                 isDisabled={template.areaId === undefined}
                 className="bg-utim"
                 onPress={handleSubmit}
