@@ -20,11 +20,11 @@ interface MemoryState {
     },
     setStored: (prop: any) => void,
     handleGlobalChange: (event: any) => void,
-    login: (email: string, password: string) => Promise<{
+    signIn: (email: string, password: string) => Promise<{
         error: string | null,
         user: CookieValueTypes
     }>,
-    logout: () => Promise<void>
+    signOut: () => Promise<void>
 }
 
 const TemplateContext = createContext<MemoryState>({} as any)
@@ -42,10 +42,11 @@ export const TemplatesProvider = ({ children }: {
         socket: io(),
         user: getCookie('user', { secure: true })
     })
-    const login = async (email: string, password: string) => {
-        const { data: { error, user } } = await axios.post('/api/login', {
+    const signIn = async (email: string, password: string) => {
+        const { data: { error, user } } = await axios.post('/api/auth/signin', {
             email, password
         })
+        console.log(error, user)
         if (error) {
             return { error, user: undefined }
         }
@@ -53,8 +54,8 @@ export const TemplatesProvider = ({ children }: {
         setCookie('user', user, { secure: true })
         return { error: null, user }
     }
-    const logout = async () => {
-        await fetch('/api/logout')
+    const signOut = async () => {
+        await fetch('/api/auth/signout')
         deleteCookie('user')
         setMemory({ ...memory, user: undefined })
     }
@@ -79,8 +80,8 @@ export const TemplatesProvider = ({ children }: {
             memory,
             setStored,
             handleGlobalChange,
-            login,
-            logout,
+            signIn,
+            signOut,
         }}>
             {children}
         </TemplateContext.Provider>

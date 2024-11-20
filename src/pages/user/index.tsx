@@ -5,7 +5,7 @@ import { UseTemplates } from "../../context";
 import Link from "next/link";
 
 export default function Login() {
-    const { login, logout, memory: { user }
+    const { signIn, signOut, memory: { user }
     } = UseTemplates()
     const [loading, setLoading] = useState(false);
     const [userInfo, setUserInfo] = useState({
@@ -19,7 +19,7 @@ export default function Login() {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
-        toast.promise(login(userInfo.email, userInfo.password), {
+        toast.promise(signIn(userInfo.email, userInfo.password), {
             loading: 'Iniciando sesión...',
             success: ({ error }) => {
                 setLoading(false)
@@ -37,7 +37,7 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center">
             <div className="flex-col object-fill w-5/6 sm:w-2/3 pt-5 mt-5">
                 {user ? (
-                    <form className="flex flex-col gap-2" onSubmit={logout}>
+                    <form className="flex flex-col gap-2" onSubmit={signOut}>
                         <div className="flex justify-center items-center content-center gap-2">
                             <Avatar color="primary"></Avatar>
                             <p className="">

@@ -1,13 +1,12 @@
 import { UseTemplates } from "@/context"
-import { getAllPersonalData, getPersonalData } from "@/models/transactions/personal-data"
-import { PersonalData } from "@/models/types/personal-data"
+import { getPersonalData } from "@/models/transactions/personal-data"
 import { Button, Input } from "@nextui-org/react"
 import Router from "next/router"
 import { ChangeEvent, useState } from "react"
 import toast from "react-hot-toast"
 
 export default function Register() {
-    const { login, logout, memory: { user } } = UseTemplates()
+    const { signIn } = UseTemplates()
     const [loading, setLoading] = useState(false);
     const [userInfo, setUserInfo] = useState({
         email: '',
@@ -17,11 +16,11 @@ export default function Register() {
     });
     const handleSubmit = async () => {
         setLoading(true)
-        toast.promise(login(userInfo.email, userInfo.password), {
+        toast.promise(signIn(userInfo.email, userInfo.password), {
             loading: 'Iniciando sesión...',
-            success: ({ error }) => {
+            success: ({ error, user }) => {
                 setLoading(false)
-                if(!error) {
+                if (!error) {
                     Router.push('/user')
                 }
                 return error ? 'Error al autenticar' : 'Usuario autenticado'
@@ -40,7 +39,9 @@ export default function Register() {
     }
     const handleGetPersonalData = (e: ChangeEvent<HTMLInputElement>) => {
         setUserInfo({ ...userInfo, nt: e.target.value })
-        toast.promise(getPersonalData({ id: Number(e.target.value) }), {
+        console.log(userInfo.nt)
+        if (!userInfo.nt) return
+        toast.promise(getPersonalData({ id: Number(userInfo.nt) }), {
             loading: 'Buscando trabajador',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
@@ -53,6 +54,7 @@ export default function Register() {
         }, {
             id: 'get-personal-data'
         })
+
     }
     return (
         <>
