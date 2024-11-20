@@ -3,7 +3,7 @@ import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../
 import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
 import { useState } from "react"
 import { UseSecretary } from "../../context"
-import { CreateEducationalProgram } from "@/models/types/educational-program"
+import { CreateEducationalProgram, EducationalProgram } from "@/models/types/educational-program"
 
 export const tableClassNames = {
     wrapper: 'm-0 p-1',
@@ -17,7 +17,7 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
 }) => {
     const { setStoredEducationalPrograms, areaState: { areas }, educationalState: { educationalPrograms } } = UseSecretary()
     const [editmode, setEditmode] = useState(false);
-    const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState<any>(new Set([]));
+    const [selectedEductationalPrograms, setSelectedEductationalPrograms] = useState<EducationalProgram[]>([]);
     const ChangeFromAreaModal = useDisclosure()
     const DeleteEducativeProgramsModal = useDisclosure()
     const handlePress = (educationalProgram: CreateEducationalProgram) => {
@@ -59,7 +59,7 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
                     thumbIcon={PencilIcon}
                     isSelected={editmode}
                     onValueChange={(e) => {
-                        if (e) setSelectedEductationalPrograms(new Set([]))
+                        if (e) setSelectedEductationalPrograms([])
                         setEditmode(e)
                     }}
                 >
@@ -70,14 +70,14 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
                         <div className="flex items-center pt-2 md:pt-0 gap-2">
                             <Button
                                 aria-label="Cambiar de área"
-                                isDisabled={selectedEductationalPrograms.size === 0}
+                                isDisabled={selectedEductationalPrograms.length === 0}
                                 startContent={ArrowsRightLeftIcon}
                                 color="primary"
                                 onPress={handleChangeArea}
                             >Cambiar de area</Button>
                             <Button
                                 aria-label="Eliminar varios"
-                                isDisabled={selectedEductationalPrograms.size === 0}
+                                isDisabled={selectedEductationalPrograms.length === 0}
                                 startContent={TrashIcon}
                                 color="danger"
                                 onPress={handleDeleteMany}
@@ -90,11 +90,11 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
                 aria-label="Tabla de programas educativos"
                 selectionMode={editmode ? "multiple" : 'none'}
                 onSelectionChange={(e) => {
-                    if (e === 'all') return setSelectedEductationalPrograms(new Set(educationalPrograms.map((edu) => edu.id)))
-                    setSelectedEductationalPrograms(e)
+                    if (e === 'all') return setSelectedEductationalPrograms(educationalPrograms)
+                    setSelectedEductationalPrograms(educationalPrograms.filter(ep => e.has(ep.id)))
                     console.log(selectedEductationalPrograms)
                 }}
-                selectedKeys={selectedEductationalPrograms}
+                selectedKeys={selectedEductationalPrograms.map(e => e.id)}
                 isCompact
                 classNames={tableClassNames}>
                 <TableHeader>

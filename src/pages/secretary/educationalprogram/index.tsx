@@ -1,7 +1,7 @@
 
 import { EducationalProgramsTable } from "@/components/educationalProgram/EducationalProgramCard"
 import { EducationalProgramDeleteModal, EducationalProgramModal } from "@/components/educationalProgram/EducationalProgramModal"
-import { ExportEducationalProgramsMenu } from "@/components/educationalProgram/ImportMenu"
+import { ImportEducationalProgramsMenu } from "@/components/educationalProgram/ImportMenu"
 import { UploadIcon } from "@/components/Icons"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
@@ -59,7 +59,7 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
                     title="Exportar programas educativos"
                     startContent={UploadIcon}
                 >
-                    <ExportEducationalProgramsMenu />
+                    <ImportEducationalProgramsMenu />
                 </AccordionItem>
             </Accordion>
             {

@@ -1,25 +1,18 @@
+import { serverClient } from '@/models/apiClient'
 import { setCookie } from 'cookies-next'
-const loginHandler = async (req, res) => {
+import { NextApiRequest, NextApiResponse } from 'next'
+const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         const { email, password } = req.body
         if (email === '' || password === '' || !email || !password) {
             return res.status(400).json({ error: 'Credenciales requeridas' })
         }
-        const response = await fetch(`${process.env.API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: email,
-                password: password,
-            }),
-        })
-        if (response.status === 401) {
+        const { data, status } = await serverClient.get('/auth/login')
+        if (status === 401) {
             return res.status(401).json({ error: 'Credenciales inválidas' })
         }
-        if (response.status === 201 || response.status === 200) {
-            const { access_token } = await response.json()
+        if (status === 201 || status === 200) {
+            const { access_token } = data
             setCookie('token', access_token, {
                 req,
                 res,

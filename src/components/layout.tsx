@@ -13,23 +13,22 @@ import { Template } from "@/models/types/template"
 export const Layout = ({ children }: {
     children: React.ReactNode
 }) => {
-    const navBarMenuItems = [
-        { name: "Inicio", href: "/" },
-        { name: "Secretaría", href: "/secretary" },
-        { name: "Estado de plantillas", href: "/templatestatus" },
-    ]
     const secretaryItems = [
         {
-            name: "Plantillas", href: "/secretary", icon: InboxIcon
+            name: "Plantillas docentes - vista general", href: "/secretary/template", icon: InboxIcon
         },
         {
-            name: "Areas", href: "/secretary/area", icon: AcademicHatIcon
+            name: 'Plantillas docnetes - vista detallada', href: '/secretary/partialtemplate', icon: InboxIcon
+        },
+        {
+            name: "Áreas", href: "/secretary/area", icon: AcademicHatIcon
         },
         {
             name: "Programas educativos", href: "/secretary/educationalprogram", icon: AcademicHatIcon
         },
     ]
     const programDirectorItems = [
+
         {
             name: "Ver estado de plantillas parciales", href: "/director/partialtemplate", icon: EyeIcon
         },
@@ -37,8 +36,10 @@ export const Layout = ({ children }: {
             name: 'Ver estado de plantillas', href: '/director/template', icon: EyeIcon
         },
         {
-            name: 'Crear nueva plantilla', href: '/director', icon: PlusIcon
-
+            name: 'Crear nueva plantilla', href: '/director/template', icon: PlusIcon
+        },
+        {
+            name: 'Ver áreas y programas educativos', href: '/director/area', icon: AcademicHatIcon
         }
     ]
     const { memory: { socket, user } } = UseTemplates()
@@ -59,14 +60,6 @@ export const Layout = ({ children }: {
         function onDisconnect() {
             setIsConnected(false)
             setTransport("N/A")
-        }
-        function onTemplateError(data: Template) {
-            if (router.pathname === "/") {
-                toast.error('Error al crear un plantilla', {
-                    id: "template-error",
-                    duration: 5000,
-                })
-            }
         }
         function onCreatedTemplate(data: Template) {
             if (router.pathname === "/secretary") {
@@ -91,7 +84,6 @@ export const Layout = ({ children }: {
         socket.on("disconnect", onDisconnect)
         socket.on("createdTemplate", onCreatedTemplate)
         socket.on("updateStatus", onStatusUpdate)
-        socket.on("templateError", onTemplateError)
         return () => {
             socket.off("connect", onConnect)
             socket.off("disconnect", onDisconnect)
@@ -171,10 +163,14 @@ export const Layout = ({ children }: {
                             <Chip
                                 variant="dot"
                                 radius="full"
-                                className="flex sm:hidden"
+                                className="flex sm:hidden pr-0"
+                                classNames={{
+                                    content: "pr-0",
+                                    dot: "pr-0",
+                                    base: "pr-0",
+                                }}
                                 color={isConnected ? "success" : "danger"}
-                            >.
-                            </Chip>
+                            />
                         </NavbarContent>
                     )
                 }

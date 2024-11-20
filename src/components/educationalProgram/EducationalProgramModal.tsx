@@ -7,7 +7,7 @@ import { createEducationalProgram, deleteEducationalProgram, updateEducationalPr
 import { UseSecretary } from "../../context"
 import { getFirstSetValue } from "../../utils"
 import { playNotifySound } from "../../toast"
-import { CreateEducationalProgram } from "@/models/types/educational-program"
+import { CreateEducationalProgram, EducationalProgram } from "@/models/types/educational-program"
 
 interface ModalProps {
     isOpen: boolean,
@@ -163,13 +163,13 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }: 
     )
 }
 
-export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }: ModalProps & { selectedEducationalPrograms: Set<any> }) => {
+export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }: ModalProps & { selectedEducationalPrograms: EducationalProgram[] }) => {
+    console.log(selectedEducationalPrograms)
     const { areaState: { areas }, educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const [selectedAreas, setSelectedAreas] = useState<any>(new Set([]));
     const handleUpdateMany = () => {
-        const programsToUpdate = educationalPrograms.filter((program) => selectedEducationalPrograms.has(program.id))
         const newAreaId = Number(getFirstSetValue(selectedAreas))
-        const programPromises = programsToUpdate.map((program) => {
+        const programPromises = selectedEducationalPrograms.map((program) => {
             return updateEducationalProgram({ id: program.id, data: { ...program, areaId: newAreaId } })
         })
         toast.promise(Promise.all(programPromises), {
@@ -232,15 +232,12 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                             Programas educativos seleccionados
                                         </TableColumn>
                                     </TableHeader>
-                                    <TableBody items={Array.from(selectedEducationalPrograms, (v: string, i: number) => ({
-                                        index: i,
-                                        value: v
-                                    }))}>
+                                    <TableBody items={selectedEducationalPrograms}>
                                         {
                                             (educationalProgram) => {
                                                 return (
-                                                    <TableRow key={educationalProgram.index}>
-                                                        <TableCell>{educationalPrograms.find(p => p.id === Number(educationalProgram.value))?.description}</TableCell>
+                                                    <TableRow key={educationalProgram.id}>
+                                                        <TableCell>{educationalProgram.description}</TableCell>
                                                     </TableRow>
                                                 )
                                             }
@@ -273,12 +270,11 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
 }
 
 export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }: ModalProps & {
-    selectedEducationalPrograms: Set<any>
+    selectedEducationalPrograms: EducationalProgram[]
 }) => {
     const { educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const handleDeleteMany = () => {
-        const programsToDelete = educationalPrograms.filter((program) => selectedEducationalPrograms.has(program.id))
-        const programPromises = programsToDelete.map((program) => {
+        const programPromises = selectedEducationalPrograms.map((program) => {
             return deleteEducationalProgram({ id: program.id })
         })
         toast.promise(Promise.all(programPromises), {
@@ -291,7 +287,7 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                 }
                 playNotifySound()
                 setStoredEducationalPrograms({
-                    educationalPrograms: educationalPrograms.filter((program) => !selectedEducationalPrograms.has(program.id))
+                    educationalPrograms: educationalPrograms.filter((program) => !selectedEducationalPrograms.some(({ id }) => id === program.id))
                 })
                 const success = promisesData.filter(({ error }) => !error)
                 const successLen = success.length
@@ -318,15 +314,12 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                             Programas educativos seleccionados
                                         </TableColumn>
                                     </TableHeader>
-                                    <TableBody items={Array.from(selectedEducationalPrograms, (v, i) => ({
-                                        index: i,
-                                        value: v
-                                    }))}>
+                                    <TableBody items={selectedEducationalPrograms}>
                                         {
                                             (educationalProgram) => {
                                                 return (
-                                                    <TableRow key={educationalProgram.index}>
-                                                        <TableCell>{educationalPrograms.find(p => p.id === educationalProgram.value)?.description}</TableCell>
+                                                    <TableRow key={educationalProgram.id}>
+                                                        <TableCell>{educationalProgram.description}</TableCell>
                                                     </TableRow>
                                                 )
                                             }

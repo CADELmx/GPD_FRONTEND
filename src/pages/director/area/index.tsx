@@ -3,7 +3,7 @@ import { tableClassNames } from "@/components/educationalProgram/EducationalProg
 import { ModalError } from "@/components/ModalError"
 import { getAreasJoinEducationalPrograms } from "@/models/transactions/area"
 import { AreaJoinEducationalPrograms } from "@/models/types/area"
-import { Accordion, AccordionItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Accordion, AccordionItem, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 
 export const getStaticProps = async () => {
     const { data } = await getAreasJoinEducationalPrograms()
@@ -22,10 +22,15 @@ export const getStaticProps = async () => {
 export default function AreaIndex({ error, data: areas }: { error: string | null, data: AreaJoinEducationalPrograms[] }) {
     return (
         <>
+            <Chip variant="solid" className="fixed right-8 bottom-10 bg-utim z-20">
+                {areas.reduce((p, n) => p + n.educationalPrograms.length, 0)} Programas educativos
+            </Chip>
+            <Chip variant="solid" className="fixed right-8 bottom-20 bg-utim z-20">
+                {areas.length} Áreas
+            </Chip>
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Areas</h1>
             <ModalError error={error} />
             <section>
-
                 <Accordion variant="splitted" title="Acordeones de areas" itemClasses={{
                     base: 'p-2 py-0',
                     title: 'text-sm p-2 py-0',

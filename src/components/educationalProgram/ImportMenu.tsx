@@ -11,7 +11,7 @@ import { playNotifySound } from "@/toast";
 import { tableClassNames } from "./EducationalProgramCard";
 
 
-export const ExportEducationalProgramsMenu = () => {
+export const ImportEducationalProgramsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
     const [file, setFile] = useState<File>(new File([], ''));
     const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
@@ -30,6 +30,21 @@ export const ExportEducationalProgramsMenu = () => {
             formData.append('file', file);
             toast.promise(axios.post('/api/import/educationalprogram', formData), {
                 loading: 'Importando programas educativos...',
+                success: ({ status }) => {
+                    if (status === 200) {
+                        return 'Procesando programas educativos...'
+                    }
+                    return 'Error al procesar los programas educativos'
+                },
+                error: () => {
+                    setLoading(false)
+                    return 'Error al importar los programas educativos'
+                }
+            }, {
+                id: 'import-educational-programs'
+            })
+            toast.promise(axios.get(`/api/import/${file.name}`), {
+                loading: 'Cargando programas educativos...',
                 success: ({ data, status }) => {
                     if (status === 200) {
                         const newEducationalPrograms = JSON.parse(data)
@@ -39,53 +54,61 @@ export const ExportEducationalProgramsMenu = () => {
                                 index: i
                             }))
                         setEducationalPrograms(newEducationalPrograms)
-                        setFile(new File([], ''))
                         setLoading(false)
-                        return 'Programas educativos importados'
+                        return 'Programas educativos listos para registrar'
+                    } else {
+                        setLoading(false)
+                        return 'Error al importar los programas educativos'
                     }
-                    return 'Error al importar los programas educativos'
                 },
                 error: () => {
                     setLoading(false)
-                    return 'Error al importar los programas educativos'
+                    return 'Error al importar los programas educativos, intenta de nuevo'
                 }
+            }, {
+                id: 'import-educational-programs'
             })
         }
     }
     const handleSubmit = async () => {
         if (selectedEductationalPrograms.size > 0) {
-            setLoading(true)
-            const newEducationalPrograms: CreateEducationalProgram[] = Array.from(selectedEductationalPrograms).map((index) => {
-                const { abbreviation, description }: {
-                    abbreviation: string,
-                    description: string
-                } = educationalPrograms[Number(index)]
-                return ({
-                    abbreviation,
-                    description
+            try {
+                setLoading(true)
+                const newEducationalPrograms: CreateEducationalProgram[] = Array.from(selectedEductationalPrograms).map((index) => {
+                    const { abbreviation, description }: {
+                        abbreviation: string,
+                        description: string
+                    } = educationalPrograms[Number(index)]
+                    return ({
+                        abbreviation,
+                        description
+                    })
                 })
-            })
-            toast.promise(createManyEducationalPrograms({
-                areaId: getFirstSetValue(selectedArea),
-                data: newEducationalPrograms
-            }), {
-                loading: 'Registrando programas educativos...',
-                success: ({ data: { data, error, message } }) => {
-                    setLoading(false)
-                    if (error) return message
-                    setEducationalPrograms(educationalPrograms.filter(e => {
-                        return !selectedEductationalPrograms.has(`${e.index}`)
-                    }))
-                    setSelectedEducationalPrograms(new Set([]))
-                    setSelectedArea(new Set([]))
-                    playNotifySound()
-                    return `${data.count} programas educativos registrados`
-                },
-                error: () => {
-                    setLoading(false)
-                    return 'Error al registrar los programas educativos'
-                }
-            })
+                toast.promise(createManyEducationalPrograms({
+                    areaId: getFirstSetValue(selectedArea),
+                    data: newEducationalPrograms
+                }), {
+                    loading: 'Registrando programas educativos...',
+                    success: ({ data: { data, error, message } }) => {
+                        setLoading(false)
+                        if (error) return message
+                        setEducationalPrograms(educationalPrograms.filter(e => {
+                            return !selectedEductationalPrograms.has(`${e.index}`)
+                        }))
+                        setSelectedEducationalPrograms(new Set([]))
+                        setSelectedArea(new Set([]))
+                        playNotifySound()
+                        return `${data.count} programas educativos registrados`
+                    },
+                    error: () => {
+                        setLoading(false)
+                        return 'Error al registrar los programas educativos'
+                    }
+                })
+            } catch (error: any) {
+                setLoading(false)
+                toast.error('Error al registrar los programas educativos')
+            }
         }
     }
     return (
@@ -102,8 +125,8 @@ export const ExportEducationalProgramsMenu = () => {
                         <p className="text-xs text-utim">Archivos en formato JSON</p>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                        <Chip isDisabled={!file} variant="bordered">
-                            {file ? file?.name : 'Nada seleccionado'}
+                        <Chip isDisabled={!file.name} variant="bordered">
+                            {file.name || 'Nada seleccionado'}
                         </Chip>
                         {
                             file &&

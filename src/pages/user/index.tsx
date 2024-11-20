@@ -1,7 +1,8 @@
-import { Avatar, Button, Input } from "@nextui-org/react";
+import { Avatar, Button, Divider, Input } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { UseTemplates } from "../../context";
+import Link from "next/link";
 
 export default function Login() {
     const { login, logout, memory: { user }
@@ -28,6 +29,8 @@ export default function Login() {
                 setLoading(false)
                 return 'Error intentando iniciar sesión'
             },
+        }, {
+            id: 'login'
         })
     }
     return (
@@ -47,10 +50,38 @@ export default function Login() {
                     <form
                         className="flex flex-col gap-2"
                         onChange={handleChange}
-                        onSubmit={handleSubmit}>
-                        <Input label="Correo" name="email" type="email" isRequired />
-                        <Input label="Contraseña" name="password" type="password" isRequired />
-                        <Button isLoading={loading} type="submit">Iniciar sesión</Button>
+                        onSubmit={handleSubmit}
+                    >
+                        <Input
+                            label="Correo"
+                            name="email"
+                            type="email"
+                            isRequired
+                        />
+                        <Input
+                            label="Contraseña"
+                            name="password"
+                            type="password"
+                            isRequired
+                        />
+                        <Button
+                            isDisabled={userInfo.email === '' || userInfo.password === ''}
+                            isLoading={loading}
+                            type="submit"
+                            className="bg-utim"
+                        >
+                            Iniciar sesión
+                        </Button>
+                        <div className="flex items-center justify-center gap-2">
+                            <Divider className="w-2/5" />
+                            o
+                            <Divider className="w-2/5" />
+                        </div>
+                        <Link href="/user/register" passHref legacyBehavior>
+                            <Button color="primary">
+                                Registrarse
+                            </Button>
+                        </Link>
                     </form >
                 )}
             </div >

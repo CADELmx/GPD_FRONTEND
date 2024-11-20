@@ -24,7 +24,6 @@ async function readAndWriteFile(file: File, newPath: string) {
         }
         const path = `${newPath}/${file.originalFilename}`
         const data = await readFile(file.filepath)
-        console.log(data)
         await writeFile(path, data)
         return 'ok'
     } catch (error: any) {
