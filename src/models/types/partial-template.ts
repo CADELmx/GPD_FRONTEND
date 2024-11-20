@@ -20,6 +20,17 @@ export type PartialTemplate = CreatePartialTemplate & {
     id: number;
 }
 
+export type UpdatePartialTemplate = {
+    nt?: number;
+    name?: string;
+    gender?: string;
+    position?: string;
+    total?: number;
+    status?: string;
+    year?: string;
+    period?: string;
+}
+
 export type PartialTemplateJoinActivity = PartialTemplate & {
     id: number,
     partialTemplateId: number,

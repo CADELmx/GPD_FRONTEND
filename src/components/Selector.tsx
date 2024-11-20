@@ -52,7 +52,7 @@ const PeriodSelector = ({ selectedYear }: { selectedYear: string }) => {
         },
         {
             period: "septiembre - diciembre",
-            grades: ['1', '4', '7'],
+            grades: ['1', '4', '7', '10'],
             months: ['septiembre', 'octubre', 'noviembre', 'diciembre']
         }
     ]

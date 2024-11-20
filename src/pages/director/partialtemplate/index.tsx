@@ -6,12 +6,7 @@ import { getPartialTemplatesJoinComments } from "../../../models/transactions/pa
 import { PartialTemplateJoinComment } from "../../../models/types/partial-template"
 import { ModalError } from "../../../components/ModalError"
 import { tableClassNames } from "../../../components/educationalProgram/EducationalProgramCard"
-
-const colors = {
-    'Aprobado': 'success',
-    'Corrección': 'danger',
-    'Pendiente': 'warning'
-}
+import { statusTypes } from "../../../components/ChangeStatus"
 
 export default function DirectorPartialTemplates({ partialTemplates: ssrTemplates, error }: {
     partialTemplates: PartialTemplateJoinComment[],
@@ -60,7 +55,7 @@ export default function DirectorPartialTemplates({ partialTemplates: ssrTemplate
                             <TableCell aria-label="nombre">{template.name}</TableCell>
                             <TableCell aria-label="horas">{template.total}</TableCell>
                             <TableCell aria-label="estado">
-                                <Chip variant="dot" color={colors[template.status]}>{template.status}</Chip>
+                                <Chip variant="dot" color={statusTypes.find(statusType=>statusType.name===template.status)?.color}>{template.status}</Chip>
                             </TableCell>
                             <TableCell aria-label="comentarios">{template.comments.length === 0 ? 'Sin comentarios' : `${template.comments.length} comentarios`}
                             </TableCell>

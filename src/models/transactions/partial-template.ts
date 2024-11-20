@@ -1,6 +1,6 @@
 import { ApiResponse, GetById, serverClient } from "../apiClient";
-import { Activity, CreateActivity } from "../types/activity";
-import { CreatePartialTemplate, PartialTemplate, PartialTemplateJoinActivity, PartialTemplateJoinComment } from "../types/partial-template";
+import { CreateActivity } from "../types/activity";
+import { CreatePartialTemplate, PartialTemplate, PartialTemplateJoinActivity, PartialTemplateJoinComment, UpdatePartialTemplate } from "../types/partial-template";
 import { insertActivities } from "./activity";
 
 
@@ -48,14 +48,10 @@ export const getPartialTemplate = (
     })
 }
 
-export const setPartialTemplateStatus = (
-    { id, status }: { id: number, status: string }
+export const updatePartialTemplate = (
+    { id, data }: { id: number, data?: UpdatePartialTemplate }
 ) => {
-    return serverClient.put<PartialTemplateResult>('/partial-template', status, {
-        params: {
-            id
-        }
-    })
+    return serverClient.put<PartialTemplateResult>(`/partial-template/${id}`, data)
 }
 
 export const getPartialTemplateJoinActivity = ({ id }: GetById) => {

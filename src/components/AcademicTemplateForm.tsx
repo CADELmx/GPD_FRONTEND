@@ -70,7 +70,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
         }
     }, [])
     return (
-        <form className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
             {
                 !partialTemplate?.id && <NtInput academicWorkers={academicWorkers} />
             }
@@ -131,6 +131,6 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
             >
                 Guardar
             </Button>
-        </form>
+        </div>
     )
 }

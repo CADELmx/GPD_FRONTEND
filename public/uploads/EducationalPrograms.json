@@ -1,0 +1,122 @@
+[
+    {
+        "abbreviation": "IFF",
+        "description": "Ingeniería Financiera"
+    },
+    {
+        "abbreviation": "IFF.M",
+        "description": "Ingeniería Financiera Mixta"
+    },
+    {
+        "abbreviation": "PAL",
+        "description": "Licenciatura en Procesos Alimentarios"
+    },
+    {
+        "abbreviation": "ADM: CH",
+        "description": "Técnico Superior Universitario en Administración Área Recursos Humanos"
+    },
+    {
+        "abbreviation": "ADM: CH.D",
+        "description": "Técnico Superior Universitario en Administración Área Recursos Humanos Despresurizado"
+    },
+    {
+        "abbreviation": "ADM: FEP",
+        "description": "Técnico Superior Universitario en Administración Área Formulación y Evaluación de Proyectos"
+    },
+    {
+        "abbreviation": "CONTA",
+        "description": "Técnico Superior Universitario en Contaduría"
+    },
+    {
+        "abbreviation": "CONTA.D",
+        "description": "Técnico Superior Universitario en Contaduría Despresurizado"
+    },
+    {
+        "abbreviation": "CONTA",
+        "description": "Licenciatura en Contaduría"
+    },
+    {
+        "abbreviation": "CONTA.M",
+        "description": "Licenciatura en Contaduría Mixta"
+    },
+    {
+        "abbreviation": "LING",
+        "description": "Técnico Superior Universitario en Lengua Inglesa"
+    },
+    {
+        "abbreviation": "LING.D",
+        "description": "Técnico Superior Universitario en Lengua Inglesa Despresurizado"
+    },
+    {
+        "abbreviation": "PMD",
+        "description": "Técnico Superior Universitario en Paramédico"
+    },
+    {
+        "abbreviation": "TPAL",
+        "description": "Técnico Superior Universitario en Procesos Alimentarios"
+    },
+    {
+        "abbreviation": "DGSW",
+        "description": "Licenciatura en Desarrollo y Gestión de Software"
+    },
+    {
+        "abbreviation": "DGSW.M",
+        "description": "Licenciatura en Desarrollo y Gestión de Software Mixta"
+    },
+    {
+        "abbreviation": "TI",
+        "description": "Licenciatura en Tecnologías de la Información"
+    },
+    {
+        "abbreviation": "TI.M",
+        "description": "Licenciatura en Tecnologías de la Información Mixta"
+    },
+    {
+        "abbreviation": "TI: DSM",
+        "description": "Técnico Superior Universitario en Tecnologías de la Información Área Desarrollo de Software Multiplataforma"
+    },
+    {
+        "abbreviation": "TI: DSM.D",
+        "description": "Técnico Superior Universitario en Tecnologías de la Información Área Desarrollo de Software Multiplataforma Despresurizado"
+    },
+    {
+        "abbreviation": "TI: IRD",
+        "description": "Técnico Superior Universitario en Tecnologías de la Información Área Infraestructura de Redes Digitales"
+    },
+    {
+        "abbreviation": "RIC",
+        "description": "Ingeniería en Redes Inteligentes y Ciberseguridad"
+    },
+    {
+        "abbreviation": "ASYP",
+        "description": "Técnico Superior Universitario en Agricultura Sustentable y Protegida"
+    },
+    {
+        "abbreviation": "ASYP",
+        "description": "Licenciatura en Agricultura Sustentable y Protegida"
+    },
+    {
+        "abbreviation": "AGRV",
+        "description": "Técnico Superior Universitario en Agrobiotecnología Área Vegetal"
+    },
+    {
+        "abbreviation": "AGRV.D",
+        "description": "Técnico Superior Universitario en Agrobiotecnología Área Vegetal Despresurizado"
+    },
+    {
+        "abbreviation": "AGRO",
+        "description": "Licenciatura en Agrobiotecnología"
+    },
+    {
+        "abbreviation": "GCH",
+        "description": "Licenciatura en Gestión de Capital Humano"
+    },
+    {
+        "abbreviation": "GCH.M",
+        "description": "Licenciatura en Gestión de Capital Humano Mixta"
+    },
+    {
+        "abbreviation": "GNP",
+        "description": "Licenciatura en Gestión de Negocios y Proyectos"
+    }
+]

@@ -1,6 +1,5 @@
 import { ApiResponse, serverClient } from "../apiClient"
 import { Activity, CreateActivity } from "../types/activity"
-import { getTemplates } from "./templates"
 
 export interface ActivityResult extends ApiResponse {
     data: Activity

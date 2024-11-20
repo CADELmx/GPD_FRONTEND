@@ -4,6 +4,10 @@ import toast from 'react-hot-toast';
 import { MessageIcon } from './Icons';
 import { UseTemplates } from '../context';
 import { checkSocketStatus } from '../utils';
+import { updatePartialTemplate } from '../models/transactions/partial-template';
+import { insertComment } from '../models/transactions/comment';
+import { Comment } from '../models/types/comment';
+import { PartialTemplate } from '../models/types/partial-template';
 
 export interface StatusType {
     name: 'Pendiente' | 'Aprobado' | 'Corrección';
@@ -16,22 +20,33 @@ export const statusTypes: StatusType[] = [
     { name: 'Corrección', color: 'danger' }
 ];
 
-export const ChangeStatus = ({ status, templateid }) => {
+export const ChangeStatus = ({ status, templateid }: {
+    status: string,
+    templateid: number
+}) => {
     const { memory: { socket } } = UseTemplates()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [comment, setComment] = useState('')
     const error = comment.length < 2
     const [taskStatus, setTaskStatus] = useState(statusTypes.find(s => s.name === status) || statusTypes[0])
 
-    const handleUpdateStatus = (newStatus) => {
-        if (checkSocketStatus(socket, toast)) return socket.connect()
-        if (newStatus.name === 'Aprobado') socket.emit('deleteComment', { id: templateid })
-        socket.emit('updateStatus', { id: templateid, status: newStatus })
-        toast('Cambiando estado...', {
-            id: 'status-change'
+    const handleUpdateStatus = (newStatus: StatusType) => {
+        toast.promise(updatePartialTemplate({
+            id: templateid, data: {
+                status: newStatus.name
+            }
+        }), {
+            loading: 'Cambiando estado...',
+            success: ({ data: { data, error, message } }) => {
+                if (error) return message
+                setTaskStatus(newStatus)
+                socket.emit('partialTemplateStatus', data)
+                return `Estado cambiado a ${newStatus.name}`
+            },
+            error: 'Error al cambiar'
         })
     }
-    const handleSubmit = (newStatus) => {
+    const handleSubmit = (newStatus: StatusType) => {
         if (newStatus.name === 'Corrección') {
             onOpen()
         } else {
@@ -39,41 +54,54 @@ export const ChangeStatus = ({ status, templateid }) => {
         }
     }
     const handleInsertComment = () => {
-        if (checkSocketStatus(socket, toast)) return socket.connect()
-        socket.emit('createComment', { id: templateid, comment })
-        toast('Enviando comentario...', {
-            id: 'comment-insert'
+        toast.promise(insertComment({
+            partialTemplateId: templateid, comment: {
+                comment: comment
+            }
+        }), {
+            loading: 'Enviando comentario...',
+            success: ({ data: { data, error, message } }) => {
+                if (error) return message
+                socket.emit('createdComment', data)
+                return 'Comentario enviado'
+            },
+            error: 'Error al enviar comentario'
         })
     }
     const handleSetStatus = () => {
-        if (checkSocketStatus(socket, toast)) return socket.connect()
-        socket.emit('updateStatus', { id: templateid, status: { name: 'Corrección', color: 'danger' } })
-        toast('Enviando a corrección...', {
-            id: 'status-change'
+        toast.promise(updatePartialTemplate({
+            id: templateid, data: {
+                status: 'Corrección'
+            }
+        }), {
+            loading: 'Cambiando estado...',
+            success: ({ data: { data, error, message } }) => {
+                if (error) return message
+                socket.emit('correctionPartialTemplate', data)
+                return 'Enviado a corrección'
+            },
+            error: 'Error al cambiar'
         })
     }
-    const handleClose = () => {
+
+    const handleCorrection = () => {
         handleSetStatus()
         handleInsertComment()
         onClose()
     }
     useEffect(() => {
-        const onUpdateStatus = (data) => {
-            if (data.error) {
-                toast.error('Error al cambiar estado', {
-                    id: 'status-change'
-                })
-            }
+        const onUpdateStatus = (data: PartialTemplate) => {
             if (data.id === templateid) {
-                setTaskStatus(data.status)
+                setTaskStatus(statusTypes.find(s => s.name === data.status) || statusTypes[0])
+                //cambiar sonido de notificacion
                 toast('Estado cambiado', {
                     id: 'status-change'
                 })
             }
         }
-        socket.on('updateStatus', onUpdateStatus)
+        socket.on('partialTemplateStatus', onUpdateStatus)
         return () => {
-            socket.off('updateStatus')
+            socket.off('partialTemplateStatus')
         };
     }, []);
     return (
@@ -105,7 +133,7 @@ export const ChangeStatus = ({ status, templateid }) => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button variant='light' onPress={onClose} color='danger'>Cancelar</Button>
-                                <Button isDisabled={error} onPress={handleClose} className='bg-utim'>Aceptar</Button>
+                                <Button isDisabled={error} onPress={handleCorrection} className='bg-utim'>Aceptar</Button>
                             </ModalFooter>
                         </>
                     )}

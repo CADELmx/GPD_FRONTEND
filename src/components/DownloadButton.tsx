@@ -3,8 +3,11 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { DownloadIcon, RightArrowIcon, VericalDotsIcon } from './Icons'
 
-export const MoreOptions = ({ templateid, templatename }) => {
-    const download = async (data) => {
+export const MoreOptions = ({ templateid, templatename }:{
+    templateid: number,
+    templatename: string
+}) => {
+    const download = async (data: Response) => {
         const blob = await data.blob()
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
@@ -44,7 +47,7 @@ export const MoreOptions = ({ templateid, templatename }) => {
         <Dropdown>
             <DropdownTrigger>
                 <Button variant="light" isIconOnly aria-label="opciones">
-                    <VericalDotsIcon />
+                    {VericalDotsIcon}
                 </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -64,7 +67,7 @@ export const MoreOptions = ({ templateid, templatename }) => {
                     aria-label='ver'
                     startContent={RightArrowIcon}
                 >
-                    <Link legacyBehavior passHref href={`/plantilla/${templateid}`}>
+                    <Link legacyBehavior passHref href={`/partialtemplate/${templateid}`}>
                         Ver plantilla
                     </Link>
                 </DropdownItem>

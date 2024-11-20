@@ -51,6 +51,9 @@ const iohandler = (_: any, res: any) => {
         const onUpdatePartialTemplateStatus = async (partialTemplate: PartialTemplate) => {
             io.emit('partialTemplateStatus', partialTemplate)
         }
+        const onCorrectionPartialTemplate = async (partialTemplate: PartialTemplate) => {
+            io.emit('correctionPartialTemplate', partialTemplate)
+        }
         const onDeletePartialTemplate = async (partialTemplate: PartialTemplate) => {
             io.emit('deletedPartialTemplate', partialTemplate)
         }
@@ -73,7 +76,8 @@ const iohandler = (_: any, res: any) => {
             socket.on('deleteTemplate', onDeleteTemplate)
             socket.on('updateTemplate', onUpdateTemplate)
             socket.on('partialTemplateStatus', onUpdatePartialTemplateStatus)
-            socket.on('deletePartialTemplate', onDeletePartialTemplate)
+            socket.on('deletePartialTemplate',onDeletePartialTemplate)
+            socket.on('correctionPartialTemplate', onCorrectionPartialTemplate)
             socket.on('updateTemplateStatus', onUpdateTemplateStatus)
             socket.on('createComment', onCreateComment)
             socket.on('deleteComment', onDeleteComment)

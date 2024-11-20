@@ -5,7 +5,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { UseSecretary } from "@/context";
 import { CreateEducationalProgram } from "@/models/types/educational-program";
-import { createManyEducationalPrograms, EducationalProgramsImportResult } from "@/models/transactions/educational-program";
+import { createManyEducationalPrograms } from "@/models/transactions/educational-program";
 import { getFirstSetValue } from "@/utils";
 import { playNotifySound } from "@/toast";
 import { tableClassNames } from "./EducationalProgramCard";
@@ -28,19 +28,28 @@ export const ExportEducationalProgramsMenu = () => {
             setLoading(true)
             const formData = new FormData();
             formData.append('file', file);
-            const { status } = await axios.post('/api/import/educationalprogram', formData)
-            if (status === 200) {
-                const { data } = await axios.get(`/api/import/${file.name}`)
-                const newEducationalPrograms = JSON.parse(data)
-                    .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
-                    .map((e: CreateEducationalProgram, i: number) => ({
-                        ...e,
-                        index: i
-                    }))
-                setEducationalPrograms(newEducationalPrograms)
-                setFile(new File([], ''))
-            }
-            setLoading(false)
+            toast.promise(axios.post('/api/import/educationalprogram', formData), {
+                loading: 'Importando programas educativos...',
+                success: ({ data, status }) => {
+                    if (status === 200) {
+                        const newEducationalPrograms = JSON.parse(data)
+                            .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
+                            .map((e: CreateEducationalProgram, i: number) => ({
+                                ...e,
+                                index: i
+                            }))
+                        setEducationalPrograms(newEducationalPrograms)
+                        setFile(new File([], ''))
+                        setLoading(false)
+                        return 'Programas educativos importados'
+                    }
+                    return 'Error al importar los programas educativos'
+                },
+                error: () => {
+                    setLoading(false)
+                    return 'Error al importar los programas educativos'
+                }
+            })
         }
     }
     const handleSubmit = async () => {
