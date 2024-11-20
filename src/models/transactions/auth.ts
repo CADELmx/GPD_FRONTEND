@@ -5,7 +5,7 @@ export type AuthCredentials = {
     password: string
 }
 
-export type SignUpCredentials = {
+export type SignUpCredentials = AuthCredentials & {
     nt: number,
     active: boolean,
 }
@@ -16,10 +16,10 @@ export interface AuthResult extends ApiResponse {
     }
 }
 
-export const login = async ({ email, password }: { email: string, password: string }) => {
-    return serverClient.post<AuthResult>('/auth/login', { email, password })
+export const signIn = async ({ data }: { data: AuthCredentials }) => {
+    return serverClient.post<AuthResult>('/auth/login', data)
 }
 
-export const signUp = async () => {
-
+export const signUp = async ({ data }: { data: SignUpCredentials }) => {
+    return serverClient.post<AuthResult>('/auth/signup', data)
 }
