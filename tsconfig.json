@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     "typings/**/*.d.ts"
-  ],
+, "src/pages/api/excelreport/index.js"  ],
   "exclude": [
     "node_modules"
   ]
