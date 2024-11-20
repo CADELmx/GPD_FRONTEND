@@ -1,3 +1,4 @@
+import { getCookie } from "cookies-next";
 import { ApiResponse, GetById, serverClient } from "../apiClient";
 import { Area, AreaJoinEducationalPrograms, CreateArea } from "../types/area";
 
@@ -26,6 +27,7 @@ export const getAreas = () => {
 }
 
 export const getAreasJoinEducationalPrograms = () => {
+    console.log(getCookie('token'))
     return serverClient.get<AreasJoinEducationalProgramsResult>('/areas/educational-programs')
 }
 

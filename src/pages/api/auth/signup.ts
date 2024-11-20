@@ -19,11 +19,8 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
                 req,
                 res,
                 maxAge: 60 * 60 * 24,
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
             })
-            return res.status(200).json({ message: 'Usuario autenticado', user: email })
+            return res.status(200).json({ message: 'Usuario autenticado', user: email, token: access_token })
         }
     }
     return res.status(400).json({ error: 'Método no permitido' })

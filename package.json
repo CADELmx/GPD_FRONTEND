@@ -12,7 +12,7 @@
     "@nextui-org/react": "^2.2.9",
     "@types/formidable": "^3.4.5",
     "axios": "^1.7.7",
-    "cookies-next": "^4.2.1",
+    "cookies-next": "^4.3.0",
     "excel4node": "^1.8.2",
     "formidable": "^3.5.2",
     "framer-motion": "^11.0.8",
