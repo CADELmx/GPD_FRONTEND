@@ -24,6 +24,10 @@ interface MemoryState {
         error: string | null,
         user: CookieValueTypes
     }>,
+    signUp: (email: string, password: string, nt: number) => Promise<{
+        error: string | null,
+        user: CookieValueTypes
+    }>,
     signOut: () => Promise<void>
 }
 
@@ -45,6 +49,18 @@ export const TemplatesProvider = ({ children }: {
     const signIn = async (email: string, password: string) => {
         const { data: { error, user } } = await axios.post('/api/auth/signin', {
             email, password
+        })
+        console.log(error, user)
+        if (error) {
+            return { error, user: undefined }
+        }
+        setMemory({ ...memory, user })
+        setCookie('user', user, { secure: true })
+        return { error: null, user }
+    }
+    const signUp = async (email: string, password: string, nt: number) => {
+        const { data: { error, user } } = await axios.post('/api/auth/signup', {
+            email, password, nt
         })
         console.log(error, user)
         if (error) {
@@ -82,6 +98,7 @@ export const TemplatesProvider = ({ children }: {
             handleGlobalChange,
             signIn,
             signOut,
+            signUp
         }}>
             {children}
         </TemplateContext.Provider>

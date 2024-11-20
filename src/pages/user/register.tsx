@@ -6,7 +6,7 @@ import { ChangeEvent, useState } from "react"
 import toast from "react-hot-toast"
 
 export default function Register() {
-    const { signIn } = UseTemplates()
+    const { signUp } = UseTemplates()
     const [loading, setLoading] = useState(false);
     const [userInfo, setUserInfo] = useState({
         email: '',
@@ -16,14 +16,14 @@ export default function Register() {
     });
     const handleSubmit = async () => {
         setLoading(true)
-        toast.promise(signIn(userInfo.email, userInfo.password), {
+        toast.promise(signUp(userInfo.email, userInfo.password, Number(userInfo.nt)), {
             loading: 'Iniciando sesión...',
             success: ({ error, user }) => {
                 setLoading(false)
                 if (!error) {
                     Router.push('/user')
                 }
-                return error ? 'Error al autenticar' : 'Usuario autenticado'
+                return error ? 'Error al autenticar' : `Sesion iniciada como ${user}`
             },
             error: () => {
                 setLoading(false)
@@ -39,7 +39,6 @@ export default function Register() {
     }
     const handleGetPersonalData = (e: ChangeEvent<HTMLInputElement>) => {
         setUserInfo({ ...userInfo, nt: e.target.value })
-        console.log(userInfo.nt)
         if (!userInfo.nt) return
         toast.promise(getPersonalData({ id: Number(userInfo.nt) }), {
             loading: 'Buscando trabajador',
