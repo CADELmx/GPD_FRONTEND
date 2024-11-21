@@ -50,13 +50,12 @@ export const TemplatesProvider = ({ children }: {
         const { data: { error, user, token } } = await axios.post('/api/auth/signin', {
             email, password
         })
-        console.log(error, user)
         if (error) {
             return { error, user: undefined }
         }
         setMemory({ ...memory, user })
-        setCookie('user', user, { maxAge: 60 * 60 * 24 })
-        setCookie('token', token, { maxAge: 60 * 60 * 24 })
+        setCookie('user', user, { maxAge: 60 * 60 * 24, secure: true })
+        setCookie('token', token, { maxAge: 60 * 60 * 24, secure: true })
         return { error: null, user }
     }
     const signUp = async (email: string, password: string, nt: number) => {

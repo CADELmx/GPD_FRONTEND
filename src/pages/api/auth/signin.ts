@@ -19,6 +19,7 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             req,
             res,
             maxAge: 60 * 60 * 24,
+            secure: true,
         })
         return res.status(200).json({ message: 'Usuario autenticado', user: email, token: access_token })
 

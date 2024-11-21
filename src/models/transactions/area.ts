@@ -27,7 +27,6 @@ export const getAreas = () => {
 }
 
 export const getAreasJoinEducationalPrograms = () => {
-    console.log(getCookie('token'))
     return serverClient.get<AreasJoinEducationalProgramsResult>('/areas/educational-programs')
 }
 

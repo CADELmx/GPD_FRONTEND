@@ -4,8 +4,12 @@ import { ModalError } from "@/components/ModalError"
 import { getAreasJoinEducationalPrograms } from "@/models/transactions/area"
 import { AreaJoinEducationalPrograms } from "@/models/types/area"
 import { Accordion, AccordionItem, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { getCookies, hasCookie } from "cookies-next"
 
 export const getStaticProps = async () => {
+    const cookies = getCookies()
+    const hc = hasCookie('token')
+    console.log(cookies, hc)
     const { data } = await getAreasJoinEducationalPrograms()
     const sortedEducaitonalPrograms = data.data.sort((area, nextArea) => {
         return nextArea.educationalPrograms.length - area.educationalPrograms.length
