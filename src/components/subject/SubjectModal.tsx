@@ -81,7 +81,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     }, [areaSelectedKeys]);
 
     return (
-        <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal backdrop="blur" placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {
                     (onClose) => (
