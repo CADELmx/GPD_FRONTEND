@@ -1,4 +1,3 @@
-import { EducationalProgramsTable } from "@/components/educationalProgram/EducationalProgramCard"
 import { ModalError } from "@/components/ModalError"
 import { SubjectTable } from "@/components/subject/SubjectCard"
 import { SubjectModal } from "@/components/subject/SubjectModal"
