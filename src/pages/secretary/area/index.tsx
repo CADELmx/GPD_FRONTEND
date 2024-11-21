@@ -22,15 +22,13 @@ export const getStaticProps = async () => {
 export default function AreasIndex({ areas: ssrAreas, error }: { areas: Area[], error: string | null }) {
     const EditModal = useDisclosure()
     const DeleteModal = useDisclosure()
-    const { areaState: { areas }, setStoredAreas } = UseSecretary()
+    const { setStoredAreas } = UseSecretary()
     const handlePress = () => {
         setStoredAreas({ selectedArea: null })
         EditModal.onOpen()
     }
     useEffect(() => {
-        if (areas.length === 0) {
-            setStoredAreas({ areas: ssrAreas })
-        }
+        setStoredAreas({ areas: ssrAreas })
     }, [])
     return (
         <>
