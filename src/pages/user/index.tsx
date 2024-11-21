@@ -73,12 +73,14 @@ export default function Login() {
                     name="email"
                     type="email"
                     isRequired
+                    isDisabled={loading}
                 />
                 <Input
                     label="Contraseña"
                     name="password"
                     type="password"
                     isRequired
+                    isDisabled={loading}
                 />
                 <Button
                     isDisabled={userInfo.email === '' || userInfo.password === ''}

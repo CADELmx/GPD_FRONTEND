@@ -92,6 +92,7 @@ export const ImportEducationalProgramsMenu = () => {
                     success: ({ data: { data, error, message } }) => {
                         setLoading(false)
                         if (error) return message
+                        playNotifySound()
                         setEducationalPrograms(educationalPrograms.filter(e => {
                             return !selectedEductationalPrograms.has(`${e.index}`)
                         }))

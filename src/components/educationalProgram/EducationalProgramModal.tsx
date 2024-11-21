@@ -9,7 +9,7 @@ import { getFirstSetValue } from "../../utils"
 import { playNotifySound } from "../../toast"
 import { CreateEducationalProgram, EducationalProgram } from "@/models/types/educational-program"
 
-interface ModalProps {
+export interface ModalProps {
     isOpen: boolean,
     onOpen: () => void,
     onOpenChange: () => void
@@ -29,7 +29,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }: ModalP
         setStoredEducationalPrograms({ selectedEducationalProgram: null })
         onOpenChange()
     }
-    const handleUpdate = async (id: number, newEducationalProgram: CreateEducationalProgram) => {
+    const handleUpdate = (id: number, newEducationalProgram: CreateEducationalProgram) => {
         toast.promise(updateEducationalProgram({ id, data: newEducationalProgram }), {
             loading: 'Actualizando programa educativo...',
             success: ({ data: { message, data, error } }) => {
@@ -44,7 +44,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }: ModalP
             error: 'Error al realizar esta acción, intente de nuevo'
         })
     }
-    const handleCreate = async (educationalProgram: CreateEducationalProgram) => {
+    const handleCreate = (educationalProgram: CreateEducationalProgram) => {
         toast.promise(createEducationalProgram({ data: educationalProgram }), {
             loading: 'Creando programa educativo...',
             success: ({ data: { message, data, error } }) => {

@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { signIn } from '@/models/transactions/auth'
 import { setCookie } from 'cookies-next'
-import { cookies } from 'next/headers'
 const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         const { email, password } = req.body
@@ -19,7 +18,11 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             req,
             res,
             maxAge: 60 * 60 * 24,
-            secure: true,
+        })
+        setCookie('user', email, {
+            req,
+            res,
+            maxAge: 60 * 60 * 24,
         })
         return res.status(200).json({ message: 'Usuario autenticado', user: email, token: access_token })
 

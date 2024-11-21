@@ -44,37 +44,31 @@ export const TemplatesProvider = ({ children }: {
         selectedActivity: defaultActivity,
         defaultGroups: [],
         socket: io(),
-        user: ''
+        user: undefined as CookieValueTypes
     })
     const signIn = async (email: string, password: string) => {
-        const { data: { error, user, token } } = await axios.post('/api/auth/signin', {
+        const { data: { error, user } } = await axios.post('/api/auth/signin', {
             email, password
         })
         if (error) {
             return { error, user: undefined }
         }
-        setMemory({ ...memory, user })
-        setCookie('user', user, { maxAge: 60 * 60 * 24, secure: true })
-        setCookie('token', token, { maxAge: 60 * 60 * 24, secure: true })
+        setMemory({ ...memory, user: getCookie('user') })
         return { error: null, user }
     }
     const signUp = async (email: string, password: string, nt: number) => {
-        const { data: { error, user, token } } = await axios.post('/api/auth/signup', {
+        const { data: { error, user } } = await axios.post('/api/auth/signup', {
             email, password, nt
         })
         if (error) {
             return { error, user: undefined }
         }
-        setMemory({ ...memory, user })
-        setCookie('user', user, { maxAge: 60 * 60 * 24 })
-        setCookie('token', token, { maxAge: 60 * 60 * 24 })
+        setMemory({ ...memory, user: getCookie('user') })
         return { error: null, user }
     }
     const signOut = async () => {
         await fetch('/api/auth/signout')
-        deleteCookie('user')
-        deleteCookie('token')
-        setMemory({ ...memory, user: '' })
+        setMemory({ ...memory, user: undefined })
     }
     const setStored = (prop: Object) => setMemory((prev) => ({ ...prev, ...prop }))
     const handleGlobalChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => setStored({

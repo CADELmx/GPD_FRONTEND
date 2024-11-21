@@ -37,9 +37,6 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
     const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]));
     const EducativeProgramModal = useDisclosure()
     const DeleteModal = useDisclosure()
-    const handleOpen = () => {
-        EducativeProgramModal.onOpen()
-    }
     useEffect(() => {
         setStoredEducationalPrograms({ educationalPrograms: ssrEducationalPrograms })
         setStoredAreas({ areas })
@@ -56,7 +53,7 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
             >
                 <AccordionItem
                     key='1'
-                    title="Exportar programas educativos"
+                    title="Importar programas educativos"
                     startContent={UploadIcon}
                 >
                     <ImportEducationalProgramsMenu />
@@ -72,7 +69,7 @@ export default function EducativeProgram({ areas, ssrEducationalPrograms, error 
                             Nuevo programa educativo
                         </Button>
                         <EducationalProgramsTable
-                            onOpenModal={handleOpen}
+                            onOpenModal={EducativeProgramModal.onOpen}
                             onOpenDeleteModal={DeleteModal.onOpen}
                         />
                     </>

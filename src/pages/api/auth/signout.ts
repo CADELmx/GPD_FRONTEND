@@ -6,7 +6,10 @@ const logoutHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         deleteCookie('token', {
             req,
             res,
-            secure: true
+        })
+        deleteCookie('user', {
+            req,
+            res,
         })
         return res.status(200).json({ message: 'Sesión cerrada' })
     }

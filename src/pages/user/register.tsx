@@ -100,7 +100,7 @@ export default function Register() {
                     type="submit"
                     className="bg-utim"
                 >
-                    Iniciar sesión
+                    Crear la cuenta
                 </Button>
             </div >
         </>

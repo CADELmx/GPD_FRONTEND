@@ -5,11 +5,7 @@ import { getPartialTemplateJoinActivity, getPartialTemplatesJoinActivities } fro
 export const serverClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
-        Authorization: `Bearer ${getCookie('token',
-            {
-                secure: true
-            }
-        )}`
+        Authorization: `Bearer ${getCookie('token')}`
     },
 })
 

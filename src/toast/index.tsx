@@ -31,7 +31,7 @@ export default function Notify() {
 }
 
 export const playNotifySound = () => {
-    const audio = new Audio(new URL('/public/sounds/notification-beep-229154.mp3', import.meta.url).toString())
+    const audio = new Audio(new URL('/public/sounds/livechat-129007.mp3', import.meta.url).toString())
     audio.play()
 }
 

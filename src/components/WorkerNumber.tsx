@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 import { BarsArrowDown, LockIcon, PencilIcon, UnlockIcon } from "./Icons"
 import { UseTemplates } from "../context"
 import { getPersonalData } from "../models/transactions/personal-data"
-import { playLevelUpSound } from "../toast"
+import { playNotifySound } from "../toast"
 import { PersonalData } from "../models/types/personal-data"
 
 
@@ -20,7 +20,7 @@ export const NtInput = ({ academicWorkers }: { academicWorkers: PersonalData[] }
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
                 if (data) {
-                    playLevelUpSound()
+                    playNotifySound()
                     setIdError(false)
                     setStored({ partialTemplate: { ...partialTemplate, nt: data.ide, position: data.position, name: data.name } })
                     setLocked(true)

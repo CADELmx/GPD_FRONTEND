@@ -17,6 +17,14 @@ export const getEducationalPrograms = () => {
     return serverClient.get<EducationalProgramsResult>('/educational-programs')
 }
 
+export const getEducationalProgramsByArea = ({ id }: GetById) => {
+    return serverClient.get<EducationalProgramsResult>('/educational-programs/area', {
+        params: {
+            id
+        }
+    })
+}
+
 export const createEducationalProgram = ({ data }: { data: CreateEducationalProgram }) => {
     return serverClient.post<EducationalProgramResult>('/educational-programs', data)
 }

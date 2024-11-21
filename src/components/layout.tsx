@@ -18,7 +18,7 @@ export const Layout = ({ children }: {
             name: "Plantillas docentes - vista general", href: "/secretary/template", icon: InboxIcon
         },
         {
-            name: 'Plantillas docnetes - vista detallada', href: '/secretary/partialtemplate', icon: InboxIcon
+            name: 'Plantillas docentes - vista detallada', href: '/secretary/partialtemplate', icon: InboxIcon
         },
         {
             name: "Áreas", href: "/secretary/area", icon: AcademicHatIcon
@@ -26,6 +26,9 @@ export const Layout = ({ children }: {
         {
             name: "Programas educativos", href: "/secretary/educationalprogram", icon: AcademicHatIcon
         },
+        {
+            name: "Materias", href: "/secretary/subject", icon: AcademicHatIcon
+        }
     ]
     const programDirectorItems = [
 
@@ -42,7 +45,7 @@ export const Layout = ({ children }: {
             name: 'Ver áreas y programas educativos', href: '/director/area', icon: AcademicHatIcon
         }
     ]
-    const { memory: { socket, user } } = UseTemplates()
+    const { memory: { socket } } = UseTemplates()
     const [isConnected, setIsConnected] = useState(false);
     const [transport, setTransport] = useState("N/A");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
