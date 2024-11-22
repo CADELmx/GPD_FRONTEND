@@ -32,8 +32,28 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
     const totalHours = sumHours({ activities: activities })
     const handleSubmit = () => {
         setLoading(true)
+        const newPartialTemplate = {
+            ...partialTemplate,
+            total: Number(partialTemplate.total),
+            nt: Number(partialTemplate.nt),
+        }
+        const newActivities = activities.map(activity => {
+            const checkIfUndefined = (v: number | undefined) => {
+                if (v === undefined) return v
+                if (isNaN(Number(v))) return v
+                return Number(v)
+            }
+            return {
+                ...activity,
+                educationalProgramId: checkIfUndefined(activity.educationalProgramId),
+                numberStudents: checkIfUndefined(activity.numberStudents),
+                partialTemplateId: checkIfUndefined(activity.partialTemplateId),
+                subtotalClassification: Number(activity.subtotalClassification),
+                weeklyHours: Number(activity.weeklyHours),
+            }
+        })
         toast.promise(insertPartialTemplateAndActivities({
-            data: { template: partialTemplate, activities }
+            data: { template: newPartialTemplate, activities: newActivities }
         }), {
             loading: 'Guardando plantilla...',
             success: ({ data, error, message }) => {

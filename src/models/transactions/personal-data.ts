@@ -20,3 +20,12 @@ export const getPersonalData = ({ id }: GetById) => {
 export const getAllPersonalData = () => {
     return serverClient.get<PersonalDataResults>('/personal-data')
 }
+
+export const getInsesnsitivePersonalData = ({ area, position }: { area: string, position: string }) => {
+    return serverClient.get<PersonalDataResults>('/personal-data/insensitive', {
+        params: {
+            area,
+            position
+        }
+    })
+}

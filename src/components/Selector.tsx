@@ -5,7 +5,7 @@ import { LockIcon } from "./Icons"
 import { UseTemplates } from "../context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "../utils"
 import { EducationalProgram } from "../models/types/educational-program"
-import { Activity, CreateActivity } from "../models/types/activity"
+import { CreateActivity } from "../models/types/activity"
 
 const YearSelector = ({ selectedYear, setState }: { selectedYear: string, setState: any }) => {
     const { memory: { partialTemplate }, setStored } = UseTemplates()

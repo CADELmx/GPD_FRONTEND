@@ -70,7 +70,6 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                     (e.target.name === "weeklyHours" || e.target.name === "totalHours") ? Number(e.target.value) : e.target.value
             }
         })
-        console.log(selectedSubject)
     }
     const handleClose = () => {
         onOpenChange()

@@ -17,3 +17,17 @@ export type Activity = CreateActivity & {
     partialTemplateId: number;
     managementType: string;
 }
+
+export const defaultActivity: CreateActivity = {
+    id: crypto.randomUUID(),
+    partialTemplateId: undefined,
+    educationalProgramId: undefined,
+    activityDistribution: "",
+    managementType: "",
+    stayType: "",
+    numberStudents: 0,
+    activityName: "",
+    gradeGroups: [],
+    weeklyHours: 0,
+    subtotalClassification: 0,
+}

@@ -2,7 +2,7 @@
 import { Button, Input, Selection, SharedSelection, Textarea } from '@nextui-org/react'
 import toast from 'react-hot-toast'
 import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementTypeSelector, StayTypeSelector } from './Selector'
-import { useEffect } from 'react'
+import { ChangeEvent, useEffect } from 'react'
 import { PlusIcon } from './Icons'
 import { UseTemplates } from '../context'
 import { defaultActivity } from '../utils'
@@ -30,6 +30,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
         })
     }
     const changeManagementType = (e: SharedSelection) => {
+        if (e === "all") return
         setStored({
             selectedActivity: {
                 ...selectedActivity,
@@ -37,7 +38,8 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             }
         })
     }
-    const changeStayType = (e) => {
+    const changeStayType = (e: SharedSelection) => {
+        if (e === "all") return
         const weeklyHours = e.anchorKey === 'TSU' ? 1 : 2
         setStored({
             selectedActivity: {
@@ -47,7 +49,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             }
         })
     }
-    const changeGroup = (e) => {
+    const changeGroup = (e: SharedSelection) => {
         setStored({
             selectedActivity: {
                 ...selectedActivity,
@@ -56,7 +58,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             }
         })
     }
-    const changeWeeklyHours = (e) => {
+    const changeWeeklyHours = (e: ChangeEvent<HTMLInputElement>) => {
         if (activity.activityDistribution === "Estadía técnica") {
             setStored({
                 selectedActivity: {
@@ -86,7 +88,8 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             })
         }
     }
-    const changeActivityProgram = (e) => {
+    const changeActivityProgram = (e: SharedSelection) => {
+        if (e === "all") return
         setStored({
             selectedActivity: {
                 ...selectedActivity,
@@ -94,7 +97,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             }
         })
     }
-    const changeStudentsNumber = (e) => {
+    const changeStudentsNumber = (e: ChangeEvent<HTMLInputElement>) => {
         setStored({
             selectedActivity: {
                 ...selectedActivity, [e.target.name]: Number(e.target.value),
