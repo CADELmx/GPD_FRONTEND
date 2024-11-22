@@ -8,6 +8,8 @@ import { CreatePartialTemplate } from '../models/types/partial-template'
 import { CreateEducationalProgram, EducationalProgram } from '../models/types/educational-program'
 import { Area, CreateArea } from '../models/types/area'
 import axios from 'axios'
+import { CreateSubject } from '../models/types/subject'
+import { CreateTemplate } from '../models/types/template'
 
 interface MemoryState {
     memory: {
@@ -96,7 +98,7 @@ export const TemplatesProvider = ({ children }: {
             handleGlobalChange,
             signIn,
             signOut,
-            signUp
+            signUp,
         }}>
             {children}
         </TemplateContext.Provider>
@@ -115,8 +117,8 @@ interface AreaState {
     },
     setStoredEducationalPrograms: (prop: any) => void,
     subjectState: {
-        subjects: any[],
-        selectedSubject: any
+        subjects: CreateSubject[],
+        selectedSubject: CreateSubject
     },
     setStoredSubjects: (prop: any) => void
 }
@@ -147,9 +149,19 @@ export const AreasProvider = ({ children }: {
             description: ''
         }
     })
-    const [subjectState, setSubjectState] = useState({
+    const [subjectState, setSubjectState] = useState<{
+        subjects: CreateSubject[],
+        selectedSubject: CreateSubject
+    }>({
         subjects: [],
-        selectedSubject: null
+        selectedSubject: {
+            monthPeriod: '',
+            subjectName: '',
+            totalHours: 0,
+            weeklyHours: 0,
+            educationalProgramId: undefined,
+            id: undefined
+        }
     })
     const setStoredEducationalPrograms = (prop: Object) => {
         setEducationalState((educationalState) => ({ ...educationalState, ...prop }))
