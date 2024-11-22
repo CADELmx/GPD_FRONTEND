@@ -1,5 +1,5 @@
 import { UseSecretary } from "@/context"
-import { Subject } from "@/models/types/subject"
+import { CreateSubject } from "@/models/types/subject"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
@@ -9,11 +9,11 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     onOpenDeleteModal: () => void
 }) => {
     const { setStoredSubjects, subjectState: { subjects } } = UseSecretary()
-    const handlePress = (subject: Subject) => {
+    const handlePress = (subject: CreateSubject) => {
         setStoredSubjects({ selectedSubject: subject })
         onOpenModal()
     }
-    const handleDelete = (subject: Subject) => {
+    const handleDelete = (subject: CreateSubject) => {
         setStoredSubjects({ selectedSubject: subject })
         onOpenDeleteModal()
     }
@@ -23,7 +23,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                 <TableColumn>
                     Nombre
                 </TableColumn>
-                <TableColumn>
+                <TableColumn hideHeader>
                     Horas semanales
                 </TableColumn>
                 <TableColumn>

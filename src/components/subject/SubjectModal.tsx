@@ -220,7 +220,19 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                         }
                                     }
                                 </Select>
-
+                                <Select
+                                    label='Cuatrimestre'
+                                    placeholder="Cuatrimestre de la materia"
+                                    items={periods}
+                                >
+                                    {
+                                        (period) => (
+                                            <SelectItem key={period.id}>
+                                                {period.name}
+                                            </SelectItem>
+                                        )
+                                    }
+                                </Select>
                                 <Input
                                     aria-label="Nombre de la materia"
                                     onChange={handleChange}
@@ -282,14 +294,6 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                     )
                 }
             </ModalContent>
-        </Modal>
-    )
-}
-
-export const SubjectDeleteModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
-    return (
-        <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
-            <ModalBody></ModalBody>
         </Modal>
     )
 }

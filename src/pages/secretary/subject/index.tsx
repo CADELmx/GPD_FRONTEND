@@ -2,7 +2,7 @@ import { ModalError } from "@/components/ModalError"
 import { SubjectTable } from "@/components/subject/SubjectCard"
 import { SubjectModal } from "@/components/subject/SubjectModal"
 import { UseSecretary } from "@/context"
-import { getAreas } from "@/models/transactions/area"
+import { getAreas, getAreasJoinEducationalPrograms } from "@/models/transactions/area"
 import { getSubjects } from "@/models/transactions/subject"
 import { Area } from "@/models/types/area"
 import { Subject } from "@/models/types/subject"
@@ -17,12 +17,12 @@ export const getStaticProps = async () => {
     const { data: {
         data: areas,
         error: areasError
-    } } = await getAreas()
+    } } = await getAreasJoinEducationalPrograms()
     const error = (areasError || subjectsError) ? 'Error al obtener areas y/o materias, recargue la página' : null
     return {
         props: {
             subjects,
-            areas,
+            areas: areas.filter((area) => area.educationalPrograms.length !== 0).map((area) => ({ ...area, educationalPrograms: [] })),
             error
         }
     }
