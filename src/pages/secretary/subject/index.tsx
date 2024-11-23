@@ -1,4 +1,6 @@
+import { ImportEducationalProgramsMenu } from "@/components/educationalProgram/ImportMenu"
 import { ModalError } from "@/components/ModalError"
+import { ImportSubjectsMenu } from "@/components/subject/ImportSubjectMenu"
 import { SubjectTable } from "@/components/subject/SubjectCard"
 import { SubjectModal } from "@/components/subject/SubjectModal"
 import { UseSecretary } from "@/context"
@@ -55,7 +57,7 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
                     key='1'
                     title='Importar materias'
                 >
-
+                    <ImportSubjectsMenu />
                 </AccordionItem>
             </Accordion>
             {

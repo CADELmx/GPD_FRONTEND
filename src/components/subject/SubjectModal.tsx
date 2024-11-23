@@ -127,7 +127,6 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
         || selectedEduKeys.size === 0)
 
     useEffect(() => {
-        console.log(areaSelectedKeys, selectedEduKeys)
         if (areaSelectedKeys.size !== 0) {
             toast.promise(getEducationalProgramsByArea({
                 id: Number(getFirstSetValue(areaSelectedKeys))
@@ -136,13 +135,14 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                 success: ({ data: { data, error, message } }) => {
                     if (error) return message
                     setEducationalPrograms(data)
+                    setSelectedEduKeys(new Set([]))
                     return message
                 },
                 error: 'Error al cargar programas educativo'
             })
         }
         return () => {
-
+            setEducationalPrograms([])
         }
     }, [areaSelectedKeys]);
 

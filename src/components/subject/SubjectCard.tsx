@@ -23,7 +23,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                 <TableColumn>
                     Nombre
                 </TableColumn>
-                <TableColumn hideHeader>
+                <TableColumn>
                     Horas semanales
                 </TableColumn>
                 <TableColumn>

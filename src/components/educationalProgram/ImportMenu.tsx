@@ -1,4 +1,4 @@
-import { Button, Chip, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { UploadIcon } from "../Icons"
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
@@ -16,12 +16,16 @@ export const ImportEducationalProgramsMenu = () => {
     const [file, setFile] = useState<File>(new File([], ''));
     const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState<any>(new Set<any>([]));
-    const [selectedArea, setSelectedArea] = useState<any>(new Set<any>([]));
+    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState(new Set<any>([]));
+    const [selectedArea, setSelectedArea] = useState(new Set<any>([]));
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFile(e.target.files[0])
         }
+    }
+    const handleEducationalProgramSelection = (e: Selection) => {
+        if(e === 'all') return
+        setSelectedEducationalPrograms(e)
     }
     const handleExport = async () => {
         if (file.name) {
@@ -163,7 +167,7 @@ export const ImportEducationalProgramsMenu = () => {
                 label='Areas'
                 placeholder="Selecciona un area"
                 onSelectionChange={(e) => {
-                    if (e === 'all') return setSelectedArea(new Set(areas.map((area) => area.id)))
+                    if (e === 'all') return
                     setSelectedArea(e)
                 }}
                 selectedKeys={selectedArea}
@@ -190,7 +194,7 @@ export const ImportEducationalProgramsMenu = () => {
             </Button>
             <Table
                 selectedKeys={selectedEductationalPrograms}
-                onSelectionChange={setSelectedEducationalPrograms}
+                onSelectionChange={handleEducationalProgramSelection}
                 isCompact
                 selectionMode="multiple"
                 classNames={tableClassNames}

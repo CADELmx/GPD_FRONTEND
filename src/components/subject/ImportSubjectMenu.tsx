@@ -1,7 +1,6 @@
 import { UseSecretary } from "@/context";
 import { UploadIcon } from "../Icons"
-import { ChangeEvent, useState } from "react";
-import { EducationalProgram } from "@/models/types/educational-program";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard";
 import { playNotifySound } from "@/toast";
@@ -10,23 +9,33 @@ import axios from "axios";
 import { CreateSubject } from "@/models/types/subject";
 import { createManySubjects } from "@/models/transactions/subject";
 import { getFirstSetValue } from "@/utils";
+import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
+import { EducationalProgram } from "@/models/types/educational-program";
 
 export const ImportSubjectsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
     const [file, setFile] = useState<File>(new File([], ''));
-    const { educationalState: { educationalPrograms } } = UseSecretary()
+    const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [subjects, setSubjects] = useState<any[]>([]);
+    const [selectedAreaKeys, setSelectedAreaKeys] = useState(new Set<any>([]));
     const [selectedEducationalKeys, setSelectedEducationalKeys] = useState(new Set<any>([]));
-    const [selectedSubjects, setSelectedSubjects] = useState(new Set<any>([]));
-    const [selectedArea, setSelectedArea] = useState<any>(new Set<any>([]));
+    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(new Set<any>([]));
     const onSelectedAreaChange = (e: Selection) => {
         if (e === "all") return
-        setSelectedArea(e)
+        setSelectedAreaKeys(e)
     }
     const onSelectionEducationProgramChange = (e: Selection) => {
         if (e === "all") return
         setSelectedEducationalKeys(e)
+    }
+    const onSelectionSubjectChange = (e: Selection) => {
+        if (e === "all") return setSelectedSubjectKeys(new Set(subjects.map((e) => {
+            return `${e.index}`
+        }))
+        )
+        setSelectedSubjectKeys(e)
+        console.log(selectedSubjectKeys)
     }
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -57,7 +66,14 @@ export const ImportSubjectsMenu = () => {
                 loading: 'Cargando materias...',
                 success: ({ data, status }) => {
                     if (status === 200) {
-                        console.log(data)
+                        console.log(JSON.parse(data))
+                        const newSubjects = JSON.parse(data).map((subject: CreateSubject, index: number) => {
+                            return {
+                                ...subject,
+                                index
+                            }
+                        })
+                        setSubjects(newSubjects)
                         setLoading(false)
                         return 'Materias listas para registrar'
                     } else {
@@ -75,25 +91,25 @@ export const ImportSubjectsMenu = () => {
         }
     }
     const handleSubmit = async () => {
-        if (selectedSubjects.size > 0) {
+        if (selectedSubjectKeys.size > 0) {
             try {
                 setLoading(true)
-                const newSubjects: CreateSubject[] = Array.from(selectedSubjects).map((index) => {
-                    const { totalHours, weeklyHours, monthPeriod, name }: {
+                const newSubjects: CreateSubject[] = Array.from(selectedSubjectKeys).map((index) => {
+                    const { totalHours, weeklyHours, monthPeriod, subjectName }: {
                         totalHours: number,
                         weeklyHours: number,
                         monthPeriod: string,
-                        name: string
+                        subjectName: string
                     } = subjects[Number(index)]
                     return ({
                         totalHours,
                         weeklyHours,
                         monthPeriod,
-                        subjectName: name
+                        subjectName
                     })
                 })
                 toast.promise(createManySubjects({
-                    educationalProgramId: getFirstSetValue(selectedArea),
+                    educationalProgramId: getFirstSetValue(selectedEducationalKeys),
                     data: newSubjects
                 }), {
                     loading: 'Registrando programas educativos...',
@@ -102,10 +118,10 @@ export const ImportSubjectsMenu = () => {
                         if (error) return message
                         playNotifySound()
                         setSubjects(subjects.filter(e => {
-                            return !selectedSubjects.has(`${e.index}`)
+                            return !selectedSubjectKeys.has(`${e.index}`)
                         }))
-                        setSelectedSubjects(new Set([]))
-                        setSelectedArea(new Set([]))
+                        setSelectedSubjectKeys(new Set([]))
+                        setSelectedAreaKeys(new Set([]))
                         playNotifySound()
                         return `${data.count} programas educativos registrados`
                     },
@@ -114,12 +130,32 @@ export const ImportSubjectsMenu = () => {
                         return 'Error al registrar los programas educativos'
                     }
                 })
+
             } catch (error: any) {
                 setLoading(false)
                 toast.error('Error al registrar los programas educativos')
             }
         }
     }
+    useEffect(() => {
+        if (selectedAreaKeys.size > 0) {
+            toast.promise(getEducationalProgramsByArea({
+                id: Number(getFirstSetValue(selectedAreaKeys))
+            }), {
+                loading: 'Cargando programas educativos',
+                success: ({ data: { data, error, message } }) => {
+                    if (error) return message
+                    setSelectedEducationalKeys(new Set([]))
+                    setEducationalPrograms(data)
+                    return message
+                },
+                error: 'Error al cargar programas educativos, intenta de nuevo'
+            })
+        }
+        return () => {
+            setEducationalPrograms([])
+        }
+    }, [selectedAreaKeys]);
     return (
         <div className="flex flex-col items-center justify-center w-full gap-2">
             <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full text-foreground border-2 border-none outline-2 rounded-lg cursor-pointer bg-content1 shadow-medium box-border">
@@ -134,7 +170,7 @@ export const ImportSubjectsMenu = () => {
                         <p className="text-xs text-utim">Archivos en formato JSON</p>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                        <Chip isDisabled={!file.name} variant="bordered">
+                        <Chip isDisabled={!file?.name} variant="bordered">
                             {file.name || 'Nada seleccionado'}
                         </Chip>
                         {
@@ -166,12 +202,12 @@ export const ImportSubjectsMenu = () => {
                 Importar programas educativos
             </Button>
             <Select
-                isDisabled={educationalPrograms.length === 0}
+                isDisabled={subjects.length === 0}
                 items={areas}
                 label='Areas'
                 placeholder="Selecciona un area"
                 onSelectionChange={onSelectedAreaChange}
-                selectedKeys={selectedArea}
+                selectedKeys={selectedAreaKeys}
                 disallowEmptySelection
             >
                 {
@@ -187,46 +223,51 @@ export const ImportSubjectsMenu = () => {
                 selectedKeys={selectedEducationalKeys}
                 onSelectionChange={onSelectionEducationProgramChange}
                 key={'table'}
+                label="Programas educativos"
+                placeholder="Selecciona un programa educativo"
                 aria-label="Selector de programas educativos"
                 items={educationalPrograms}
+                isDisabled={educationalPrograms.length === 0}
                 disallowEmptySelection
             >
                 {
-                    (educationalProgram) => (
-                        <TableRow key={educationalProgram.id}>
-                            <TableCell>
-                                {educationalProgram.description}
-                            </TableCell>
-                            <TableCell>
-                                {educationalProgram.abbreviation}
-                            </TableCell>
-                        </TableRow>
+                    (educationalProgram: EducationalProgram) => (
+                        <SelectItem key={educationalProgram.id}>
+                            {educationalProgram.description}
+                        </SelectItem>
                     )
                 }
             </Select>
             <Button
                 fullWidth
                 className="bg-utim"
-                isDisabled
+                isDisabled={selectedEducationalKeys.size === 0}
                 onPress={handleSubmit}
                 isLoading={loading && !file}
             >
                 Registrar en el programa educativo seleccionado
             </Button>
             <Table
-                selectedKeys={selectedEducationalKeys}
-                onSelectionChange={onSelectionEducationProgramChange}
+                selectedKeys={selectedSubjectKeys}
+                onSelectionChange={onSelectionSubjectChange}
                 isCompact
+                selectionMode="multiple"
                 classNames={tableClassNames}
                 key={'table'}
                 aria-label="tabla de importaciones"
             >
                 <TableHeader>
                     <TableColumn>
-                        Programa educativo
+                        Numbre
                     </TableColumn>
                     <TableColumn>
-                        Abreviación
+                        Horas semanales
+                    </TableColumn>
+                    <TableColumn>
+                        Horas totales
+                    </TableColumn>
+                    <TableColumn>
+                        Cuatrimestre
                     </TableColumn>
                 </TableHeader>
                 <TableBody
@@ -237,10 +278,16 @@ export const ImportSubjectsMenu = () => {
                         (subject) => (
                             <TableRow key={subject.index}>
                                 <TableCell>
-                                    {subject.description}
+                                    {subject.subjectName}
                                 </TableCell>
                                 <TableCell>
-                                    {subject.abbreviation}
+                                    {subject.weeklyHours}
+                                </TableCell>
+                                <TableCell>
+                                    {subject.totalHours}
+                                </TableCell>
+                                <TableCell>
+                                    {subject.monthPeriod}
                                 </TableCell>
                             </TableRow>
                         )
