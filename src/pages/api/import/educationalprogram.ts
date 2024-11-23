@@ -10,14 +10,14 @@ export const config = {
     }
 }
 
-const formidableParse = async (req: NextApiRequest): Promise<[formidable.Fields, formidable.Files]> =>
+export const formidableParse = async (req: NextApiRequest): Promise<[formidable.Fields, formidable.Files]> =>
     new Promise((resolve, reject) =>
         new IncomingForm().parse(req, (err, fields, files) => err ? reject(err) : resolve([fields, files]))
     )
 
-type File = formidable.File | undefined
+export type FormidableFile = formidable.File | undefined
 
-async function readAndWriteFile(file: File, newPath: string) {
+async function readAndWriteFile(file: FormidableFile, newPath: string) {
     try {
         if(!file) {
             return 'error'

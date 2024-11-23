@@ -6,15 +6,12 @@ import { AreaJoinEducationalPrograms } from "@/models/types/area"
 import { Accordion, AccordionItem, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 
 export const getStaticProps = async () => {
-    const { data } = await getAreasJoinEducationalPrograms()
-    const sortedEducaitonalPrograms = data.data.sort((area, nextArea) => {
-        return nextArea.educationalPrograms.length - area.educationalPrograms.length
-    })
+    const { data: { data, error, message } } = await getAreasJoinEducationalPrograms()
     return {
         revalidate: 3,
         props: {
-            data: sortedEducaitonalPrograms,
-            error: data.error || null
+            data,
+            error: error ? message : null
         }
     }
 }
@@ -34,10 +31,11 @@ export default function AreaIndex({ error, data: areas }: { error: string | null
                 <Accordion variant="splitted" title="Acordeones de areas" itemClasses={{
                     base: 'p-2 py-0',
                     title: 'text-sm p-2 py-0',
+                    subtitle: 'text-sm p-2 py-0 text-utim font-semibold tracking-wider',
                 }}>
                     {
                         areas.map((area) => (
-                            <AccordionItem title={area.name} key={area.name}>
+                            <AccordionItem title={area.name} subtitle={`${area.educationalPrograms.length} Programas educativos`} key={area.name}>
                                 <Table classNames={tableClassNames}>
                                     <TableHeader>
                                         <TableColumn>

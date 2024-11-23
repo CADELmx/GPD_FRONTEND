@@ -169,8 +169,6 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
 
 export const PeriodSelector = () => {
     return(
-        <Select>
-            <SelectItem>2021</SelectItem>
-        </Select>
+        <></>
     )
 }

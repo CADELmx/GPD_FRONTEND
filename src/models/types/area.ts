@@ -14,3 +14,9 @@ export type Area = CreateArea & {
 export type AreaJoinEducationalPrograms = Area & {
     educationalPrograms: EducationalProgram[];
 }
+
+export type AreaEducationalProgramCount = Area & {
+    _count: {
+        educationalPrograms: number;
+    }
+}

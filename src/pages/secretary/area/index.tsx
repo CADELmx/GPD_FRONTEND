@@ -3,13 +3,13 @@ import { AreaModal, DeleteAreaModal } from "@/components/area/AreaModal"
 import { AreasTable } from "@/components/area/AreaTable"
 import { ModalError } from "@/components/ModalError"
 import { UseSecretary } from "@/context"
-import { getAreas } from "@/models/transactions/area"
+import { getAreasEducationalProgramsCount } from "@/models/transactions/area"
 import { Area } from "@/models/types/area"
 import { Button, useDisclosure } from "@nextui-org/react"
 import { useEffect } from "react"
 
 export const getStaticProps = async () => {
-    const { data: { data, error } } = await getAreas()
+    const { data: { data, error } } = await getAreasEducationalProgramsCount()
     return {
         revalidate: 3,
         props: {

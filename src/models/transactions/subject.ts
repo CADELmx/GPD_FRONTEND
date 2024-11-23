@@ -1,4 +1,4 @@
-import { ApiResponse, GetById, serverClient } from "../apiClient";
+import { ApiResponse, CreateManyResult, GetById, serverClient } from "../apiClient";
 import { CreateSubject, Subject } from "../types/subject";
 
 export interface SubjectResult extends ApiResponse {
@@ -23,6 +23,10 @@ export const getSubjects = () => {
 
 export const createSubject = ({ data }: { data: CreateSubject }) => {
     return serverClient.post<SubjectResult>('/subject', data)
+}
+
+export const createManySubjects = ({ data }: { data: CreateSubject[] }) => {
+    return serverClient.post<CreateManyResult>('/subject/many', data)
 }
 
 export const updateSubject = ({ id, data }: { id: number, data: CreateSubject }) => {

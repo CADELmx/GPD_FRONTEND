@@ -9,15 +9,12 @@ export const AcademicCharge = ({ educationalPrograms }: { educationalPrograms: E
     return (
         <Accordion aria-label="Academic Details" showDivider={false} isCompact fullWidth selectionMode="multiple">
             <AccordionItem
+                classNames={{
+                    subtitle: 'text-sm text-utim font-semibold tracking-wider',
+                }}
                 aria-label="Academic Charge"
-                title={
-                    <>
-                        Carga académica
-                        <p className="text-sm text-utim font-semibold tracking-wider">
-                            selecciona actividades académicas
-                        </p>
-                    </>
-                }
+                title='Carga académica'
+                subtitle="selecciona actividades académicas"
                 startContent={
                     <Badge
                         color="primary"

@@ -1,8 +1,8 @@
-import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { PencilIcon, TrashIcon } from "../Icons"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 import { UseSecretary } from "../../context"
-import { CreateArea } from "@/models/types/area"
+import { AreaEducationalProgramCount, CreateArea } from "@/models/types/area"
 
 export const AreasTable = ({ onOpenModal, onOpenDeleteModal }: {
     onOpenModal: () => void,
@@ -30,14 +30,22 @@ export const AreasTable = ({ onOpenModal, onOpenDeleteModal }: {
                         Nombre
                     </TableColumn>
                     <TableColumn>
+                        Número de P.E
+                    </TableColumn>
+                    <TableColumn>
                         Acciones
                     </TableColumn>
                 </TableHeader>
-                <TableBody items={areas}>
+                <TableBody items={areas as AreaEducationalProgramCount[]}>
                     {
-                        (area) => (
+                        (area: AreaEducationalProgramCount) => (
                             <TableRow key={area.id}>
                                 <TableCell>{area.name}</TableCell>
+                                <TableCell>
+                                    <Chip variant="bordered">
+                                        {area._count.educationalPrograms}
+                                    </Chip>
+                                </TableCell>
                                 <TableCell>
                                     <div className="w-full relative flex items-center gap-2">
                                         <Button
