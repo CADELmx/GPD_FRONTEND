@@ -206,7 +206,7 @@ export const ImportEducationalProgramsMenu = () => {
                     </TableColumn>
                 </TableHeader>
                 <TableBody
-                    key={'ld'}
+                    key={'educational-table-body'}
                     items={educationalPrograms}
                     emptyContent={'Nada exportado aún'}
                 >

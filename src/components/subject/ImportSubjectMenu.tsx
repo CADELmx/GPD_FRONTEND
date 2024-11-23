@@ -2,20 +2,32 @@ import { UseSecretary } from "@/context";
 import { UploadIcon } from "../Icons"
 import { ChangeEvent, useState } from "react";
 import { EducationalProgram } from "@/models/types/educational-program";
-import { Button, Chip, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard";
 import { playNotifySound } from "@/toast";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { CreateSubject } from "@/models/types/subject";
+import { createManySubjects } from "@/models/transactions/subject";
+import { getFirstSetValue } from "@/utils";
 
 export const ImportSubjectsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
     const [file, setFile] = useState<File>(new File([], ''));
-    const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
+    const { educationalState: { educationalPrograms } } = UseSecretary()
     const [loading, setLoading] = useState(false);
-    const [selectedSubjects, setSelectedSubjects] = useState<any>(new Set<any>([]));
+    const [subjects, setSubjects] = useState<any[]>([]);
+    const [selectedEducationalKeys, setSelectedEducationalKeys] = useState(new Set<any>([]));
+    const [selectedSubjects, setSelectedSubjects] = useState(new Set<any>([]));
     const [selectedArea, setSelectedArea] = useState<any>(new Set<any>([]));
+    const onSelectedAreaChange = (e: Selection) => {
+        if (e === "all") return
+        setSelectedArea(e)
+    }
+    const onSelectionEducationProgramChange = (e: Selection) => {
+        if (e === "all") return
+        setSelectedEducationalKeys(e)
+    }
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFile(e.target.files[0])
@@ -63,31 +75,36 @@ export const ImportSubjectsMenu = () => {
         }
     }
     const handleSubmit = async () => {
-        if (selectedEductationalPrograms.size > 0) {
+        if (selectedSubjects.size > 0) {
             try {
                 setLoading(true)
-                const newEducationalPrograms: CreateSubject[] = Array.from(selectedSubjects).map((index) => {
+                const newSubjects: CreateSubject[] = Array.from(selectedSubjects).map((index) => {
                     const { totalHours, weeklyHours, monthPeriod, name }: {
-                        abbreviation: string,
-                        description: string
-                    } = educationalPrograms[Number(index)]
+                        totalHours: number,
+                        weeklyHours: number,
+                        monthPeriod: string,
+                        name: string
+                    } = subjects[Number(index)]
                     return ({
-                        totalHours, weeklyHours, monthPeriod, name
+                        totalHours,
+                        weeklyHours,
+                        monthPeriod,
+                        subjectName: name
                     })
                 })
-                toast.promise(createManyEducationalPrograms({
-                    areaId: getFirstSetValue(selectedArea),
-                    data: newEducationalPrograms
+                toast.promise(createManySubjects({
+                    educationalProgramId: getFirstSetValue(selectedArea),
+                    data: newSubjects
                 }), {
                     loading: 'Registrando programas educativos...',
                     success: ({ data: { data, error, message } }) => {
                         setLoading(false)
                         if (error) return message
                         playNotifySound()
-                        setEducationalPrograms(educationalPrograms.filter(e => {
-                            return !selectedEductationalPrograms.has(`${e.index}`)
+                        setSubjects(subjects.filter(e => {
+                            return !selectedSubjects.has(`${e.index}`)
                         }))
-                        setSelectedEducationalPrograms(new Set([]))
+                        setSelectedSubjects(new Set([]))
                         setSelectedArea(new Set([]))
                         playNotifySound()
                         return `${data.count} programas educativos registrados`
@@ -153,8 +170,8 @@ export const ImportSubjectsMenu = () => {
                 items={areas}
                 label='Areas'
                 placeholder="Selecciona un area"
-                onSelectionChange={ }
-                selectedKeys={ }
+                onSelectionChange={onSelectedAreaChange}
+                selectedKeys={selectedArea}
                 disallowEmptySelection
             >
                 {
@@ -165,6 +182,28 @@ export const ImportSubjectsMenu = () => {
                     )
                 }
             </Select>
+
+            <Select
+                selectedKeys={selectedEducationalKeys}
+                onSelectionChange={onSelectionEducationProgramChange}
+                key={'table'}
+                aria-label="Selector de programas educativos"
+                items={educationalPrograms}
+                disallowEmptySelection
+            >
+                {
+                    (educationalProgram) => (
+                        <TableRow key={educationalProgram.id}>
+                            <TableCell>
+                                {educationalProgram.description}
+                            </TableCell>
+                            <TableCell>
+                                {educationalProgram.abbreviation}
+                            </TableCell>
+                        </TableRow>
+                    )
+                }
+            </Select>
             <Button
                 fullWidth
                 className="bg-utim"
@@ -172,13 +211,12 @@ export const ImportSubjectsMenu = () => {
                 onPress={handleSubmit}
                 isLoading={loading && !file}
             >
-                Registrar en el área seleccionada
+                Registrar en el programa educativo seleccionado
             </Button>
             <Table
-                selectedKeys={selectedEductationalPrograms}
-                onSelectionChange={ }
+                selectedKeys={selectedEducationalKeys}
+                onSelectionChange={onSelectionEducationProgramChange}
                 isCompact
-                selectionMode="multiple"
                 classNames={tableClassNames}
                 key={'table'}
                 aria-label="tabla de importaciones"
@@ -192,18 +230,17 @@ export const ImportSubjectsMenu = () => {
                     </TableColumn>
                 </TableHeader>
                 <TableBody
-                    key={'ld'}
-                    items={educationalPrograms}
-                    emptyContent={'Nada exportado aún'}
+                    items={subjects}
+                    emptyContent={'Sin materia para importar'}
                 >
                     {
-                        (educationalProgram) => (
-                            <TableRow key={educationalProgram.index}>
+                        (subject) => (
+                            <TableRow key={subject.index}>
                                 <TableCell>
-                                    {educationalProgram.description}
+                                    {subject.description}
                                 </TableCell>
                                 <TableCell>
-                                    {educationalProgram.abbreviation}
+                                    {subject.abbreviation}
                                 </TableCell>
                             </TableRow>
                         )

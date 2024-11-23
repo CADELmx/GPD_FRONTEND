@@ -25,8 +25,12 @@ export const createSubject = ({ data }: { data: CreateSubject }) => {
     return serverClient.post<SubjectResult>('/subject', data)
 }
 
-export const createManySubjects = ({ data }: { data: CreateSubject[] }) => {
-    return serverClient.post<CreateManyResult>('/subject/many', data)
+export const createManySubjects = ({ educationalProgramId, data }: { educationalProgramId: number, data: CreateSubject[] }) => {
+    return serverClient.post<CreateManyResult>('/subject/many', data, {
+        params: {
+            id: educationalProgramId
+        }
+    })
 }
 
 export const updateSubject = ({ id, data }: { id: number, data: CreateSubject }) => {
