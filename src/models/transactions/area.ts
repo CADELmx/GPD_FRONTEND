@@ -10,6 +10,10 @@ export interface AreasResult extends ApiResponse {
     data: Area[]
 }
 
+export interface AreaJoinEducationalProgramsResult extends ApiResponse {
+    data: AreaJoinEducationalPrograms
+}
+
 export interface AreasJoinEducationalProgramsResult extends ApiResponse {
     data: AreaJoinEducationalPrograms[]
 }
@@ -40,6 +44,10 @@ export const getAreasEducationalProgramsCount = () => {
 
 export const getAreasJoinEducationalPrograms = () => {
     return serverClient.get<AreasJoinEducationalProgramsResult>('/areas/educational-programs')
+}
+
+export const getAreaByEducationalProgram = ({ id }: GetById) => {
+    return serverClient.get<AreaJoinEducationalProgramsResult>(`/areas/educational-programs/${id}`)
 }
 
 export const createArea = ({ data }: { data: CreateArea }) => {

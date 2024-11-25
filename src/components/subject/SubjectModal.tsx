@@ -1,13 +1,14 @@
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react"
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, Selection, SelectItem } from "@nextui-org/react"
 import { ModalProps } from "../educationalProgram/EducationalProgramModal"
 import { UseSecretary } from "@/context"
-import { ChangeEvent, useEffect, useState } from "react"
+import React, { ChangeEvent, Key, useEffect, useState } from "react"
 import { CreateSubject } from "@/models/types/subject"
 import toast from "react-hot-toast"
 import { createSubject, updateSubject } from "@/models/transactions/subject"
 import { EducationalProgram } from "@/models/types/educational-program"
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program"
-import { getFirstSetValue } from "@/utils"
+import { getFirstSetValue, InitiSelectedKeys } from "@/utils"
+import { getAreaByEducationalProgram } from "@/models/transactions/area"
 
 export type PeriodType = {
     id: number,
@@ -17,50 +18,56 @@ export type PeriodType = {
 const periods: PeriodType[] = [
     {
         id: 1,
-        name: '1o'
+        name: '1'
     },
     {
         id: 2,
-        name: '2o'
+        name: '2'
     },
     {
         id: 3,
-        name: '3o'
+        name: '3'
     },
     {
         id: 4,
-        name: '4o'
+        name: '4'
     },
     {
         id: 5,
-        name: '5o'
+        name: '5'
     },
     {
         id: 7,
-        name: '7o'
+        name: '7'
     },
     {
         id: 8,
-        name: '8o'
+        name: '8'
     },
     {
         id: 9,
-        name: '9o'
+        name: '9'
     },
     {
         id: 10,
-        name: '10o'
+        name: '10'
     },
     {
         id: 11,
-        name: 'Estadía'
+        name: '11'
     }
 ]
 
+export const AddToArrayIfNotExists = (array: any[], value: any) => {
+    if (array.includes(value)) return array
+    return [...array, value]
+}
+
+
 export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     const { subjectState: { selectedSubject, subjects }, setStoredSubjects, areaState: { areas } } = UseSecretary()
-    const [areaSelectedKeys, setAreaSelectedKeys] = useState<any>(new Set<any>([]))
-    const [selectedEduKeys, setSelectedEduKeys] = useState<any>(new Set<any>([]))
+    const [areaSelectedKeys, setAreaSelectedKeys] = useState(InitiSelectedKeys)
+    const [selectedEduKeys, setSelectedEduKeys] = useState(InitiSelectedKeys)
     const [educationalPrograms, setEducationalPrograms] = useState<EducationalProgram[]>([]);
     const handleChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>) => {
         setStoredSubjects({
@@ -68,6 +75,29 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                 ...selectedSubject,
                 [e.target.name]:
                     (e.target.name === "weeklyHours" || e.target.name === "totalHours") ? Number(e.target.value) : e.target.value
+            }
+        })
+    }
+    const handlePeriodChange = (e: Selection) => {
+        if (e === "all") return
+        setStoredSubjects({
+            selectedSubject: {
+                ...selectedSubject,
+                monthPeriod: getFirstSetValue(new Set(e))
+            }
+        })
+    }
+    const handleAreaChange = (e: Selection) => {
+        if (e === "all") return
+        setAreaSelectedKeys(e)
+    }
+    const handleEducationalProgramChange = (e: Selection) => {
+        if (e === "all") return
+        setSelectedEduKeys(e)
+        setStoredSubjects({
+            selectedSubject: {
+                ...selectedSubject,
+                educationalProgramId: Number(getFirstSetValue(new Set(e)))
             }
         })
     }
@@ -114,7 +144,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     const handleSubmit = () => {
         const newEducationalProgram = {
             ...selectedSubject,
-            educationalProgramId: selectedSubject.educationalProgramId
+            educationalProgramId: Number(selectedSubject.educationalProgramId)
         }
         if (selectedSubject?.id) {
             handleUpdate(selectedSubject.id, newEducationalProgram)
@@ -135,10 +165,12 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                 success: ({ data: { data, error, message } }) => {
                     if (error) return message
                     setEducationalPrograms(data)
-                    setSelectedEduKeys(new Set([]))
+                    setSelectedEduKeys(selectedSubject.id ? new Set([selectedSubject.educationalProgramId as Key]) : new Set([]))
                     return message
                 },
                 error: 'Error al cargar programas educativo'
+            }, {
+                id: 'get-areas-or-educational-programs'
             })
         }
         return () => {
@@ -146,13 +178,26 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
         }
     }, [areaSelectedKeys]);
 
-
     useEffect(() => {
-        console.log(selectedEduKeys, areaSelectedKeys)
+        if (selectedSubject?.educationalProgramId)
+            toast.promise(getAreaByEducationalProgram({
+                id: Number(selectedSubject.educationalProgramId)
+            }), {
+                loading: 'Cargando área',
+                success: ({ data: { data, error, message } }) => {
+                    if (error) return message
+                    setAreaSelectedKeys(new Set([data.id]))
+                    return message
+                },
+                error: 'Error al cargar área'
+            }, {
+                id: 'get-areas-or-educational-programs'
+            })
         return () => {
+            setAreaSelectedKeys(new Set([]))
+            setEducationalPrograms([])
         }
-    }, [selectedEduKeys])
-
+    }, [selectedSubject?.id]);
 
     return (
         <Modal
@@ -176,10 +221,11 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                     disallowEmptySelection
                                     aria-label="Selector área"
                                     label='Área'
+                                    placeholder="Selecciona un área"
                                     name="areaId"
                                     required
-                                    defaultSelectedKeys={areaSelectedKeys}
-                                    onSelectionChange={setAreaSelectedKeys}
+                                    selectedKeys={areaSelectedKeys as Selection}
+                                    onSelectionChange={handleAreaChange}
                                     items={areas}
                                 >
                                     {
@@ -189,21 +235,13 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                 </Select>
                                 <Select
                                     disallowEmptySelection
+                                    placeholder="Selecciona un programa educativo"
                                     aria-label="Programa educativo"
                                     isDisabled={
                                         educationalPrograms.length === 0
                                     }
-                                    selectedKeys={selectedEduKeys}
-                                    onSelectionChange={(e) => {
-                                        console.log('Programa educativo', e)
-                                        setSelectedEduKeys(e)
-                                        setStoredSubjects({
-                                            selectedSubject: {
-                                                ...selectedSubject,
-                                                educationalProgramId: Number(getFirstSetValue(new Set(e)))
-                                            }
-                                        })
-                                    }}
+                                    selectedKeys={selectedEduKeys as Selection}
+                                    onSelectionChange={handleEducationalProgramChange}
                                     label='Programa educativo'
                                     items={educationalPrograms}
                                 >
@@ -222,7 +260,12 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                 <Select
                                     label='Cuatrimestre'
                                     placeholder="Cuatrimestre de la materia"
-                                    items={periods}
+                                    isDisabled={disabledSubjectFields}
+                                    items={AddToArrayIfNotExists(periods, {
+                                        id: 12,
+                                        name: selectedSubject?.monthPeriod
+                                    })}
+                                    onSelectionChange={handlePeriodChange}
                                 >
                                     {
                                         (period) => (
@@ -236,7 +279,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                     aria-label="Nombre de la materia"
                                     onChange={handleChange}
                                     isDisabled={disabledSubjectFields}
-                                    defaultValue={selectedSubject?.subjectName}
+                                    value={selectedSubject?.subjectName}
                                     label='Nombre'
                                     placeholder="Nombre de la materia"
                                     name="subjectName"
@@ -245,7 +288,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                     aria-label="Periodo de la materia"
                                     type="number"
                                     isDisabled={disabledSubjectFields}
-                                    defaultValue={`${selectedSubject?.weeklyHours}`}
+                                    value={`${selectedSubject?.weeklyHours}`}
                                     name="weeklyHours"
                                     onChange={(e) => {
                                         setStoredSubjects({
@@ -255,7 +298,6 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                                 totalHours: 15 * Number(e.target.value)
                                             }
                                         })
-                                        console.log(selectedSubject)
                                     }}
                                     label='Horas semanales'
                                     placeholder="Horas semanales de la materia"
@@ -263,16 +305,16 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                 <Input
                                     onChange={handleChange}
                                     aria-label="Horas totales de la materia"
-                                    isDisabled
+                                    isDisabled={disabledSubjectFields}
                                     type="number"
-                                    value={`${15 * (selectedSubject?.weeklyHours || 0)}`}
+                                    value={`${selectedSubject?.totalHours}`}
                                     label='Horas totales'
                                     placeholder="Horas totales de la materia"
                                     name="totalHours"
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light">
+                                <Button color="danger" onPress={handleClose} variant="light">
                                     Cancelar
                                 </Button>
                                 <Button

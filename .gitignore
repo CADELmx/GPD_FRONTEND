@@ -33,7 +33,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# database files sql and erd desiner file
+# uploads folder
+/public/uploads
+
+# database files sql and erd designer file
 *.sql
 *.erd.json
 

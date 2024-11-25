@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, Divider, Input } from "@nextui-org/react";
+import { Avatar, Button, Card, CardBody, CardHeader, Divider, Input } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { UseTemplates } from "../../context";
@@ -72,6 +72,7 @@ export default function Login() {
                     label="Correo"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     isRequired
                     isDisabled={loading}
                 />
@@ -79,6 +80,7 @@ export default function Login() {
                     label="Contraseña"
                     name="password"
                     type="password"
+                    autoComplete="current-password"
                     isRequired
                     isDisabled={loading}
                 />

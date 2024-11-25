@@ -101,7 +101,7 @@ export const Layout = ({ children }: {
                         className="sm:hidden"
                     />
                     <NavbarBrand>
-                        <Image src={logo} alt="UTIM" className="sm:w-32 sm:flex" width={80} height={80} />
+                        <Image src={logo} alt="UTIM" className="sm:w-32 sm:flex" width={80} height={33} priority/>
                     </NavbarBrand>
                 </NavbarContent>
                 <NavbarContent className="hidden sm:flex" justify="center">

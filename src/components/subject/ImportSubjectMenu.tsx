@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { CreateSubject } from "@/models/types/subject";
 import { createManySubjects } from "@/models/transactions/subject";
-import { getFirstSetValue } from "@/utils";
+import { getFirstSetValue, InitiSelectedKeys } from "@/utils";
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
 import { EducationalProgram } from "@/models/types/educational-program";
 
@@ -18,9 +18,9 @@ export const ImportSubjectsMenu = () => {
     const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [subjects, setSubjects] = useState<any[]>([]);
-    const [selectedAreaKeys, setSelectedAreaKeys] = useState(new Set<any>([]));
-    const [selectedEducationalKeys, setSelectedEducationalKeys] = useState(new Set<any>([]));
-    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(new Set<any>([]));
+    const [selectedAreaKeys, setSelectedAreaKeys] = useState(InitiSelectedKeys);
+    const [selectedEducationalKeys, setSelectedEducationalKeys] = useState(InitiSelectedKeys);
+    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(InitiSelectedKeys);
     const onSelectedAreaChange = (e: Selection) => {
         if (e === "all") return
         setSelectedAreaKeys(e)
@@ -32,10 +32,8 @@ export const ImportSubjectsMenu = () => {
     const onSelectionSubjectChange = (e: Selection) => {
         if (e === "all") return setSelectedSubjectKeys(new Set(subjects.map((e) => {
             return `${e.index}`
-        }))
-        )
+        })))
         setSelectedSubjectKeys(e)
-        console.log(selectedSubjectKeys)
     }
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -109,7 +107,7 @@ export const ImportSubjectsMenu = () => {
                     })
                 })
                 toast.promise(createManySubjects({
-                    educationalProgramId: getFirstSetValue(selectedEducationalKeys),
+                    educationalProgramId: Number(getFirstSetValue(selectedEducationalKeys)),
                     data: newSubjects
                 }), {
                     loading: 'Registrando programas educativos...',
@@ -207,7 +205,7 @@ export const ImportSubjectsMenu = () => {
                 label='Areas'
                 placeholder="Selecciona un area"
                 onSelectionChange={onSelectedAreaChange}
-                selectedKeys={selectedAreaKeys}
+                selectedKeys={selectedAreaKeys as Selection}
                 disallowEmptySelection
             >
                 {
@@ -220,7 +218,7 @@ export const ImportSubjectsMenu = () => {
             </Select>
 
             <Select
-                selectedKeys={selectedEducationalKeys}
+                selectedKeys={selectedEducationalKeys as Selection}
                 onSelectionChange={onSelectionEducationProgramChange}
                 key={'table'}
                 label="Programas educativos"
@@ -248,7 +246,7 @@ export const ImportSubjectsMenu = () => {
                 Registrar en el programa educativo seleccionado
             </Button>
             <Table
-                selectedKeys={selectedSubjectKeys}
+                selectedKeys={selectedSubjectKeys as Selection}
                 onSelectionChange={onSelectionSubjectChange}
                 isCompact
                 selectionMode="multiple"

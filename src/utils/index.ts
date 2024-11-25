@@ -1,7 +1,8 @@
 import { Socket } from "socket.io"
 import { Activity, CreateActivity } from "../models/types/activity"
 import { CreatePartialTemplate, PartialTemplate } from "../models/types/partial-template"
-import { Toast,toast } from "react-hot-toast"
+import { Toast, toast } from "react-hot-toast"
+import { Key } from "react"
 export const promiseResolver = async<T>(promises: Promise<T>[]) => {
     const result = await Promise.all(promises)
     return result
@@ -96,8 +97,12 @@ export const generatePeriods = ({
 
 export const checkEmptyStringOption = (string: string | undefined) => string === "" || string === undefined ? [] : [string]
 
-export const getFirstSetValue = <T>(set: Set<T>) => {
+export const getFirstSetValue = <T>(set: Set<T>): T => {
     return Array.from(set)[0]
+}
+
+export const InitiSelectedKeys = () => {
+    return new Set<Key>([])
 }
 
 export const sumHours = ({ activities }: { activities: CreateActivity[] }) => {
