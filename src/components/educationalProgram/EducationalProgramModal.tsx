@@ -181,10 +181,6 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                     return 'Error al actualizar programas educativos'
                 }
                 playNotifySound()
-                console.log(educationalPrograms.map((program) => {
-                    const updatedProgram = promisesData.find(({ data }) => data.id === program.id)
-                    return updatedProgram ? updatedProgram.data : program
-                }))
                 setStoredEducationalPrograms({
                     educationalPrograms: educationalPrograms.map((program) => {
                         const updatedProgram = promisesData.find(({ data }) => data.id === program.id)
@@ -200,12 +196,20 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
 
     }
     return (
-        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+        <Modal
+            backdrop="blur"
+            isOpen={isOpen}
+            placement="center"
+            isDismissable
+            onOpenChange={onOpenChange}
+        >
             <ModalContent>
                 {
                     (onClose) => (
                         <>
-                            <ModalHeader>Cambiar programas educativos de área</ModalHeader>
+                            <ModalHeader>
+                                Cambiar programas educativos de área
+                            </ModalHeader>
                             <ModalBody>
                                 <Select
                                     startContent={ArrowRight}
@@ -251,13 +255,15 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                         variant="light"
                                         color="danger"
                                         onPress={onClose}
-                                    >Cancelar
+                                    >
+                                        Cancelar
                                     </Button>
                                     <Button
                                         isDisabled={selectedAreas.size === 0}
                                         className="bg-utim"
                                         onPress={handleUpdateMany}
-                                    >Guardar
+                                    >
+                                        Guardar
                                     </Button>
                                 </div>
                             </ModalFooter>

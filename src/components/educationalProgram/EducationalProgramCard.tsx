@@ -74,14 +74,18 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
                                 startContent={ArrowsRightLeftIcon}
                                 color="primary"
                                 onPress={handleChangeArea}
-                            >Cambiar de area</Button>
+                            >
+                                Cambiar de area
+                            </Button>
                             <Button
                                 aria-label="Eliminar varios"
                                 isDisabled={selectedEductationalPrograms.length === 0}
                                 startContent={TrashIcon}
                                 color="danger"
                                 onPress={handleDeleteMany}
-                            >Eliminar</Button>
+                            >
+                                Eliminar
+                            </Button>
                         </div>
                     )
                 }
