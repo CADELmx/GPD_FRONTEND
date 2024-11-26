@@ -9,6 +9,7 @@ import { createManyEducationalPrograms } from "@/models/transactions/educational
 import { getFirstSetValue, InitSelectedKeys } from "@/utils";
 import { playNotifySound } from "@/toast";
 import { tableClassNames } from "./EducationalProgramCard";
+import Link from "next/link";
 
 
 export const ImportEducationalProgramsMenu = () => {
@@ -41,9 +42,14 @@ export const ImportEducationalProgramsMenu = () => {
                             success: ({ data, status }) => {
                                 if (status === 200) {
                                     const keys = Object.keys(JSON.parse(data)[0])
-                                    if (keys.some(key=>!['abbreviation', 'description'].includes(key))) {
+                                    if (keys.some(key => !['abbreviation', 'description'].includes(key))) {
                                         setLoading(false)
-                                        return 'El archivo no tiene el formato correcto'
+                                        return <>
+                                            El archivo no tiene el formato correcto
+                                            <Link href={'/about'}>
+                                                Más información
+                                            </Link>
+                                        </>
                                     }
                                     const newEducationalPrograms = JSON.parse(data)
                                         .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
