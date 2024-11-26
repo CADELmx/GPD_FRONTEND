@@ -21,7 +21,10 @@ export const AreasTable = ({ onOpenModal, onOpenDeleteModal }: {
     return (
         <div className="flex flex-col gap-2">
             <Table
-                classNames={tableClassNames}
+                classNames={{
+                    ...tableClassNames,
+                    base: 'max-h-[34rem] overflow-auto'
+                }}
                 isCompact
                 aria-label="Tabla de áreas"
             >

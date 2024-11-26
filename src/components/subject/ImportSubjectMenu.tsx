@@ -49,39 +49,43 @@ export const ImportSubjectsMenu = () => {
                 loading: 'Importando materias...',
                 success: ({ status }) => {
                     if (status === 200) {
-                        return 'Procesando programas educativos...'
-                    }
-                    return 'Error al procesar las materias'
-                },
-                error: () => {
-                    setLoading(false)
-                    return 'Error al procesar las materias, intenta de nuevo'
-                }
-            }, {
-                id: 'import-subjects'
-            })
-            toast.promise(axios.get(`/api/import/${file.name}`), {
-                loading: 'Cargando materias...',
-                success: ({ data, status }) => {
-                    if (status === 200) {
-                        console.log(JSON.parse(data))
-                        const newSubjects = JSON.parse(data).map((subject: CreateSubject, index: number) => {
-                            return {
-                                ...subject,
-                                index
+                        toast.promise(axios.get(`/api/import/${file?.name}`), {
+                            loading: 'Cargando materias...',
+                            success: ({ data, status }) => {
+                                if (status === 200) {
+                                    const keys = Object.keys(JSON.parse(data)[0]).map(e => e.toLowerCase())
+                                    if (!keys.some(e => e === 'subjectname' && 'totalhours' && 'weeklyhours' && 'monthperiod')) {
+                                        setLoading(false)
+                                        return 'Error al importar las materias, el archivo no el formato correcto'
+                                    }
+                                    const newSubjects = JSON.parse(data).map((subject: CreateSubject, index: number) => {
+                                        return {
+                                            ...subject,
+                                            index
+                                        }
+                                    })
+                                    setSubjects(newSubjects)
+                                    setLoading(false)
+                                    return 'Materias listas para registrar'
+                                } else {
+                                    setLoading(false)
+                                    return 'Error al importar los programas educativos'
+                                }
+                            },
+                            error: () => {
+                                setLoading(false)
+                                return 'Error al importar las materias, intenta de nuevo'
                             }
+                        }, {
+                            id: 'import-subjects'
                         })
-                        setSubjects(newSubjects)
-                        setLoading(false)
-                        return 'Materias listas para registrar'
-                    } else {
-                        setLoading(false)
-                        return 'Error al importar los programas educativos'
+                        return 'Archivo subido correctamente'
                     }
+                    return 'Error al subir el archivo'
                 },
                 error: () => {
                     setLoading(false)
-                    return 'Error al importar las materias, intenta de nuevo'
+                    return 'Error al subir el archivo, intente de nuevo'
                 }
             }, {
                 id: 'import-subjects'
@@ -169,7 +173,7 @@ export const ImportSubjectsMenu = () => {
                     </div>
                     <div className="flex items-center justify-center gap-2">
                         <Chip isDisabled={!file?.name} variant="bordered">
-                            {file.name || 'Nada seleccionado'}
+                            {file?.name || 'Nada seleccionado'}
                         </Chip>
                         {
                             file &&
@@ -249,9 +253,12 @@ export const ImportSubjectsMenu = () => {
                 selectedKeys={selectedSubjectKeys as Selection}
                 onSelectionChange={onSelectionSubjectChange}
                 isCompact
+                isHeaderSticky
                 selectionMode="multiple"
-                classNames={tableClassNames}
-                key={'table'}
+                classNames={{
+                    ...tableClassNames,
+                    base: 'max-h-[34rem] overflow-auto'
+                }}
                 aria-label="tabla de importaciones"
             >
                 <TableHeader>

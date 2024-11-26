@@ -27,7 +27,6 @@ async function readAndWriteFile(file: FormidableFile, newPath: string) {
         await writeFile(path, data)
         return 'ok'
     } catch (error: any) {
-        console.log(error.message)
         return 'error'
     }
 }

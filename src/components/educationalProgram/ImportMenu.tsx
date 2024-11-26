@@ -24,7 +24,7 @@ export const ImportEducationalProgramsMenu = () => {
         }
     }
     const handleEducationalProgramSelection = (e: Selection) => {
-        if(e === 'all') return
+        if (e === 'all') return
         setSelectedEducationalPrograms(e)
     }
     const handleExport = async () => {
@@ -196,8 +196,12 @@ export const ImportEducationalProgramsMenu = () => {
                 selectedKeys={selectedEductationalPrograms as Selection}
                 onSelectionChange={handleEducationalProgramSelection}
                 isCompact
+                isHeaderSticky
                 selectionMode="multiple"
-                classNames={tableClassNames}
+                classNames={{
+                    ...tableClassNames,
+                    base: 'max-h-[34rem] overflow-auto'
+                }}
                 key={'table'}
                 aria-label="tabla de importaciones"
             >

@@ -95,7 +95,11 @@ export const EducationalProgramsTable = ({ onOpenModal, onOpenDeleteModal }: {
                 onSelectionChange={onSelectionChange}
                 selectedKeys={selectedEducationalPrograms.map(e => e.id)}
                 isCompact
-                classNames={tableClassNames}>
+                isHeaderSticky
+                classNames={{
+                    ...tableClassNames,
+                    base: 'max-h-[34rem] overflow-auto'
+                }}>
                 <TableHeader>
                     <TableColumn>
                         Abreviatura

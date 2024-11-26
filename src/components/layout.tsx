@@ -6,7 +6,7 @@ import logo from "/public/utim.png"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { LoginButton } from "./LoginButton"
-import { AcademicHatIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
+import { AcademicHatIcon, CheckIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
 import { UseTemplates } from "../context"
 import { Template } from "@/models/types/template"
 
@@ -36,7 +36,7 @@ export const Layout = ({ children }: {
             name: "Ver estado de plantillas parciales", href: "/director/partialtemplate", icon: EyeIcon
         },
         {
-            name: 'Ver estado de plantillas', href: '/director/template', icon: EyeIcon
+            name: 'Ver estado de plantillas', href: '/', icon: EyeIcon
         },
         {
             name: 'Crear nueva plantilla', href: '/director/template', icon: PlusIcon
@@ -101,7 +101,7 @@ export const Layout = ({ children }: {
                         className="sm:hidden"
                     />
                     <NavbarBrand>
-                        <Image src={logo} alt="UTIM" className="sm:w-32 sm:flex" width={80} height={33} priority/>
+                        <Image src={logo} alt="UTIM" className="sm:w-32 sm:flex" width={80} height={33} priority />
                     </NavbarBrand>
                 </NavbarContent>
                 <NavbarContent className="hidden sm:flex" justify="center">
@@ -112,18 +112,28 @@ export const Layout = ({ children }: {
                                 <Button variant="light">Dirección de carrera</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="academic items" items={programDirectorItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="default"
+                            aria-label="academic items"
+                            items={programDirectorItems}
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                            selectionMode="single"
+                            selectedKeys={[router.pathname]}
+                        >
                             {
                                 (directorItem) => (
                                     <DropdownItem
-                                        startContent={directorItem.icon
-                                        }
+                                        href={directorItem.href}
+                                        as={Link}
+                                        className="data-[selected=true]:bg-default"
+                                        startContent={directorItem.icon}
                                         textValue={directorItem.name}
-                                        key={directorItem.name}
+                                        key={directorItem.href}
                                     >
-                                        <Link passHref href={directorItem.href}>
-                                            {directorItem.name}
-                                        </Link>
+                                        {directorItem.name}
                                     </DropdownItem>
                                 )
                             }
@@ -135,18 +145,29 @@ export const Layout = ({ children }: {
                                 <Button variant="light">Secretaría</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="secretary items" items={secretaryItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="default"
+                            aria-label="secretary items"
+                            items={secretaryItems}
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                            selectionMode="single"
+                            selectedKeys={[router.pathname]}
+                        >
                             {
                                 (secretaryItem) => (
                                     <DropdownItem
+                                        as={Link}
+                                        href={secretaryItem.href}
                                         startContent={secretaryItem.icon
                                         }
+                                        className="data-[selected=true]:bg-default"
                                         textValue={secretaryItem.name}
-                                        key={secretaryItem.name}
+                                        key={secretaryItem.href}
                                     >
-                                        <Link passHref href={secretaryItem.href}>
-                                            {secretaryItem.name}
-                                        </Link>
+                                        {secretaryItem.name}
                                     </DropdownItem>
                                 )
                             }
@@ -184,18 +205,27 @@ export const Layout = ({ children }: {
                                 <Button variant="light" size="lg">Dirección de carrera</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="academic items" items={programDirectorItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="primary"
+                            aria-label="academic items"
+                            items={programDirectorItems}
+                            selectedKeys={[router.pathname]}
+                            selectionMode="single"
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                        >
                             {
                                 (directorItem) => (
                                     <DropdownItem
                                         startContent={directorItem.icon
                                         }
+                                        className="data-[selected=true]:bg-primary"
                                         textValue={directorItem.name}
-                                        key={directorItem.name}
+                                        key={directorItem.href}
                                     >
-                                        <Link passHref href={directorItem.href}>
-                                            {directorItem.name}
-                                        </Link>
+                                        {directorItem.name}
                                     </DropdownItem>
                                 )
                             }
@@ -207,18 +237,27 @@ export const Layout = ({ children }: {
                                 <Button variant="light" size="lg">Secretaría</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="secretary items" items={secretaryItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="default"
+                            aria-label="secretary items"
+                            items={secretaryItems}
+                            selectedKeys={[router.pathname]}
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                            selectionMode="single"
+                        >
                             {
                                 (secretaryItem) => (
                                     <DropdownItem
+                                        href={secretaryItem.href}
                                         startContent={secretaryItem.icon
                                         }
                                         textValue={secretaryItem.name}
-                                        key={secretaryItem.name}
+                                        key={secretaryItem.href}
                                     >
-                                        <Link passHref href={secretaryItem.href}>
-                                            {secretaryItem.name}
-                                        </Link>
+                                        {secretaryItem.name}
                                     </DropdownItem>
                                 )
                             }
