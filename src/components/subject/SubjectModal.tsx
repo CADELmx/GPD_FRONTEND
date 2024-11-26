@@ -7,7 +7,7 @@ import toast from "react-hot-toast"
 import { createSubject, deleteSubject, updateSubject } from "@/models/transactions/subject"
 import { EducationalProgram } from "@/models/types/educational-program"
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program"
-import { AddToArrayIfNotExists, getFirstSetValue, InitiSelectedKeys } from "@/utils"
+import { AddToArrayIfNotExists, getFirstSetValue, InitSelectedKeys } from "@/utils"
 import { getAreaByEducationalProgram } from "@/models/transactions/area"
 import { playNotifySound } from "@/toast"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
@@ -71,9 +71,9 @@ const periods: PeriodType[] = [
 
 export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     const { subjectState: { selectedSubject, subjects }, setStoredSubjects, areaState: { areas } } = UseSecretary()
-    const [areaSelectedKeys, setAreaSelectedKeys] = useState(InitiSelectedKeys)
-    const [selectedEduKeys, setSelectedEduKeys] = useState(InitiSelectedKeys)
-    const [periodSelectedKeys, setPeriodSelectedKeys] = useState(InitiSelectedKeys);
+    const [areaSelectedKeys, setAreaSelectedKeys] = useState(InitSelectedKeys)
+    const [selectedEduKeys, setSelectedEduKeys] = useState(InitSelectedKeys)
+    const [periodSelectedKeys, setPeriodSelectedKeys] = useState(InitSelectedKeys);
     const [educationalPrograms, setEducationalPrograms] = useState<EducationalProgram[]>([]);
     const handleChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>) => {
         setStoredSubjects({
@@ -414,7 +414,7 @@ export const DeleteSubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps)
 
 export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubjects }: ModalProps & { selectedSubjects: Subject[] }) => {
     const { areaState: { areas }, subjectState: { subjects }, setStoredSubjects } = UseSecretary()
-    const [selectedEduKeys, setSelectedEduKeys] = useState(InitiSelectedKeys);
+    const [selectedEduKeys, setSelectedEduKeys] = useState(InitSelectedKeys);
     const [educationalPrograms, setEducationalPrograms] = useState<EducationalProgram[]>([]);
     const handleSelectEducationalProgram = (e: Selection) => {
         if (e === "all") return
@@ -572,6 +572,131 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
                                     className="bg-utim"
                                     onPress={handleUpdateMany}
                                     isDisabled={selectedEduKeys.size === 0}
+                                >
+                                    Cambiar
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )
+                }
+            </ModalContent>
+        </Modal>
+    )
+}
+
+export const ChangePeriodModal = ({ isOpen, onOpen, onOpenChange, selectedSubjects }: ModalProps & { selectedSubjects: Subject[] }) => {
+    const { subjectState: { subjects }, setStoredSubjects } = UseSecretary()
+    const [periodSelectedKeys, setPeriodSelectedKeys] = useState(InitSelectedKeys)
+    const handlePeriodChange = (e: Selection) => {
+        if (e === "all") return
+        setPeriodSelectedKeys(e)
+    }
+    const handleClose = () => {
+        setPeriodSelectedKeys(new Set<Key>([]))
+        onOpenChange()
+    }
+    const handleUpdateMany = () => {
+        const newPeriod = getFirstSetValue(periodSelectedKeys)
+        const subjectPromises = selectedSubjects.map(subject => {
+            return updateSubject({
+                id: subject.id,
+                data: {
+                    ...subject,
+                    monthPeriod: `${newPeriod}`
+                }
+            })
+        })
+        toast.promise(Promise.all(subjectPromises), {
+            loading: 'Actualizando materias',
+            success: (results) => {
+                onOpenChange()
+                const promisesData = results.map(({ data }) => data)
+                if (promisesData.some(({ error }) => error)) return 'Error al actualizar materias'
+                playNotifySound()
+                setStoredSubjects({
+                    subjects: subjects.map(subject => {
+                        const newSubject = promisesData.find(({ data }) => data.id === subject.id)
+                        return newSubject ? newSubject.data : subject
+                    })
+                })
+                return 'Materias actualizadas'
+            },
+            error: 'Error al actualizar materias, intente de nuevo'
+        })
+    }
+    return (
+        <Modal
+            backdrop="blur"
+            placement="center"
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            onClose={handleClose}
+        >
+            <ModalContent>
+                {
+                    (onClose) => (
+                        <>
+                            <ModalHeader>
+                                Cambiar cuatrimestre
+                            </ModalHeader>
+                            <ModalBody>
+                                <Select
+                                    aria-label="Cuatrimestre de la materia"
+                                    label='Cuatrimestre'
+                                    placeholder="Cuatrimestre de la materia"
+                                    items={periods}
+                                    selectedKeys={periodSelectedKeys as Selection}
+                                    onSelectionChange={handlePeriodChange}
+                                >
+                                    {
+                                        (period: PeriodType) => (
+                                            <SelectItem key={period.name}>
+                                                {period.name}
+                                            </SelectItem>
+                                        )
+                                    }
+                                </Select>
+                                <Table
+                                    aria-label="Tabla de materias"
+                                    selectionMode="none"
+                                    classNames={{
+                                        ...tableClassNames,
+                                        th: 'text-center text-1xl',
+                                        base: 'max-h-60 overflow-y-auto'
+                                    }}
+                                >
+                                    <TableHeader>
+                                        <TableColumn>
+                                            Materias seleccionadas
+                                        </TableColumn>
+                                    </TableHeader>
+                                    <TableBody
+                                        items={selectedSubjects}
+                                    >
+                                        {
+                                            selectedSubjects.map(subject => (
+                                                <TableRow key={subject.id}>
+                                                    <TableCell>
+                                                        {subject.subjectName}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button
+                                    color="danger"
+                                    variant="light"
+                                    onPress={handleClose}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    className="bg-utim"
+                                    onPress={handleUpdateMany}
+                                    isDisabled={periodSelectedKeys.size === 0}
                                 >
                                     Cambiar
                                 </Button>

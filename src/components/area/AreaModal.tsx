@@ -61,7 +61,13 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }: {
         }
     }
     return (
-        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+        <Modal
+            backdrop="blur"
+            isOpen={isOpen}
+            placement="center"
+            isDismissable
+            onOpenChange={onOpenChange}
+        >
             <ModalContent>
                 {
                     (onClose) => (
@@ -77,8 +83,19 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }: {
                                 ></Input>
                             </ModalBody>
                             <ModalFooter>
-                                <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
-                                <Button className="bg-utim" onPress={handleSubmit}>Guardar</Button>
+                                <Button
+                                    variant="light"
+                                    color="danger"
+                                    onPress={handleClose}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    className="bg-utim"
+                                    onPress={handleSubmit}
+                                >
+                                    Guardar
+                                </Button>
                             </ModalFooter>
                         </>
                     )

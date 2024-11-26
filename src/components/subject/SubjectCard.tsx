@@ -4,7 +4,6 @@ import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selectio
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 import { useState } from "react"
-import { InitiSelectedKeys } from "../../utils"
 import { SwitchMode } from "../SwitchMode"
 import { ChangeProgramModal, DeleteManySubjectsModal, DeleteSubjectModal, SubjectModal } from "./SubjectModal"
 
@@ -18,6 +17,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     const ChangeFromProgramModal = useDisclosure()
     const ChangePeriodModal = useDisclosure()
     const DeleteSubjectsModal = useDisclosure()
+    const DeleteModal = useDisclosure()
     const handlePress = (subject: CreateSubject) => {
         setStoredSubjects({ selectedSubject: subject })
         onOpenModal()
@@ -69,9 +69,9 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                     selectedSubjects={selectedSubjects}
                 />
                 <DeleteSubjectModal
-                    isOpen={ChangePeriodModal.isOpen}
-                    onOpen={ChangePeriodModal.onOpen}
-                    onOpenChange={ChangePeriodModal.onOpenChange}
+                    isOpen={DeleteModal.isOpen}
+                    onOpen={DeleteModal.onOpen}
+                    onOpenChange={DeleteModal.onOpenChange}
                 />
                 <SubjectModal
                     isOpen={ChangePeriodModal.isOpen}

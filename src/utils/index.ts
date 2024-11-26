@@ -101,7 +101,7 @@ export const getFirstSetValue = <T>(set: Set<T>): T => {
     return Array.from(set)[0]
 }
 
-export const InitiSelectedKeys = () => {
+export const InitSelectedKeys = () => {
     return new Set<Key>([])
 }
 

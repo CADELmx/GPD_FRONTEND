@@ -1,11 +1,11 @@
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
-import { ChangeEvent, useState } from "react"
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { ChangeEvent, Key, useState } from "react"
 import toast from "react-hot-toast"
 import { tableClassNames } from "./EducationalProgramCard"
 import { ArrowRight } from "../Icons"
 import { createEducationalProgram, deleteEducationalProgram, updateEducationalProgram } from "../../models/transactions/educational-program"
 import { UseSecretary } from "../../context"
-import { getFirstSetValue } from "../../utils"
+import { getFirstSetValue, InitSelectedKeys } from "../../utils"
 import { playNotifySound } from "../../toast"
 import { CreateEducationalProgram, EducationalProgram } from "@/models/types/educational-program"
 
@@ -145,6 +145,7 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }: 
         <Modal
             backdrop="blur"
             isOpen={isOpen}
+            onClose={handleClose}
             placement="center"
             isDismissable
             onOpenChange={onOpenChange}
@@ -183,7 +184,15 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }: 
 export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }: ModalProps & { selectedEducationalPrograms: EducationalProgram[] }) => {
     console.log(selectedEducationalPrograms)
     const { areaState: { areas }, educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
-    const [selectedAreas, setSelectedAreas] = useState<any>(new Set([]));
+    const [selectedAreas, setSelectedAreas] = useState(InitSelectedKeys);
+    const handleSelectArea = (e: Selection) => {
+        if (e === "all") return
+        setSelectedAreas(e)
+    }
+    const handleClose = () => {
+        setSelectedAreas(new Set<Key>([]))
+        onOpenChange()
+    }
     const handleUpdateMany = () => {
         const newAreaId = Number(getFirstSetValue(selectedAreas))
         const programPromises = selectedEducationalPrograms.map((program) => {
@@ -218,6 +227,7 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
             isOpen={isOpen}
             placement="center"
             isDismissable
+            onClose={handleClose}
             onOpenChange={onOpenChange}
         >
             <ModalContent>
@@ -233,9 +243,8 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                     label='Área destino'
                                     isRequired
                                     items={areas}
-                                    selectedKeys={selectedAreas}
-                                    defaultSelectedKeys={selectedAreas}
-                                    onSelectionChange={setSelectedAreas}
+                                    selectedKeys={selectedAreas as Selection}
+                                    onSelectionChange={handleSelectArea}
                                     disallowEmptySelection
                                 >
                                     {
@@ -271,7 +280,7 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                     <Button
                                         variant="light"
                                         color="danger"
-                                        onPress={onClose}
+                                        onPress={handleClose}
                                     >
                                         Cancelar
                                     </Button>
