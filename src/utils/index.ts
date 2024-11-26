@@ -1,7 +1,7 @@
 import { Socket } from "socket.io"
-import { Activity, CreateActivity } from "../models/types/activity"
+import { CreateActivity } from "../models/types/activity"
 import { CreatePartialTemplate, PartialTemplate } from "../models/types/partial-template"
-import { Toast, toast } from "react-hot-toast"
+import { toast } from "react-hot-toast"
 import { Key } from "react"
 export const promiseResolver = async<T>(promises: Promise<T>[]) => {
     const result = await Promise.all(promises)
@@ -136,4 +136,12 @@ export const checkSocketStatus = (socket: Socket, toast: toasttype) => {
         return true
     }
     return false
+}
+
+export const AddToArrayIfNotExists = (array: any[], value: any) => {
+    if (array.find(e => e.name === value)) return array
+    return [...array, {
+        id: array.length + 1,
+        name: value
+    }]
 }

@@ -7,7 +7,7 @@ import toast from "react-hot-toast"
 import { createSubject, updateSubject } from "@/models/transactions/subject"
 import { EducationalProgram } from "@/models/types/educational-program"
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program"
-import { getFirstSetValue, InitiSelectedKeys } from "@/utils"
+import { AddToArrayIfNotExists, getFirstSetValue, InitiSelectedKeys } from "@/utils"
 import { getAreaByEducationalProgram } from "@/models/transactions/area"
 import { playNotifySound } from "@/toast"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
@@ -68,13 +68,6 @@ const periods: PeriodType[] = [
     }
 ]
 
-export const AddToArrayIfNotExists = (array: any[], value: any) => {
-    if (array.find(e => e.name === value)) return array
-    return [...array, {
-        id: array.length + 1,
-        name: value
-    }]
-}
 
 export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     const { subjectState: { selectedSubject, subjects }, setStoredSubjects, areaState: { areas } } = UseSecretary()
