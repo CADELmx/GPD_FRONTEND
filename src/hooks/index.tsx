@@ -1,4 +1,4 @@
-import { InitiSelectedKeys } from "@/utils"
+import { InitSelectedKeys } from "@/utils"
 import { Selection } from "@nextui-org/react"
 import { Key, useState } from "react"
 
@@ -7,7 +7,7 @@ export const useSelectionKeys = ({ onSelectionChange, clearSelection, defaultSel
     clearSelection?: () => void,
     defaultSelectedKeys?: Key[]
 }) => {
-    const [selectedKeys, setSelectedKeys] = useState(defaultSelectedKeys ? new Set<Key>(defaultSelectedKeys) : InitiSelectedKeys)
+    const [selectedKeys, setSelectedKeys] = useState(defaultSelectedKeys ? new Set<Key>(defaultSelectedKeys) : InitSelectedKeys)
     const onChange = (e: Selection) => {
         if (e === "all") return
         if (onSelectionChange) onSelectionChange(e)

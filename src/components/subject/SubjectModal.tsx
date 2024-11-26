@@ -93,8 +93,6 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
             }
         })
         setPeriodSelectedKeys(e)
-        console.log(periodSelectedKeys)
-        console.log(selectedSubject)
     }
     const handleAreaChange = (e: Selection) => {
         if (e === "all") return
@@ -114,9 +112,10 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
         setStoredSubjects({
             selectedSubject: null
         })
-        setAreaSelectedKeys(new Set<Key>([]))
-        setSelectedEduKeys(new Set<Key>([]))
-        setPeriodSelectedKeys(new Set<Key>([]))
+        const newKeys = InitSelectedKeys()
+        setAreaSelectedKeys(newKeys)
+        setSelectedEduKeys(newKeys)
+        setPeriodSelectedKeys(newKeys)
         setEducationalPrograms([])
         onOpenChange()
     }
@@ -129,6 +128,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                     selectedSubject: null,
                     subjects: subjects.map(subject => subject.id === data.id ? data : subject)
                 })
+                playNotifySound()
                 handleClose()
                 return message
             },
@@ -144,6 +144,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                     selectedSubject: null,
                     subjects: [...subjects, data]
                 })
+                playNotifySound()
                 handleClose()
                 return message
             },
@@ -189,7 +190,7 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     }, [areaSelectedKeys]);
 
     useEffect(() => {
-        if (selectedSubject?.educationalProgramId) {
+        if (selectedSubject?.educationalProgramId && isOpen) {
             setPeriodSelectedKeys(new Set<Key>([selectedSubject.monthPeriod]))
             toast.promise(getAreaByEducationalProgram({
                 id: Number(selectedSubject.educationalProgramId)
@@ -321,7 +322,11 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" onPress={handleClose} variant="light">
+                                <Button
+                                    color="danger"
+                                    onPress={handleClose}
+                                    variant="light"
+                                >
                                     Cancelar
                                 </Button>
                                 <Button
@@ -348,6 +353,12 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
 
 export const DeleteSubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     const { subjectState: { selectedSubject, subjects }, setStoredSubjects } = UseSecretary()
+    const handleClose = () => {
+        setStoredSubjects({
+            selectedSubject: null
+        })
+        onOpenChange()
+    }
     const handleDelete = () => {
         toast.promise(deleteSubject({ id: selectedSubject.id as number }), {
             loading: 'Eliminando materia',
@@ -357,17 +368,12 @@ export const DeleteSubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps)
                     selectedSubject: null,
                     subjects: subjects.filter(subject => subject.id !== selectedSubject.id)
                 })
-                onOpenChange()
+                playNotifySound()
+                handleClose()
                 return message
             },
             error: 'Error al eliminar materia, intente de nuevo'
         })
-    }
-    const handleClose = () => {
-        setStoredSubjects({
-            selectedSubject: null
-        })
-        onOpenChange()
     }
     return (
         <Modal
@@ -375,7 +381,7 @@ export const DeleteSubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps)
             placement="center"
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-            onClose={onOpen}
+            onClose={handleClose}
         >
             <ModalContent>
                 {
@@ -398,7 +404,7 @@ export const DeleteSubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps)
                                     Cancelar
                                 </Button>
                                 <Button
-                                    className="danger"
+                                    color="danger"
                                     onPress={handleDelete}
                                 >
                                     Eliminar
@@ -421,7 +427,7 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
         setSelectedEduKeys(e)
     }
     const handleClose = () => {
-        setSelectedEduKeys(new Set<Key>([]))
+        setSelectedEduKeys(InitSelectedKeys())
         setEducationalPrograms([])
         onOpenChange()
     }
@@ -439,17 +445,19 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
         toast.promise(Promise.all(subjectPromises), {
             loading: 'Actualizando materias',
             success: (results) => {
-                onOpenChange()
                 const promisesData = results.map(({ data }) => data)
                 if (promisesData.some(({ error }) => error)) return 'Error al actualizar materias'
-                playNotifySound()
                 setStoredSubjects({
                     subjects: subjects.map(subject => {
                         const newSubject = promisesData.find(({ data }) => data.id === subject.id)
                         return newSubject ? newSubject.data : subject
                     })
                 })
-                return 'Materias actualizadas'
+                const success = promisesData.filter(({ error }) => !error)
+                const successLength = success.length
+                playNotifySound()
+                handleClose()
+                return `${successLength} materias actualizadas`
             },
             error: 'Error al actualizar materias, intente de nuevo'
         })
@@ -514,7 +522,7 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
                                 <Select
                                     label='Programa educativo'
                                     disallowEmptySelection
-                                    placeholder="Selecciona un programa educativo"
+                                    placeholder="Programa educativo destino"
                                     aria-label="Programa educativo"
                                     items={educationalPrograms}
                                     isDisabled={educationalPrograms.length === 0 || selectedEduKeys.size === 0}
@@ -534,6 +542,7 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
                                 <Table
                                     aria-label="Tabla de materias"
                                     selectionMode="none"
+                                    isHeaderSticky
                                     classNames={{
                                         ...tableClassNames,
                                         th: 'text-center text-1xl',
@@ -602,6 +611,7 @@ export const ChangePeriodModal = ({ isOpen, onOpen, onOpenChange, selectedSubjec
                 id: subject.id,
                 data: {
                     ...subject,
+                    educationalProgramId: Number(subject.educationalProgramId),
                     monthPeriod: `${newPeriod}`
                 }
             })
@@ -609,17 +619,19 @@ export const ChangePeriodModal = ({ isOpen, onOpen, onOpenChange, selectedSubjec
         toast.promise(Promise.all(subjectPromises), {
             loading: 'Actualizando materias',
             success: (results) => {
-                onOpenChange()
                 const promisesData = results.map(({ data }) => data)
                 if (promisesData.some(({ error }) => error)) return 'Error al actualizar materias'
-                playNotifySound()
                 setStoredSubjects({
                     subjects: subjects.map(subject => {
                         const newSubject = promisesData.find(({ data }) => data.id === subject.id)
                         return newSubject ? newSubject.data : subject
                     })
                 })
-                return 'Materias actualizadas'
+                const success = promisesData.filter(({ error }) => !error)
+                const successLength = success.length
+                playNotifySound()
+                handleClose()
+                return `${successLength} materias actualizadas`
             },
             error: 'Error al actualizar materias, intente de nuevo'
         })
@@ -643,7 +655,7 @@ export const ChangePeriodModal = ({ isOpen, onOpen, onOpenChange, selectedSubjec
                                 <Select
                                     aria-label="Cuatrimestre de la materia"
                                     label='Cuatrimestre'
-                                    placeholder="Cuatrimestre de la materia"
+                                    placeholder="Cuatrimestre destino"
                                     items={periods}
                                     selectedKeys={periodSelectedKeys as Selection}
                                     onSelectionChange={handlePeriodChange}
@@ -657,12 +669,13 @@ export const ChangePeriodModal = ({ isOpen, onOpen, onOpenChange, selectedSubjec
                                     }
                                 </Select>
                                 <Table
+                                    isHeaderSticky
                                     aria-label="Tabla de materias"
                                     selectionMode="none"
                                     classNames={{
                                         ...tableClassNames,
                                         th: 'text-center text-1xl',
-                                        base: 'max-h-60 overflow-y-auto'
+                                        base: 'max-h-60 overflow-y-auto',
                                     }}
                                 >
                                     <TableHeader>
@@ -711,6 +724,9 @@ export const ChangePeriodModal = ({ isOpen, onOpen, onOpenChange, selectedSubjec
 
 export const DeleteManySubjectsModal = ({ isOpen, onOpen, onOpenChange, selectedSubjects }: ModalProps & { selectedSubjects: Subject[] }) => {
     const { subjectState: { subjects }, setStoredSubjects } = UseSecretary()
+    const handleClose = () => {
+        onOpenChange()
+    }
     const handleDeleteMany = () => {
         const subjectPromises = selectedSubjects.map(subject => {
             return deleteSubject({ id: subject.id })
@@ -718,15 +734,15 @@ export const DeleteManySubjectsModal = ({ isOpen, onOpen, onOpenChange, selected
         toast.promise(Promise.all(subjectPromises), {
             loading: 'Eliminando materias',
             success: (results) => {
-                onOpenChange()
                 const promisesData = results.map(({ data }) => data)
                 if (promisesData.some(({ error }) => error)) return 'Error al eliminar materias'
-                playNotifySound()
                 setStoredSubjects({
                     subjects: subjects.filter(subject => !selectedSubjects.some(selected => selected.id === subject.id))
                 })
                 const success = promisesData.filter(({ error }) => !error)
                 const successLength = success.length
+                playNotifySound()
+                handleClose()
                 return `${successLength} materias eliminadas`
             },
             error: 'Error al eliminar materias, intente de nuevo'
@@ -738,7 +754,7 @@ export const DeleteManySubjectsModal = ({ isOpen, onOpen, onOpenChange, selected
             placement="center"
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-            onClose={onOpen}
+            onClose={handleClose}
         >
             <ModalContent>
                 {
@@ -781,7 +797,7 @@ export const DeleteManySubjectsModal = ({ isOpen, onOpen, onOpenChange, selected
                                 <Button
                                     variant="light"
                                     color="danger"
-                                    onPress={onClose}
+                                    onPress={handleClose}
                                 >
                                     Cancelar
                                 </Button>

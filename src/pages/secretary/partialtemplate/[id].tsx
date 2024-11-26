@@ -7,6 +7,7 @@ import { getTemplates } from "@/models/transactions/templates"
 import { EducationalProgram } from "@/models/types/educational-program"
 import { PartialTemplate } from "@/models/types/partial-template"
 import { PersonalData } from "@/models/types/personal-data"
+import { useRouter } from "next/router"
 
 export default function SecretaryPartialTemplate({ template, error, educationalPrograms, academicWorkers }: {
     template: PartialTemplate,
@@ -14,6 +15,10 @@ export default function SecretaryPartialTemplate({ template, error, educationalP
     educationalPrograms: EducationalProgram[],
     academicWorkers: PersonalData[],
 }) {
+    const router = useRouter()
+    if (router.isFallback) {
+        return <h1>Loading...</h1>
+    }
     return (
         <>
             <ModalError error={error} />
@@ -24,7 +29,7 @@ export default function SecretaryPartialTemplate({ template, error, educationalP
 
 export const getStaticPaths = async () => {
     const { data: { data, error } } = await getTemplates()
-    if (error) {
+    if (error || data.length === 0) {
         return {
             paths: [],
             fallback: true,
@@ -37,13 +42,13 @@ export const getStaticPaths = async () => {
     }
 }
 
-export const getStaticProps = async ({ params: { id } }: { params: { id: number } }) => {
+export const getStaticProps = async ({ params: { id } }: { params: { id: string } }) => {
     const eduPromise = getEducationalPrograms()
     const acaPromise = getAllPersonalData()
     const [educationalResponse, academicResponse] = await Promise.all([eduPromise, acaPromise])
     const { data: educationalData } = educationalResponse
     const { data: academicData } = academicResponse
-    const { props } = await generateSingleRecord({ id })
+    const { props } = await generateSingleRecord({ id: Number(id) })
     const error = educationalData.error || academicData.error || props.error
     return {
         revalidate: 3,

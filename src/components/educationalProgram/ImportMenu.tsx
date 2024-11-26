@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { UseSecretary } from "@/context";
 import { CreateEducationalProgram } from "@/models/types/educational-program";
 import { createManyEducationalPrograms } from "@/models/transactions/educational-program";
-import { getFirstSetValue } from "@/utils";
+import { getFirstSetValue, InitSelectedKeys } from "@/utils";
 import { playNotifySound } from "@/toast";
 import { tableClassNames } from "./EducationalProgramCard";
 
@@ -16,8 +16,8 @@ export const ImportEducationalProgramsMenu = () => {
     const [file, setFile] = useState<File>(new File([], ''));
     const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState(new Set<any>([]));
-    const [selectedArea, setSelectedArea] = useState(new Set<any>([]));
+    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState(InitSelectedKeys);
+    const [selectedArea, setSelectedArea] = useState(InitSelectedKeys);
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFile(e.target.files[0])
@@ -89,7 +89,7 @@ export const ImportEducationalProgramsMenu = () => {
                     })
                 })
                 toast.promise(createManyEducationalPrograms({
-                    areaId: getFirstSetValue(selectedArea),
+                    areaId: Number(getFirstSetValue(selectedArea)),
                     data: newEducationalPrograms
                 }), {
                     loading: 'Registrando programas educativos...',
@@ -170,7 +170,7 @@ export const ImportEducationalProgramsMenu = () => {
                     if (e === 'all') return
                     setSelectedArea(e)
                 }}
-                selectedKeys={selectedArea}
+                selectedKeys={selectedArea as Selection}
                 disallowEmptySelection
             >
                 {
@@ -193,7 +193,7 @@ export const ImportEducationalProgramsMenu = () => {
                 Registrar en el área seleccionada
             </Button>
             <Table
-                selectedKeys={selectedEductationalPrograms}
+                selectedKeys={selectedEductationalPrograms as Selection}
                 onSelectionChange={handleEducationalProgramSelection}
                 isCompact
                 selectionMode="multiple"

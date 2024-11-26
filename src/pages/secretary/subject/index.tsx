@@ -2,7 +2,7 @@ import { UploadIcon } from "@/components/Icons"
 import { ModalError } from "@/components/ModalError"
 import { ImportSubjectsMenu } from "@/components/subject/ImportSubjectMenu"
 import { SubjectTable } from "@/components/subject/SubjectCard"
-import { SubjectModal } from "@/components/subject/SubjectModal"
+import { DeleteSubjectModal, SubjectModal } from "@/components/subject/SubjectModal"
 import { UseSecretary } from "@/context"
 import { getAreasJoinEducationalPrograms } from "@/models/transactions/area"
 import { getSubjects } from "@/models/transactions/subject"
@@ -37,7 +37,7 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
 }) {
     const { setStoredSubjects, setStoredAreas } = UseSecretary()
     const EditSubjectModal = useDisclosure()
-    const DeleteSubjectModal = useDisclosure()
+    const DeleteModal = useDisclosure()
     const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]))
     useEffect(() => {
         setStoredAreas({ areas: ssrAreas })
@@ -72,7 +72,7 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
                         </Button>
                         <SubjectTable
                             onOpenModal={EditSubjectModal.onOpen}
-                            onOpenDeleteModal={DeleteSubjectModal.onOpen}
+                            onOpenDeleteModal={DeleteModal.onOpen}
                         />
                     </>
                 )
@@ -81,6 +81,11 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
                 isOpen={EditSubjectModal.isOpen}
                 onOpen={EditSubjectModal.onOpen}
                 onOpenChange={EditSubjectModal.onOpenChange}
+            />
+            <DeleteSubjectModal
+                isOpen={DeleteModal.isOpen}
+                onOpen={DeleteModal.onOpen}
+                onOpenChange={DeleteModal.onOpenChange}
             />
         </>
     )

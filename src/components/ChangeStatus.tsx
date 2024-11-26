@@ -3,10 +3,8 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { MessageIcon } from './Icons';
 import { UseTemplates } from '../context';
-import { checkSocketStatus } from '../utils';
 import { updatePartialTemplate } from '../models/transactions/partial-template';
 import { insertComment } from '../models/transactions/comment';
-import { Comment } from '../models/types/comment';
 import { PartialTemplate } from '../models/types/partial-template';
 
 export interface StatusType {

@@ -11,13 +11,13 @@ import { insertTemplate } from "@/models/transactions/templates";
 import { Area } from "@/models/types/area";
 import { PersonalData } from "@/models/types/personal-data";
 import { CreateTemplate, Template } from "@/models/types/template";
-import { getFirstSetValue } from "@/utils";
+import { getFirstSetValue, InitSelectedKeys } from "@/utils";
 import { Button, Chip, Select, Selection, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
     const { data: { data: areas, error } } = await getAreas()
     return {
         props: {
@@ -38,8 +38,8 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
     })
     const [responsibleName, setResponsibleName] = useState('');
     const [revisedOptions, setRevisedOptions] = useState<PersonalData[]>([]);
-    const [selectedKeys, setSelectedKeys] = useState(new Set<any>([]));
-    const [selectedAreaKeys, setSelectedAreaKeys] = useState(new Set<any>([]));
+    const [selectedKeys, setSelectedKeys] = useState(InitSelectedKeys);
+    const [selectedAreaKeys, setSelectedAreaKeys] = useState(InitSelectedKeys);
     const handleSelectRevisedBy = (e: Selection) => {
         if (e === "all") return
         setTemplate({ ...template, revisedById: Number(getFirstSetValue(e)) })
@@ -111,7 +111,7 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
                 placeholder="Area a la que pertenece la plantilla"
                 label='Area'
                 disallowEmptySelection
-                selectedKeys={selectedAreaKeys}
+                selectedKeys={selectedAreaKeys as Selection}
                 onSelectionChange={handleSelectArea}
             >
                 {
@@ -139,7 +139,7 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
                 </Chip>
             </div>
             <Select
-                selectedKeys={selectedKeys}
+                selectedKeys={selectedKeys as Selection}
                 onSelectionChange={handleSelectRevisedBy}
                 items={revisedOptions}
                 title="Revisado por"

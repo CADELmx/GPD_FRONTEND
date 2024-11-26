@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { CreateSubject } from "@/models/types/subject";
 import { createManySubjects } from "@/models/transactions/subject";
-import { getFirstSetValue, InitiSelectedKeys } from "@/utils";
+import { getFirstSetValue, InitSelectedKeys } from "@/utils";
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
 import { EducationalProgram } from "@/models/types/educational-program";
 
@@ -18,9 +18,9 @@ export const ImportSubjectsMenu = () => {
     const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [subjects, setSubjects] = useState<any[]>([]);
-    const [selectedAreaKeys, setSelectedAreaKeys] = useState(InitiSelectedKeys);
-    const [selectedEducationalKeys, setSelectedEducationalKeys] = useState(InitiSelectedKeys);
-    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(InitiSelectedKeys);
+    const [selectedAreaKeys, setSelectedAreaKeys] = useState(InitSelectedKeys);
+    const [selectedEducationalKeys, setSelectedEducationalKeys] = useState(InitSelectedKeys);
+    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(InitSelectedKeys);
     const onSelectedAreaChange = (e: Selection) => {
         if (e === "all") return
         setSelectedAreaKeys(e)

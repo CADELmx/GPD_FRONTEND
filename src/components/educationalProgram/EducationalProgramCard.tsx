@@ -1,4 +1,4 @@
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection, SlotsToClasses, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { ChangeAreaModal, DeleteManyModal } from "./EducationalProgramModal"
 import { useState } from "react"
@@ -6,8 +6,8 @@ import { UseSecretary } from "../../context"
 import { CreateEducationalProgram, EducationalProgram } from "@/models/types/educational-program"
 import { SwitchMode } from "../SwitchMode"
 
-export const tableClassNames = {
-    wrapper: 'm-0 p-1',
+export const tableClassNames: SlotsToClasses<"base" | "table" | "tbody" | "td" | "tfoot" | "th" | "thead" | "tr" | "wrapper" | "sortIcon" | "emptyWrapper" | "loadingWrapper"> = {
+    wrapper: 'm-0 p-0',
     td: 'text-xs p-2',
     th: 'text-xs p-2',
 }

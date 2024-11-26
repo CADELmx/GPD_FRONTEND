@@ -38,6 +38,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }: ModalP
                     selectedEducationalProgram: null,
                     educationalPrograms: educationalPrograms.map(educationalProgram => educationalProgram.id === data.id ? data : educationalProgram)
                 })
+                playNotifySound()
                 onOpenChange()
                 return message
             },
@@ -53,6 +54,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }: ModalP
                     selectedEducationalProgram: null,
                     educationalPrograms: [...educationalPrograms, data]
                 })
+                playNotifySound()
                 onOpenChange()
                 return message
             },
@@ -190,7 +192,7 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
         setSelectedAreas(e)
     }
     const handleClose = () => {
-        setSelectedAreas(new Set<Key>([]))
+        setSelectedAreas(InitSelectedKeys())
         onOpenChange()
     }
     const handleUpdateMany = () => {
@@ -275,8 +277,7 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                     </TableBody>
                                 </Table>
                             </ModalBody>
-                            <ModalFooter className="flex flex-col">
-                                <div className="flex flex-row justify-end">
+                            <ModalFooter>
                                     <Button
                                         variant="light"
                                         color="danger"
@@ -291,7 +292,6 @@ export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                     >
                                         Guardar
                                     </Button>
-                                </div>
                             </ModalFooter>
                         </>
                     )
@@ -317,10 +317,10 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                 if (promisesData.some(({ error }) => error)) {
                     return 'Error al eliminar programas educativos'
                 }
-                playNotifySound()
                 setStoredEducationalPrograms({
                     educationalPrograms: educationalPrograms.filter((program) => !selectedEducationalPrograms.some(({ id }) => id === program.id))
                 })
+                playNotifySound()
                 const success = promisesData.filter(({ error }) => !error)
                 const successLen = success.length
                 return `${successLen} programas educativos eliminados`
@@ -329,7 +329,13 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
         })
     }
     return (
-        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+        <Modal
+            backdrop="blur"
+            isOpen={isOpen}
+            placement="center"
+            isDismissable
+            onOpenChange={onOpenChange}
+        >
             <ModalContent>
                 {
                     (onClose) => (
@@ -362,21 +368,19 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                                     </TableBody>
                                 </Table>
                             </ModalBody>
-                            <ModalFooter className="flex flex-col">
-                                <div className="flex flex-row justify-end">
-                                    <Button
-                                        variant="light"
-                                        color="danger"
-                                        onPress={onClose}
-                                    >
-                                        Cancelar
-                                    </Button>
-                                    <Button
-                                        color="danger"
-                                        onPress={handleDeleteMany}
-                                    >Eliminar
-                                    </Button>
-                                </div>
+                            <ModalFooter>
+                                <Button
+                                    variant="light"
+                                    color="danger"
+                                    onPress={onClose}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    color="danger"
+                                    onPress={handleDeleteMany}
+                                >Eliminar
+                                </Button>
                             </ModalFooter>
                         </>
                     )

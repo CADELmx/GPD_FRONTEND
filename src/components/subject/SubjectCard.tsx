@@ -5,7 +5,7 @@ import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 import { useState } from "react"
 import { SwitchMode } from "../SwitchMode"
-import { ChangeProgramModal, DeleteManySubjectsModal, DeleteSubjectModal, SubjectModal } from "./SubjectModal"
+import { ChangePeriodModal, ChangeProgramModal, DeleteManySubjectsModal } from "./SubjectModal"
 
 export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     onOpenModal: () => void,
@@ -15,9 +15,8 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([]);
     const { setStoredSubjects, subjectState: { subjects } } = UseSecretary()
     const ChangeFromProgramModal = useDisclosure()
-    const ChangePeriodModal = useDisclosure()
+    const ChangeFromPeriodModal = useDisclosure()
     const DeleteSubjectsModal = useDisclosure()
-    const DeleteModal = useDisclosure()
     const handlePress = (subject: CreateSubject) => {
         setStoredSubjects({ selectedSubject: subject })
         onOpenModal()
@@ -38,7 +37,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
         ChangeFromProgramModal.onOpen()
     }
     const handleChangePeriod = () => {
-        ChangePeriodModal.onOpen()
+        ChangeFromPeriodModal.onOpen()
     }
     const handleDeleteMany = () => {
         DeleteSubjectsModal.onOpen()
@@ -62,21 +61,17 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                     onOpenChange={ChangeFromProgramModal.onOpenChange}
                     selectedSubjects={selectedSubjects}
                 />
+                <ChangePeriodModal
+                    isOpen={ChangeFromPeriodModal.isOpen}
+                    onOpen={ChangeFromPeriodModal.onOpen}
+                    onOpenChange={ChangeFromPeriodModal.onOpenChange}
+                    selectedSubjects={selectedSubjects}
+                />
                 <DeleteManySubjectsModal
                     isOpen={DeleteSubjectsModal.isOpen}
                     onOpen={DeleteSubjectsModal.onOpen}
                     onOpenChange={DeleteSubjectsModal.onOpenChange}
                     selectedSubjects={selectedSubjects}
-                />
-                <DeleteSubjectModal
-                    isOpen={DeleteModal.isOpen}
-                    onOpen={DeleteModal.onOpen}
-                    onOpenChange={DeleteModal.onOpenChange}
-                />
-                <SubjectModal
-                    isOpen={ChangePeriodModal.isOpen}
-                    onOpen={ChangePeriodModal.onOpen}
-                    onOpenChange={ChangePeriodModal.onOpenChange}
                 />
                 <SwitchMode
                     isSelected={editMode}
@@ -124,7 +119,12 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                 }
             </div>
             <Table
-                classNames={tableClassNames}
+            className="scrollbar"
+                classNames={{
+                    ...tableClassNames,
+                    base: `max-h-[34rem] overflow-auto`,
+                }}
+                isHeaderSticky
                 aria-label="Tabla de materias"
                 selectionMode={editMode ? 'multiple' : 'none'}
                 onSelectionChange={onSubjectSelectionChange}

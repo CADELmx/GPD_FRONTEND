@@ -1,8 +1,10 @@
 import { Socket } from "socket.io"
 import { CreateActivity } from "../models/types/activity"
-import { CreatePartialTemplate, PartialTemplate } from "../models/types/partial-template"
+import { CreatePartialTemplate } from "../models/types/partial-template"
 import { toast } from "react-hot-toast"
 import { Key } from "react"
+import { v4 as uuidv4 } from 'uuid'
+
 export const promiseResolver = async<T>(promises: Promise<T>[]) => {
     const result = await Promise.all(promises)
     return result
@@ -42,7 +44,7 @@ export const modalidades = [
     'Ingeniería Mixta',
 ]
 export const defaultActivity: CreateActivity = {
-    id: crypto.randomUUID(),
+    id: uuidv4(),
     partialTemplateId: undefined,
     educationalProgramId: undefined,
     activityDistribution: "",
