@@ -38,7 +38,7 @@ export default function Login() {
             <Card
                 className="flex self-center flex-col gap-2 items-center justify-center"
                 classNames={{
-                    base:'p-2'
+                    base: 'p-2'
                 }}
             >
                 <CardHeader className="flex gap-3 items-center justify-center">

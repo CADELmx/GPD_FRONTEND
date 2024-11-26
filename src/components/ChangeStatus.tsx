@@ -8,14 +8,14 @@ import { insertComment } from '../models/transactions/comment';
 import { PartialTemplate } from '../models/types/partial-template';
 
 export interface StatusType {
-    name: 'Pendiente' | 'Aprobado' | 'Corrección';
+    name: 'pendiente' | 'aprobado' | 'corrección';
     color: 'warning' | 'success' | 'danger';
 }
 
 export const statusTypes: StatusType[] = [
-    { name: 'Pendiente', color: 'warning' },
-    { name: 'Aprobado', color: 'success' },
-    { name: 'Corrección', color: 'danger' }
+    { name: 'pendiente', color: 'warning' },
+    { name: 'aprobado', color: 'success' },
+    { name: 'corrección', color: 'danger' }
 ];
 
 export const ChangeStatus = ({ status, templateid }: {
@@ -45,7 +45,7 @@ export const ChangeStatus = ({ status, templateid }: {
         })
     }
     const handleSubmit = (newStatus: StatusType) => {
-        if (newStatus.name === 'Corrección') {
+        if (newStatus.name === 'corrección') {
             onOpen()
         } else {
             handleUpdateStatus(newStatus)

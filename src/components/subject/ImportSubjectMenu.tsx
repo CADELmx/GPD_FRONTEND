@@ -1,5 +1,5 @@
 import { UseSecretary } from "@/context";
-import { UploadIcon } from "../Icons"
+import { QuestionMarkIcon, UploadIcon } from "../Icons"
 import { ChangeEvent, useEffect, useState } from "react";
 import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard";
@@ -11,6 +11,7 @@ import { createManySubjects } from "@/models/transactions/subject";
 import { getFirstSetValue, InitSelectedKeys } from "@/utils";
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
 import { EducationalProgram } from "@/models/types/educational-program";
+import Link from "next/link";
 
 export const ImportSubjectsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
@@ -56,7 +57,18 @@ export const ImportSubjectsMenu = () => {
                                     const keys = Object.keys(JSON.parse(data)[0]).map(e => e.toLowerCase())
                                     if (!keys.some(e => e === 'subjectname' && 'totalhours' && 'weeklyhours' && 'monthperiod')) {
                                         setLoading(false)
-                                        return 'Error al importar las materias, el archivo no el formato correcto'
+                                        return (
+                                            <Link passHref legacyBehavior href={'/about'}>
+                                                <Button
+                                                    className=""
+                                                    color="danger"
+                                                    variant="light"
+                                                    endContent={QuestionMarkIcon}
+                                                >
+                                                    Formato incorrecto
+                                                </Button>
+                                            </Link>
+                                        )
                                     }
                                     const newSubjects = JSON.parse(data).map((subject: CreateSubject, index: number) => {
                                         return {

@@ -11,9 +11,10 @@ import { insertTemplate } from "@/models/transactions/templates";
 import { Area } from "@/models/types/area";
 import { PersonalData } from "@/models/types/personal-data";
 import { CreateTemplate, Template } from "@/models/types/template";
-import { getFirstSetValue, InitSelectedKeys } from "@/utils";
+import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { Button, Chip, Select, Selection, SelectItem } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import Router from "next/router";
+import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 
@@ -29,13 +30,18 @@ export const getStaticProps = async () => {
 
 export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, error }: { areas: Area[], template: Template, error: string | null }) {
     const { areaState: { areas }, setStoredAreas } = UseSecretary()
+    const currentYear = String(new Date().getFullYear())
+    const currentMonth = new Date().toLocaleString('es-MX', { month: 'long' })
+    const currentPeriod = periods.find(p => p.months.includes(currentMonth))
+    const defaultPeriodKey = `${currentPeriod?.period} ${currentYear}: Ordinario`
     const [template, setTemplate] = useState<CreateTemplate>({
         areaId: undefined,
-        period: new Date().getFullYear().toString(),
-        state: 'Pendiente',
+        period: defaultPeriodKey,
+        state: 'pendiente',
         responsibleId: undefined,
         revisedById: undefined,
     })
+    console.log('septiembre - diciembre 2024: Ordinario'.length)
     const [responsibleName, setResponsibleName] = useState('');
     const [revisedOptions, setRevisedOptions] = useState<PersonalData[]>([]);
     const [selectedKeys, setSelectedKeys] = useState(InitSelectedKeys);
@@ -44,26 +50,37 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
         if (e === "all") return
         setTemplate({ ...template, revisedById: Number(getFirstSetValue(e)) })
         setSelectedKeys(e)
-        console.log(template)
     }
     const handleSelectArea = (e: Selection) => {
         if (e === "all") return
         setTemplate({ ...template, areaId: Number(getFirstSetValue(e)) })
         setSelectedAreaKeys(e)
-        console.log(template)
+    }
+    const handleSelectPeriod = (e: Set<Key>) => {
+        setTemplate({
+            ...template,
+            period: String(getFirstSetValue(e))
+        })
+    }
+    const handleSelectYear = (e: Set<Key>) => {
+        setTemplate({
+            ...template,
+            period: ''
+        })
     }
     const handleSubmit = () => {
         toast.promise(insertTemplate({ data: template }), {
             loading: 'Registrando plantilla',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
+                Router.push(`/director/partialtemplate/${data.id}`)
                 return message
             },
             error: 'Error al crear la plantilla'
         })
     }
     const [templateStatus, setTemplateStatus] = useState(statusTypes.find(s => s.name === template?.state) || statusTypes[0])
-    const disabledSubmit = template.areaId === undefined || template.responsibleId === undefined || template.revisedById === undefined
+    const disabledSubmit = template.areaId === undefined || template.responsibleId === undefined || template.revisedById === undefined || template.period === ""
     useEffect(() => {
         const getUser = () => {
             toast.promise(getUserData(), {
@@ -91,9 +108,7 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
             })
         }
         getUser()
-        if (areas.length === 0) {
-            setStoredAreas({ areas: ssrAreas })
-        }
+        setStoredAreas({ areas: ssrAreas })
         if (ssrTemplate?.id) {
             setTemplate(ssrTemplate)
             setTemplateStatus(statusTypes.find(s => s.name === ssrTemplate.state) || statusTypes[0])
@@ -102,7 +117,12 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
     return (
         <>
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Crear nueva plantilla</h1>
-            <YearSelectorAlter />
+            <YearSelectorAlter
+                defaultYear={currentYear}
+                defaultPeriod={defaultPeriodKey}
+                onSelectPeriod={handleSelectPeriod}
+                onSelectYear={handleSelectYear}
+            />
             <ModalError error={error} />
             <Select
                 isRequired
@@ -168,7 +188,7 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
 }
 
 export const PeriodSelector = () => {
-    return(
+    return (
         <></>
     )
 }

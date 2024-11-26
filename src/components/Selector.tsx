@@ -1,9 +1,9 @@
 
-import { Input, Select, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
-import { ChangeEvent, useEffect, useState } from "react"
+import { Input, Select, Selection, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
+import { ChangeEvent, Key, useEffect, useState } from "react"
 import { LockIcon } from "./Icons"
 import { UseTemplates } from "../context"
-import { activitiesDistribution, checkEmptyStringOption, generatePeriods } from "../utils"
+import { activitiesDistribution, checkEmptyStringOption, generatePeriods, getFirstSetValue, InitSelectedKeys, periods } from "../utils"
 import { EducationalProgram } from "../models/types/educational-program"
 import { CreateActivity } from "../models/types/activity"
 
@@ -39,23 +39,7 @@ const YearSelector = ({ selectedYear, setState }: { selectedYear: string, setSta
 
 const PeriodSelector = ({ selectedYear }: { selectedYear: string }) => {
     const { setStored, memory: { partialTemplate } } = UseTemplates()
-    const periods = [
-        {
-            period: "enero - abril",
-            grades: ['2', '5', '8'],
-            months: ['enero', 'febrero', 'marzo', 'abril']
-        },
-        {
-            period: "mayo - agosto",
-            grades: ['3', '6', '9'],
-            months: ['mayo', 'junio', 'julio', 'agosto']
-        },
-        {
-            period: "septiembre - diciembre",
-            grades: ['1', '4', '7', '10'],
-            months: ['septiembre', 'octubre', 'noviembre', 'diciembre']
-        }
-    ]
+
     const handleChange = (e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) => {
         const option = e.target.value
         const groups = periods.find(opt => {
@@ -92,7 +76,7 @@ const PeriodSelector = ({ selectedYear }: { selectedYear: string }) => {
             <SelectSection title={'Ordinario'}>
                 {
                     generatePeriods({ year: Number(selectedYear), ordinary: true }).map(p => {
-                        return <SelectItem key={p} variant="flat">{p}</SelectItem>
+                        return <SelectItem key={p.id} variant="flat">{p.period}</SelectItem>
                     })
                 }
             </SelectSection>
@@ -102,7 +86,7 @@ const PeriodSelector = ({ selectedYear }: { selectedYear: string }) => {
                         year: Number(selectedYear),
                         ordinary: false
                     }).map(p => {
-                        return <SelectItem key={p} variant="flat">{p}</SelectItem>
+                        return <SelectItem key={p.id} variant="flat">{p.period}</SelectItem>
                     })
                 }
             </SelectSection>
@@ -233,33 +217,66 @@ export const AcademicProgramSelector = (
     )
 }
 
-export const YearSelectorAlter = () => {
-    const defaultYear = String(new Date().getFullYear())
-    const [year, setYear] = useState(defaultYear)
+export const YearSelectorAlter = ({ defaultYear, defaultPeriod, onSelectPeriod, onSelectYear }: { defaultYear: string, defaultPeriod?: string, onSelectYear: (e: Set<Key>) => void, onSelectPeriod: (e: Set<Key>) => void }) => {
+    const [selectedYearKeys, setSelectedYearKeys] = useState(new Set([defaultYear as Key]))
+    const [selectedPeriodKeys, setSelectedPeriodKeys] = useState(new Set(defaultPeriod === "" ? [] : [defaultPeriod as Key]))
+    const handleSelectYear = (e: Selection) => {
+        if (e === "all") return
+        setSelectedPeriodKeys(InitSelectedKeys())
+        onSelectYear(e)
+        setSelectedYearKeys(e)
+    }
+    const handleSelectPeriod = (e: Selection) => {
+        if (e === "all") return
+        onSelectPeriod(e)
+        setSelectedPeriodKeys(e)
+    }
     const yearList = Array.from({ length: 3 }, (_, k) => ({
         key: `${Number(defaultYear) - k + 1}`,
         value: `${Number(defaultYear) - k + 1}`
     }))
-    const [isDisabled, setIsDisabled] = useState(true);
+    const ordinaryPeriods = generatePeriods({ ordinary: true, year: Number(getFirstSetValue(selectedYearKeys)) })
+    const notOrdinaryPeriods = generatePeriods({ ordinary: false, year: Number(getFirstSetValue(selectedYearKeys)) })
+
     return (
-        <div className="flex sm:flex gap-2 items-center">
+        <div className="flex flex-col sm:flex-row gap-2 items-center">
             <Select
-                className="w-full"
-                isDisabled={isDisabled}
+                className="sm:w-1/4 md:w-1/3"
                 label='Año'
                 disallowEmptySelection
-                selectedKeys={[year]}
-                onChange={e => setYear(e.target.value)}
+                defaultSelectedKeys={[defaultYear]}
+                selectedKeys={selectedYearKeys as Selection}
+                onSelectionChange={handleSelectYear}
                 items={yearList}
             >
                 {
-                    ({ value, key }) => <SelectItem key={key} variant="flat">{value}</SelectItem>
+                    ({ value, key }) => (
+                        <SelectItem key={key} variant="flat">
+                            {value}
+                        </SelectItem>
+                    )
                 }
             </Select>
-            <Switch
-                thumbIcon={LockIcon}
-                onChange={() => setIsDisabled(!isDisabled)}
-            />
+            <Select
+                label='Periodo'
+                placeholder="Selecciona un periodo"
+                selectedKeys={selectedPeriodKeys as Selection}
+                onSelectionChange={handleSelectPeriod}
+            >
+                <SelectSection title={'Ordinario'} items={ordinaryPeriods}>
+                    {
+                        (p) => <SelectItem key={p.period}>
+                            {p.period}
+                        </SelectItem>
+                    }
+                </SelectSection>
+                <SelectSection title={'Extraordinario'} items={notOrdinaryPeriods}>
+
+                    {(p) => <SelectItem key={p.period}>
+                        {p.period}
+                    </SelectItem>}
+                </SelectSection>
+            </Select>
         </div>
     )
 }

@@ -9,6 +9,25 @@ export const promiseResolver = async<T>(promises: Promise<T>[]) => {
     const result = await Promise.all(promises)
     return result
 }
+
+export const periods = [
+    {
+        period: "enero - abril",
+        grades: ['2', '5', '8'],
+        months: ['enero', 'febrero', 'marzo', 'abril']
+    },
+    {
+        period: "mayo - agosto",
+        grades: ['3', '6', '9'],
+        months: ['mayo', 'junio', 'julio', 'agosto']
+    },
+    {
+        period: "septiembre - diciembre",
+        grades: ['1', '4', '7', '10'],
+        months: ['septiembre', 'octubre', 'noviembre', 'diciembre']
+    }
+]
+
 export const positions = [
     'Profesor de Tiempo Completo Titular "A"',
     'Profesor de Tiempo Completo Titular "B"',
@@ -93,7 +112,11 @@ export const generatePeriods = ({
     return Array.from({ length: 3 }, (_, k) => {
         const month1 = generateMonthName(k * period)
         const month2 = generateMonthName(k * period + period - 1)
-        return generateFormat(month1, month2)
+        const finalPeriod = generateFormat(month1, month2)
+        return {
+            id: uuidv4(),
+            period: finalPeriod
+        }
     })
 }
 
