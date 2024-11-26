@@ -4,7 +4,7 @@ import { UseSecretary } from "@/context"
 import React, { ChangeEvent, Key, useEffect, useState } from "react"
 import { CreateSubject, Subject } from "@/models/types/subject"
 import toast from "react-hot-toast"
-import { createSubject, updateSubject } from "@/models/transactions/subject"
+import { createSubject, deleteSubject, updateSubject } from "@/models/transactions/subject"
 import { EducationalProgram } from "@/models/types/educational-program"
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program"
 import { AddToArrayIfNotExists, getFirstSetValue, InitiSelectedKeys } from "@/utils"
@@ -346,6 +346,72 @@ export const SubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     )
 }
 
+export const DeleteSubjectModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
+    const { subjectState: { selectedSubject, subjects }, setStoredSubjects } = UseSecretary()
+    const handleDelete = () => {
+        toast.promise(deleteSubject({ id: selectedSubject.id as number }), {
+            loading: 'Eliminando materia',
+            success: ({ data: { error, message } }) => {
+                if (error) return message
+                setStoredSubjects({
+                    selectedSubject: null,
+                    subjects: subjects.filter(subject => subject.id !== selectedSubject.id)
+                })
+                onOpenChange()
+                return message
+            },
+            error: 'Error al eliminar materia, intente de nuevo'
+        })
+    }
+    const handleClose = () => {
+        setStoredSubjects({
+            selectedSubject: null
+        })
+        onOpenChange()
+    }
+    return (
+        <Modal
+            backdrop="blur"
+            placement="center"
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            onClose={onOpen}
+        >
+            <ModalContent>
+                {
+                    (onClose) => (
+                        <>
+                            <ModalHeader>
+                                ¿Estás seguro de eliminar esta materia?
+                            </ModalHeader>
+                            <ModalBody className="text-utim">
+                                {
+                                    selectedSubject.subjectName
+                                }
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button
+                                    variant="light"
+                                    color="danger"
+                                    onPress={handleClose}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    className="danger"
+                                    onPress={handleDelete}
+                                >
+                                    Eliminar
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )
+                }
+            </ModalContent>
+        </Modal>
+    )
+}
+
 export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubjects }: ModalProps & { selectedSubjects: Subject[] }) => {
     const { areaState: { areas }, subjectState: { subjects }, setStoredSubjects } = UseSecretary()
     const [selectedEduKeys, setSelectedEduKeys] = useState(InitiSelectedKeys);
@@ -508,6 +574,97 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
                                     isDisabled={selectedEduKeys.size === 0}
                                 >
                                     Cambiar
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )
+                }
+            </ModalContent>
+        </Modal>
+    )
+}
+
+export const DeleteManySubjectsModal = ({ isOpen, onOpen, onOpenChange, selectedSubjects }: ModalProps & { selectedSubjects: Subject[] }) => {
+    const { subjectState: { subjects }, setStoredSubjects } = UseSecretary()
+    const handleDeleteMany = () => {
+        const subjectPromises = selectedSubjects.map(subject => {
+            return deleteSubject({ id: subject.id })
+        })
+        toast.promise(Promise.all(subjectPromises), {
+            loading: 'Eliminando materias',
+            success: (results) => {
+                onOpenChange()
+                const promisesData = results.map(({ data }) => data)
+                if (promisesData.some(({ error }) => error)) return 'Error al eliminar materias'
+                playNotifySound()
+                setStoredSubjects({
+                    subjects: subjects.filter(subject => !selectedSubjects.some(selected => selected.id === subject.id))
+                })
+                const success = promisesData.filter(({ error }) => !error)
+                const successLength = success.length
+                return `${successLength} materias eliminadas`
+            },
+            error: 'Error al eliminar materias, intente de nuevo'
+        })
+    }
+    return (
+        <Modal
+            backdrop="blur"
+            placement="center"
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            onClose={onOpen}
+        >
+            <ModalContent>
+                {
+                    (onClose) => (
+                        <>
+                            <ModalHeader>
+                                ¿Estás seguro de eliminar estas materias?
+                            </ModalHeader>
+                            <ModalBody>
+                                <Table
+                                    aria-label="Tabla de materias"
+                                    isHeaderSticky
+                                    classNames={{
+                                        ...tableClassNames,
+                                        th: 'text-center text-1xl',
+                                        base: 'max-h-60 overflow-y-auto'
+                                    }}
+                                >
+                                    <TableHeader>
+                                        <TableColumn>
+                                            Materias seleccionadas
+                                        </TableColumn>
+                                    </TableHeader>
+                                    <TableBody
+                                        items={selectedSubjects}
+                                    >
+                                        {
+                                            selectedSubjects.map(subject => (
+                                                <TableRow key={subject.id}>
+                                                    <TableCell>
+                                                        {subject.subjectName}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button
+                                    variant="light"
+                                    color="danger"
+                                    onPress={onClose}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    color="danger"
+                                    onPress={handleDeleteMany}
+                                >
+                                    Eliminar
                                 </Button>
                             </ModalFooter>
                         </>

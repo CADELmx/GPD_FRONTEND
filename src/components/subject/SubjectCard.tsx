@@ -6,6 +6,7 @@ import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 import { useState } from "react"
 import { InitiSelectedKeys } from "../../utils"
 import { SwitchMode } from "../SwitchMode"
+import { ChangeProgramModal, DeleteManySubjectsModal, DeleteSubjectModal, SubjectModal } from "./SubjectModal"
 
 export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     onOpenModal: () => void,
@@ -55,6 +56,28 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     return (
         <div className="flex flex-col gap-2">
             <div className="flex-col md:flex gap-2 items-center">
+                <ChangeProgramModal
+                    isOpen={ChangeFromProgramModal.isOpen}
+                    onOpen={ChangeFromProgramModal.onOpen}
+                    onOpenChange={ChangeFromProgramModal.onOpenChange}
+                    selectedSubjects={selectedSubjects}
+                />
+                <DeleteManySubjectsModal
+                    isOpen={DeleteSubjectsModal.isOpen}
+                    onOpen={DeleteSubjectsModal.onOpen}
+                    onOpenChange={DeleteSubjectsModal.onOpenChange}
+                    selectedSubjects={selectedSubjects}
+                />
+                <DeleteSubjectModal
+                    isOpen={ChangePeriodModal.isOpen}
+                    onOpen={ChangePeriodModal.onOpen}
+                    onOpenChange={ChangePeriodModal.onOpenChange}
+                />
+                <SubjectModal
+                    isOpen={ChangePeriodModal.isOpen}
+                    onOpen={ChangePeriodModal.onOpen}
+                    onOpenChange={ChangePeriodModal.onOpenChange}
+                />
                 <SwitchMode
                     isSelected={editMode}
                     isDisabled={subjects.length === 0}

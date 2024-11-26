@@ -142,18 +142,35 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }: 
         onOpenChange()
     }
     return (
-        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+        <Modal
+            backdrop="blur"
+            isOpen={isOpen}
+            placement="center"
+            isDismissable
+            onOpenChange={onOpenChange}
+        >
             <ModalContent>
                 {
                     (onClose) => (
                         <>
                             <ModalHeader>¿Estás seguro de eliminar el programa educativo?</ModalHeader>
                             <ModalBody className="text-utim">
-                                {selectedEducationalProgram.description}
+                                {
+                                    selectedEducationalProgram.description
+                                }
                             </ModalBody>
                             <ModalFooter>
-                                <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
-                                <Button color="danger" onPress={handleDelete}>Eliminar</Button>
+                                <Button
+                                    variant="light"
+                                    color="danger"
+                                    onPress={handleClose}
+                                >Cancelar
+                                </Button>
+                                <Button
+                                    color="danger"
+                                    onPress={handleDelete}
+                                >Eliminar
+                                </Button>
                             </ModalFooter>
                         </>
                     )
@@ -310,11 +327,14 @@ export const DeleteManyModal = ({ isOpen, onOpen, onOpenChange, selectedEducatio
                         <>
                             <ModalHeader>Eliminar programas educativos</ModalHeader>
                             <ModalBody>
-                                <Table isHeaderSticky classNames={{
-                                    ...tableClassNames,
-                                    th: 'text-center text-1xl',
-                                    base: 'max-h-60 overflow-y-auto'
-                                }}>
+                                <Table
+                                    aria-label="Tabla de programas educativos"
+                                    isHeaderSticky
+                                    classNames={{
+                                        ...tableClassNames,
+                                        th: 'text-center text-1xl',
+                                        base: 'max-h-60 overflow-y-auto'
+                                    }}>
                                     <TableHeader>
                                         <TableColumn>
                                             Programas educativos seleccionados
