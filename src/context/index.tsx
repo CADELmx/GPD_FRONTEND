@@ -8,7 +8,7 @@ import { CreatePartialTemplate } from '../models/types/partial-template'
 import { CreateEducationalProgram, EducationalProgram } from '../models/types/educational-program'
 import { Area, CreateArea } from '../models/types/area'
 import axios from 'axios'
-import { CreateSubject } from '../models/types/subject'
+import { CreateSubject, Subject } from '../models/types/subject'
 import { CreateTemplate } from '../models/types/template'
 
 interface MemoryState {
@@ -117,7 +117,7 @@ interface AreaState {
     },
     setStoredEducationalPrograms: (prop: any) => void,
     subjectState: {
-        subjects: CreateSubject[],
+        subjects: Subject[],
         selectedSubject: CreateSubject
     },
     setStoredSubjects: (prop: any) => void

@@ -529,7 +529,7 @@ export const ChangeProgramModal = ({ isOpen, onOpen, onOpenChange, selectedSubje
                                 </Button>
                                 <Button
                                     className="bg-utim"
-                                    onPress={onOpen}
+                                    onPress={handleUpdateMany}
                                     isDisabled={selectedEduKeys.size === 0}
                                 >
                                     Cambiar

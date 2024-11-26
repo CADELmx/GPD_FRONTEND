@@ -1,9 +1,11 @@
 import { UseSecretary } from "@/context"
 import { CreateSubject, Subject } from "@/models/types/subject"
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
 import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 import { useState } from "react"
+import { InitiSelectedKeys } from "../../utils"
+import { SwitchMode } from "../SwitchMode"
 
 export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     onOpenModal: () => void,
@@ -12,6 +14,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     const [editMode, setEditMode] = useState(false);
     const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([]);
     const { setStoredSubjects, subjectState: { subjects } } = UseSecretary()
+    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(InitiSelectedKeys)
     const ChangeFromProgramModal = useDisclosure()
     const ChangePeriodModal = useDisclosure()
     const DeleteSubjectsModal = useDisclosure()
@@ -23,6 +26,14 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
         setStoredSubjects({ selectedSubject: subject })
         onOpenDeleteModal()
     }
+    const onSubjectSelectionChange = (e: Selection) => {
+        if (e === "all") return setSelectedSubjects(subjects)
+        setSelectedSubjects(subjects.filter(subject => e.has(subject.id)))
+    }
+    const onChangeEditMode = (e: boolean) => {
+        if (e) setSelectedSubjects([])
+        setEditMode(e)
+    }
     const handleChangeEducationalProgram = () => {
         ChangeFromProgramModal.onOpen()
     }
@@ -32,46 +43,62 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     const handleDeleteMany = () => {
         DeleteSubjectsModal.onOpen()
     }
+    const checkSamePeriod = (subjects: Subject[]) => {
+        const period = subjects[0].monthPeriod
+        return subjects.every(subject => subject.monthPeriod === period)
+    }
+    const checkSameEducationalProgram = (subjects: Subject[]) => {
+        const program = subjects[0].educationalProgramId
+        return subjects.every(subject => subject.educationalProgramId === program)
+    }
     return (
         <div className="flex flex-col gap-2">
-            <Switch isDisabled={subjects.length === 0}>
-                Selección múltiple
-            </Switch>
-            {
-                editMode && (
-                    <div className="flex items-center pt-2 md:pt-0 gap-2">
-                        <Button
-                            aria-label="Cambiar de programa educativo"
-                            isDisabled={selectedSubjects.length === 0}
-                            startContent={ArrowsRightLeftIcon}
-                            color="primary"
-                            onPress={handleChangeEducationalProgram}
-                        >
-                            Cambiar de programa educativo
-                        </Button>
-                        <Button
-                            aria-label="Cambiar de cuatrimestre"
-                            isDisabled={selectedSubjects.length === 0}
-                            startContent={ArrowsRightLeftIcon}
-                            color="primary"
-                            onPress={handleChangePeriod}
-                        >
-                            Cambiar de cuatrimestre
-                        </Button>
-                        <Button
-                            aria-label="Eliminar varios"
-                            isDisabled={selectedSubjects.length === 0}
-                            startContent={TrashIcon}
-                            color="danger"
-                            onPress={handleDeleteMany}
-                        >Eliminar</Button>
-                    </div>
-                )
-            }
+            <div className="flex-col md:flex gap-2 items-center">
+                <SwitchMode
+                    isSelected={editMode}
+                    isDisabled={subjects.length === 0}
+                    onValueChange={onChangeEditMode}
+                >
+                    Selección múltiple
+                </SwitchMode>
+                {
+                    editMode && (
+                        <div className="flex items-center pt-2 md:pt-0 gap-2">
+                            <Button
+                                aria-label="Cambiar de programa educativo"
+                                isDisabled={selectedSubjects.length === 0}
+                                startContent={ArrowsRightLeftIcon}
+                                color="primary"
+                                onPress={handleChangeEducationalProgram}
+                            >
+                                Cambiar de programa educativo
+                            </Button>
+                            <Button
+                                aria-label="Cambiar de cuatrimestre"
+                                isDisabled={selectedSubjects.length === 0}
+                                startContent={ArrowsRightLeftIcon}
+                                color="primary"
+                                onPress={handleChangePeriod}
+                            >
+                                Cambiar de cuatrimestre
+                            </Button>
+                            <Button
+                                aria-label="Eliminar varios"
+                                isDisabled={selectedSubjects.length === 0}
+                                startContent={TrashIcon}
+                                color="danger"
+                                onPress={handleDeleteMany}
+                            >Eliminar</Button>
+                        </div>
+                    )
+                }
+            </div>
             <Table
                 classNames={tableClassNames}
                 aria-label="Tabla de materias"
                 selectionMode={editMode ? 'multiple' : 'none'}
+                onSelectionChange={onSubjectSelectionChange}
+                selectedKeys={selectedSubjects.map(subject => subject.id)}
             >
                 <TableHeader>
                     <TableColumn>
@@ -87,7 +114,9 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                         Periodo
                     </TableColumn>
                     <TableColumn>
-                        Acciones
+                        {
+                            editMode || 'Acciones'
+                        }
                     </TableColumn>
                 </TableHeader>
                 <TableBody items={subjects} emptyContent='Sin materias'>
@@ -107,31 +136,35 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                                     {subject.monthPeriod}
                                 </TableCell>
                                 <TableCell>
-                                    <Dropdown>
-                                        <DropdownTrigger>
-                                            <Button
-                                                isIconOnly
-                                                variant="light"
-                                            >
-                                                {VericalDotsIcon}
-                                            </Button>
-                                        </DropdownTrigger>
-                                        <DropdownMenu>
-                                            <DropdownItem
-                                                startContent={PencilIcon}
-                                                onPress={() => handlePress(subject)}
-                                            >
-                                                Editar
-                                            </DropdownItem>
-                                            <DropdownItem
-                                                startContent={TrashIcon}
-                                                onPress={() => handleDelete(subject)}
-                                                color="danger"
-                                            >
-                                                Elminar
-                                            </DropdownItem>
-                                        </DropdownMenu>
-                                    </Dropdown>
+                                    {
+                                        editMode || (
+                                            <Dropdown>
+                                                <DropdownTrigger>
+                                                    <Button
+                                                        isIconOnly
+                                                        variant="light"
+                                                    >
+                                                        {VericalDotsIcon}
+                                                    </Button>
+                                                </DropdownTrigger>
+                                                <DropdownMenu>
+                                                    <DropdownItem
+                                                        startContent={PencilIcon}
+                                                        onPress={() => handlePress(subject)}
+                                                    >
+                                                        Editar
+                                                    </DropdownItem>
+                                                    <DropdownItem
+                                                        startContent={TrashIcon}
+                                                        onPress={() => handleDelete(subject)}
+                                                        color="danger"
+                                                    >
+                                                        Elminar
+                                                    </DropdownItem>
+                                                </DropdownMenu>
+                                            </Dropdown>
+                                        )
+                                    }
                                 </TableCell>
                             </TableRow>
                         )
