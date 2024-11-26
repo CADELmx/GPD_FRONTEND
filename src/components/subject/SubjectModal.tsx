@@ -1,7 +1,7 @@
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { ModalProps } from "../educationalProgram/EducationalProgramModal"
 import { UseSecretary } from "@/context"
-import React, { ChangeEvent, Key, use, useEffect, useState } from "react"
+import React, { ChangeEvent, Key, useEffect, useState } from "react"
 import { CreateSubject, Subject } from "@/models/types/subject"
 import toast from "react-hot-toast"
 import { createSubject, updateSubject } from "@/models/transactions/subject"
@@ -14,24 +14,6 @@ import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
 
 export interface GenericTypeFn {
     <T>(e: T): T
-}
-
-export const useSelectionKeys = ({ onSelectionChange, clearSelection, defaultSelectedKeys }: {
-    onSelectionChange?: (e: Set<Key>) => void,
-    clearSelection?: () => void,
-    defaultSelectedKeys?: Key[]
-}) => {
-    const [selectedKeys, setSelectedKeys] = useState(defaultSelectedKeys ? new Set<Key>(defaultSelectedKeys) : InitiSelectedKeys)
-    const onChange = (e: Selection) => {
-        if (e === "all") return
-        if (onSelectionChange) onSelectionChange(e)
-        setSelectedKeys(e)
-    }
-    const cleanup = () => {
-        if (clearSelection) clearSelection()
-        setSelectedKeys(new Set<Key>([]))
-    }
-    return { selectedKeys, onSelectionChange: onChange, clearSelection: cleanup }
 }
 
 export type PeriodType = {

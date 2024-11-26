@@ -14,7 +14,6 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     const [editMode, setEditMode] = useState(false);
     const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([]);
     const { setStoredSubjects, subjectState: { subjects } } = UseSecretary()
-    const [selectedSubjectKeys, setSelectedSubjectKeys] = useState(InitiSelectedKeys)
     const ChangeFromProgramModal = useDisclosure()
     const ChangePeriodModal = useDisclosure()
     const DeleteSubjectsModal = useDisclosure()
@@ -51,6 +50,8 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
         const program = subjects[0].educationalProgramId
         return subjects.every(subject => subject.educationalProgramId === program)
     }
+    const disabledChangePeriod = selectedSubjects.length === 0 || !checkSamePeriod(selectedSubjects)
+    const disabledChangeProgram = selectedSubjects.length === 0 || !checkSameEducationalProgram(selectedSubjects)
     return (
         <div className="flex flex-col gap-2">
             <div className="flex-col md:flex gap-2 items-center">
@@ -63,32 +64,38 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                 </SwitchMode>
                 {
                     editMode && (
-                        <div className="flex items-center pt-2 md:pt-0 gap-2">
+                        <div className="flex flex-col sm:flex-row items-center pt-2 md:pt-0 gap-2">
                             <Button
+                                fullWidth
                                 aria-label="Cambiar de programa educativo"
-                                isDisabled={selectedSubjects.length === 0}
+                                isDisabled={disabledChangeProgram}
                                 startContent={ArrowsRightLeftIcon}
                                 color="primary"
                                 onPress={handleChangeEducationalProgram}
                             >
                                 Cambiar de programa educativo
                             </Button>
-                            <Button
-                                aria-label="Cambiar de cuatrimestre"
-                                isDisabled={selectedSubjects.length === 0}
-                                startContent={ArrowsRightLeftIcon}
-                                color="primary"
-                                onPress={handleChangePeriod}
-                            >
-                                Cambiar de cuatrimestre
-                            </Button>
-                            <Button
-                                aria-label="Eliminar varios"
-                                isDisabled={selectedSubjects.length === 0}
-                                startContent={TrashIcon}
-                                color="danger"
-                                onPress={handleDeleteMany}
-                            >Eliminar</Button>
+                            <div className="flex gap-2 w-full">
+                                <Button
+                                    fullWidth
+                                    aria-label="Cambiar de cuatrimestre"
+                                    isDisabled={disabledChangePeriod}
+                                    startContent={ArrowsRightLeftIcon}
+                                    color="primary"
+                                    onPress={handleChangePeriod}
+                                >
+                                    Cambiar de cuatrimestre
+                                </Button>
+                                <Button
+                                    aria-label="Eliminar varios"
+                                    isDisabled={selectedSubjects.length === 0}
+                                    startContent={TrashIcon}
+                                    color="danger"
+                                    onPress={handleDeleteMany}
+                                >
+                                    Eliminar
+                                </Button>
+                            </div>
                         </div>
                     )
                 }

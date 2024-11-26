@@ -1,3 +1,4 @@
+import { UploadIcon } from "@/components/Icons"
 import { ModalError } from "@/components/ModalError"
 import { ImportSubjectsMenu } from "@/components/subject/ImportSubjectMenu"
 import { SubjectTable } from "@/components/subject/SubjectCard"
@@ -55,6 +56,7 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
                 <AccordionItem
                     key='1'
                     title='Importar materias'
+                    startContent={UploadIcon}
                 >
                     <ImportSubjectsMenu />
                 </AccordionItem>
