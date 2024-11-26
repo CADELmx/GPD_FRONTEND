@@ -24,7 +24,7 @@ export const ImportEducationalProgramsMenu = () => {
         }
     }
     const handleEducationalProgramSelection = (e: Selection) => {
-        if (e === 'all') return
+        if (e === 'all') return setSelectedEducationalPrograms(new Set(educationalPrograms.map((e) => `${e.index}`)))
         setSelectedEducationalPrograms(e)
     }
     const handleExport = async () => {
@@ -33,45 +33,51 @@ export const ImportEducationalProgramsMenu = () => {
             const formData = new FormData();
             formData.append('file', file);
             toast.promise(axios.post('/api/import/educationalprogram', formData), {
-                loading: 'Importando programas educativos...',
+                loading: 'Subiendo archivo...',
                 success: ({ status }) => {
                     if (status === 200) {
-                        return 'Procesando programas educativos...'
+                        toast.promise(axios.get(`/api/import/${file.name}`), {
+                            loading: 'Cargando programas educativos...',
+                            success: ({ data, status }) => {
+                                if (status === 200) {
+                                    const keys = Object.keys(JSON.parse(data)[0])
+                                    if (keys.some(key=>!['abbreviation', 'description'].includes(key))) {
+                                        setLoading(false)
+                                        return 'El archivo no tiene el formato correcto'
+                                    }
+                                    const newEducationalPrograms = JSON.parse(data)
+                                        .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
+                                        .map((e: CreateEducationalProgram, index: number) => ({
+                                            ...e,
+                                            index
+                                        }))
+                                    setEducationalPrograms(newEducationalPrograms)
+                                    setLoading(false)
+                                    return 'Programas educativos listos para registrar'
+                                } else {
+                                    setLoading(false)
+                                    return 'Error al importar los programas educativos'
+                                }
+                            },
+                            error: () => {
+                                setLoading(false)
+                                return 'Error al importar los programas educativos, intenta de nuevo'
+                            }
+                        }, {
+                            id: 'import-educational-programs'
+                        })
+                        return 'Archivo subido con éxito'
                     }
-                    return 'Error al procesar los programas educativos'
+                    return 'Error al subir el archivo'
                 },
                 error: () => {
                     setLoading(false)
-                    return 'Error al importar los programas educativos'
+                    return 'Error al subir el archivo, intenta de nuevo'
                 }
             }, {
                 id: 'import-educational-programs'
             })
-            toast.promise(axios.get(`/api/import/${file.name}`), {
-                loading: 'Cargando programas educativos...',
-                success: ({ data, status }) => {
-                    if (status === 200) {
-                        const newEducationalPrograms = JSON.parse(data)
-                            .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
-                            .map((e: CreateEducationalProgram, i: number) => ({
-                                ...e,
-                                index: i
-                            }))
-                        setEducationalPrograms(newEducationalPrograms)
-                        setLoading(false)
-                        return 'Programas educativos listos para registrar'
-                    } else {
-                        setLoading(false)
-                        return 'Error al importar los programas educativos'
-                    }
-                },
-                error: () => {
-                    setLoading(false)
-                    return 'Error al importar los programas educativos, intenta de nuevo'
-                }
-            }, {
-                id: 'import-educational-programs'
-            })
+
         }
     }
     const handleSubmit = async () => {
@@ -130,8 +136,8 @@ export const ImportEducationalProgramsMenu = () => {
                         <p className="text-xs text-utim">Archivos en formato JSON</p>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                        <Chip isDisabled={!file.name} variant="bordered">
-                            {file.name || 'Nada seleccionado'}
+                        <Chip isDisabled={!file?.name} variant="bordered">
+                            {file?.name || 'Nada seleccionado'}
                         </Chip>
                         {
                             file &&
