@@ -133,6 +133,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                 }
             </Select>
             <YearSelectorAlter
+                onSelectYear={() => { }}
                 onSelectPeriod={(e) => {
                     const option = String(getFirstSetValue(e))
                     const groups = periods.find(opt => {
