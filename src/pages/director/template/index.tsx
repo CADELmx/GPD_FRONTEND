@@ -41,7 +41,6 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
         responsibleId: undefined,
         revisedById: undefined,
     })
-    console.log('septiembre - diciembre 2024: Ordinario'.length)
     const [responsibleName, setResponsibleName] = useState('');
     const [revisedOptions, setRevisedOptions] = useState<PersonalData[]>([]);
     const [selectedKeys, setSelectedKeys] = useState(InitSelectedKeys);

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
-import { YearAndPeriodSelector } from './Selector'
+import { YearAndPeriodSelector, YearSelectorAlter } from './Selector'
 import { Button, Input, Select, SelectItem, Textarea } from '@nextui-org/react'
 import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
 import toast from 'react-hot-toast'
 import { CheckIcon } from './Icons'
 import { UseTemplates } from '../context'
-import { positions, sumHours } from '../utils'
+import { getFirstSetValue, periods, positions, sumHours } from '../utils'
 import { insertPartialTemplateAndActivities } from '../models/transactions/partial-template'
 import { playNotifySound } from '../toast'
 import { EducationalProgram } from '../models/types/educational-program'
@@ -21,6 +21,10 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
 }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
     const [loading, setLoading] = useState(false)
+    const currentYear = String(new Date().getFullYear())
+    const currentMonth = new Date().toLocaleString('es-MX', { month: 'long' })
+    const currentPeriod = periods.find(p => p.months.includes(currentMonth))
+    const defaultPeriodKey = `${currentPeriod?.period} ${currentYear}: Ordinario`
     const getPosition = (position: string) => {
         if (position === "") return []
         if (!positions.includes(position)) {
@@ -128,6 +132,25 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                     positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
                 }
             </Select>
+            <YearSelectorAlter
+                onSelectPeriod={(e) => {
+                    const option = String(getFirstSetValue(e))
+                    const groups = periods.find(opt => {
+                        return e.has(opt.period)
+                    })
+                    const defaultGroups = option === "" ? [] :
+                        groups?.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
+                    setStored({
+                        defaultGroups,
+                        partialTemplate: {
+                            ...partialTemplate,
+                            period: String(getFirstSetValue(e)),
+                        }
+                    })
+                }}
+                defaultYear={currentYear}
+                defaultPeriod={defaultPeriodKey}
+            />
             <YearAndPeriodSelector />
             <AcademicCharge educationalPrograms={educationalPrograms} />
             <AddActivityButton isDisabled={Boolean(partialTemplate.id)} />

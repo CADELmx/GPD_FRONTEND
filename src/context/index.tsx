@@ -121,6 +121,11 @@ interface AreaState {
         selectedSubject: CreateSubject
     },
     setStoredSubjects: (prop: any) => void
+    templateState: {
+        templates: CreateTemplate[],
+        selectedTemplate: CreateTemplate
+    }
+    setStoredTemplates: (prop: any) => void
 }
 
 const AreaContext = createContext({} as any)
@@ -163,6 +168,19 @@ export const AreasProvider = ({ children }: {
             id: undefined
         }
     })
+    const [templateState, setTemplateState] = useState<{
+        templates: CreateTemplate[],
+        selectedTemplate: CreateTemplate
+    }>({
+        templates: [],
+        selectedTemplate: {
+            areaId: undefined,
+            period: '',
+            state: '',
+            responsibleId: undefined,
+            revisedById: undefined,
+        }
+    })
     const setStoredEducationalPrograms = (prop: Object) => {
         setEducationalState((educationalState) => ({ ...educationalState, ...prop }))
     }
@@ -172,6 +190,9 @@ export const AreasProvider = ({ children }: {
     const setStoredSubjects = (prop: Object) => {
         setSubjectState((areaState) => ({ ...areaState, ...prop }))
     }
+    const setStoredTemplates = (prop: Object) => {
+        setTemplateState((areaState) => ({ ...areaState, ...prop }))
+    }
     return (
         <AreaContext.Provider value={{
             areaState,
@@ -179,7 +200,9 @@ export const AreasProvider = ({ children }: {
             educationalState,
             setStoredEducationalPrograms,
             subjectState,
-            setStoredSubjects
+            setStoredSubjects,
+            templateState,
+            setStoredTemplates
         }}>
             {children}
         </AreaContext.Provider>
