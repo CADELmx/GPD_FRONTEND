@@ -1,5 +1,5 @@
 import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
-import { UploadIcon } from "../Icons"
+import { QuestionMarkIcon, UploadIcon } from "../Icons"
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -44,12 +44,18 @@ export const ImportEducationalProgramsMenu = () => {
                                     const keys = Object.keys(JSON.parse(data)[0])
                                     if (keys.some(key => !['abbreviation', 'description'].includes(key))) {
                                         setLoading(false)
-                                        return <>
-                                            El archivo no tiene el formato correcto
-                                            <Link href={'/about'}>
-                                                Más información
+                                        return (
+                                            <Link passHref legacyBehavior href={'/about'}>
+                                                <Button
+                                                    className=""
+                                                    color="danger"
+                                                    variant="light"
+                                                    endContent={QuestionMarkIcon}
+                                                >
+                                                    Formato incorrecto
+                                                </Button>
                                             </Link>
-                                        </>
+                                        )
                                     }
                                     const newEducationalPrograms = JSON.parse(data)
                                         .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))

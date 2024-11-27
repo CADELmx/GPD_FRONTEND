@@ -64,7 +64,7 @@ export default function DirectorPartialTemplate({
 }) {
     const {
         educationalState: { educationalPrograms }, setStoredEducationalPrograms,
-        templateState: { selectedTemplate }, setStoredTemplates
+        setStoredTemplates
     } = UseSecretary()
     const router = useRouter()
     if (router.isFallback) {
@@ -81,7 +81,11 @@ export default function DirectorPartialTemplate({
 
     return (
         <>
-            <AcademicTemplateForm academicWorkers={ssrPersonalData} educationalPrograms={educationalPrograms} />
+            <AcademicTemplateForm
+                academicWorkers={ssrPersonalData}
+                educationalPrograms={educationalPrograms}
+                template={ssrTemplate}
+            />
         </>
     )
 }

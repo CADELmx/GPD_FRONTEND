@@ -243,6 +243,7 @@ export const YearSelectorAlter = ({ defaultYear, defaultPeriod, onSelectPeriod, 
             <Select
                 className="sm:w-1/4 md:w-1/3"
                 label='Año'
+                isRequired
                 disallowEmptySelection
                 defaultSelectedKeys={[defaultYear]}
                 selectedKeys={selectedYearKeys as Selection}
@@ -258,6 +259,7 @@ export const YearSelectorAlter = ({ defaultYear, defaultPeriod, onSelectPeriod, 
                 }
             </Select>
             <Select
+                isRequired
                 label='Periodo'
                 placeholder="Selecciona un periodo"
                 selectedKeys={selectedPeriodKeys as Selection}

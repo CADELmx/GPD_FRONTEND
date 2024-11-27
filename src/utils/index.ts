@@ -28,14 +28,48 @@ export const periods = [
     }
 ]
 
-export const positions = [
-    'Profesor de Tiempo Completo Titular "A"',
-    'Profesor de Tiempo Completo Titular "B"',
-    'Profesor de Tiempo Completo Asociado "A"',
-    'Profesor de Tiempo Completo Asociado "B"',
-    'Profesor de Tiempo Completo Asociado "C"',
-    'Profesor de asignatura "B"',
-    'Técnico de Apoyo',
+export type PositionType = {
+    name: string,
+    minHours: number,
+    maxHours: number
+}
+
+export const positions: PositionType[] = [
+    {
+        name: 'Profesor de Tiempo Completo Titular "A"',
+        minHours: 40,
+        maxHours: 40
+    },
+    {
+        name: 'Profesor de Tiempo Completo Titular "B"',
+        minHours: 40,
+        maxHours: 40
+    },
+    {
+        name: 'Profesor de Tiempo Completo Asociado "A"',
+        minHours: 40,
+        maxHours: 40
+    },
+    {
+        name: 'Profesor de Tiempo Completo Asociado "B"',
+        minHours: 40,
+        maxHours: 40
+    },
+    {
+        name: 'Profesor de Tiempo Completo Asociado "C"',
+        minHours: 40,
+        maxHours: 40
+    },
+    {
+        name: 'Profesor de asignatura "B"',
+        minHours: 17,
+        maxHours: 32
+    },
+    {
+        name: 'Técnico de Apoyo',
+        minHours: 17,
+        maxHours: 32
+    }
 ]
 
 export const titles = [
@@ -122,6 +156,12 @@ export const generatePeriods = ({
 
 export const checkEmptyStringOption = (string: string | undefined) => string === "" || string === undefined ? [] : [string]
 
+export const checkIfUndefined = (v: number | undefined) => {
+    if (v === undefined) return v
+    if (isNaN(Number(v))) return v
+    return Number(v)
+}
+
 export const getFirstSetValue = <T>(set: Set<T>): T => {
     return Array.from(set)[0]
 }
@@ -168,5 +208,14 @@ export const AddToArrayIfNotExists = (array: any[], value: any) => {
     return [...array, {
         id: array.length + 1,
         name: value
+    }]
+}
+
+export const AddToPositionIfNotExists = (array: PositionType[], value: string) => {
+    if (array.find(e => e.name === value)) return array
+    return [...array, {
+        name: value,
+        minHours: 0,
+        maxHours: 40
     }]
 }

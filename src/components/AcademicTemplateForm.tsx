@@ -6,33 +6,33 @@ import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
 import toast from 'react-hot-toast'
 import { CheckIcon } from './Icons'
-import { UseTemplates } from '../context'
-import { getFirstSetValue, periods, positions, sumHours } from '../utils'
+import { UseSecretary, UseTemplates } from '../context'
+import { AddToArrayIfNotExists, AddToPositionIfNotExists, checkIfUndefined, getFirstSetValue, periods, positions, sumHours } from '../utils'
 import { insertPartialTemplateAndActivities } from '../models/transactions/partial-template'
 import { playNotifySound } from '../toast'
 import { EducationalProgram } from '../models/types/educational-program'
 import { PersonalData } from '../models/types/personal-data'
 import { PartialTemplate } from '../models/types/partial-template'
+import { Template } from '@/models/types/template'
 
-export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, template }: {
+export const AcademicTemplateForm = ({
+    educationalPrograms,
+    academicWorkers,
+    partialTemplate: ssrPartialTemplate,
+    template: ssrTemplate
+}: {
     educationalPrograms: EducationalProgram[],
     academicWorkers: PersonalData[],
-    template?: PartialTemplate
+    partialTemplate?: PartialTemplate,
+    template?: Template
 }) => {
     const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
+    const { templateState: { selectedTemplate } } = UseSecretary()
     const [loading, setLoading] = useState(false)
     const currentYear = String(new Date().getFullYear())
     const currentMonth = new Date().toLocaleString('es-MX', { month: 'long' })
     const currentPeriod = periods.find(p => p.months.includes(currentMonth))
     const defaultPeriodKey = `${currentPeriod?.period} ${currentYear}: Ordinario`
-    const getPosition = (position: string) => {
-        if (position === "") return []
-        if (!positions.includes(position)) {
-            positions.push(position)
-            return [position]
-        }
-        return [partialTemplate?.position]
-    }
     const totalHours = sumHours({ activities: activities })
     const handleSubmit = () => {
         setLoading(true)
@@ -42,11 +42,6 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
             nt: Number(partialTemplate.nt),
         }
         const newActivities = activities.map(activity => {
-            const checkIfUndefined = (v: number | undefined) => {
-                if (v === undefined) return v
-                if (isNaN(Number(v))) return v
-                return Number(v)
-            }
             return {
                 ...activity,
                 educationalProgramId: checkIfUndefined(activity.educationalProgramId),
@@ -71,9 +66,7 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
         })
     }
     useEffect(() => {
-        if (partialTemplate?.id) {
-            setStored({ partialTemplate: template })
-        }
+        setStored({ partialTemplate: ssrPartialTemplate })
         const onCreatedTemplate = () => {
             setLoading(false)
             toast.success('Plantilla guardada', {
@@ -122,18 +115,33 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                 </Select>
             </div>
             <Select
-                selectedKeys={getPosition(partialTemplate.position)}
+                items={AddToPositionIfNotExists(positions, partialTemplate.position)}
                 label='Puesto'
                 name='position'
                 onChange={handleGlobalChange}
                 isRequired
             >
                 {
-                    positions.map((p) => <SelectItem key={p} textValue={p} variant="flat">{p}</SelectItem>)
+                    (p) => (
+                        <SelectItem
+                            key={p.name}
+                            textValue={p.name}
+                            variant="flat"
+                        >
+                            {p.name}
+                        </SelectItem>
+                    )
                 }
             </Select>
             <YearSelectorAlter
-                onSelectYear={() => { }}
+                onSelectYear={(e) => {
+                    setStored({
+                        partialTemplate: {
+                            ...partialTemplate,
+                            year: String(getFirstSetValue(e))
+                        }
+                    })
+                }}
                 onSelectPeriod={(e) => {
                     const option = String(getFirstSetValue(e))
                     const groups = periods.find(opt => {
@@ -152,7 +160,6 @@ export const AcademicTemplateForm = ({ educationalPrograms, academicWorkers, tem
                 defaultYear={currentYear}
                 defaultPeriod={defaultPeriodKey}
             />
-            <YearAndPeriodSelector />
             <AcademicCharge educationalPrograms={educationalPrograms} />
             <AddActivityButton isDisabled={Boolean(partialTemplate.id)} />
             <Input

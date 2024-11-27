@@ -34,13 +34,14 @@ export default function Register() {
         })
     }
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target as HTMLInputElement;
+        const { name, value } = e.target;
         setUserInfo({ ...userInfo, [name]: value });
     }
     const handleGetPersonalData = (e: ChangeEvent<HTMLInputElement>) => {
-        setUserInfo({ ...userInfo, nt: e.target.value })
-        if (!userInfo.nt) return
-        toast.promise(getPersonalData({ id: Number(userInfo.nt) }), {
+        const { value } = e.target
+        setUserInfo({ ...userInfo, nt: value })
+        if (value === '' || !value) return
+        toast.promise(getPersonalData({ id: Number(value) }), {
             loading: 'Buscando trabajador',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
