@@ -3,7 +3,6 @@ import { CreateActivity } from "../models/types/activity"
 import { CreatePartialTemplate } from "../models/types/partial-template"
 import { toast } from "react-hot-toast"
 import { Key } from "react"
-import { v4 as uuidv4 } from 'uuid'
 
 export const promiseResolver = async<T>(promises: Promise<T>[]) => {
     const result = await Promise.all(promises)
@@ -96,30 +95,6 @@ export const modalidades = [
     'Ingeniería Escolarizada',
     'Ingeniería Mixta',
 ]
-export const defaultActivity: CreateActivity = {
-    id: uuidv4(),
-    partialTemplateId: undefined,
-    educationalProgramId: undefined,
-    activityDistribution: "",
-    managementType: "",
-    stayType: "",
-    numberStudents: 0,
-    activityName: "",
-    gradeGroups: [],
-    weeklyHours: 0,
-    subtotalClassification: 0,
-}
-
-export const defaultPartialTemplate: CreatePartialTemplate = {
-    nt: 0,
-    name: "",
-    gender: "",
-    position: "",
-    status: "Pendiente",
-    year: `${new Date().getFullYear()}`,
-    period: "",
-    total: 0,
-}
 
 export const generatePeriods = ({
     year, ordinary
@@ -148,7 +123,7 @@ export const generatePeriods = ({
         const month2 = generateMonthName(k * period + period - 1)
         const finalPeriod = generateFormat(month1, month2)
         return {
-            id: uuidv4(),
+            id: k,
             period: finalPeriod
         }
     })
@@ -212,6 +187,7 @@ export const AddToArrayIfNotExists = (array: any[], value: any) => {
 }
 
 export const AddToPositionIfNotExists = (array: PositionType[], value: string) => {
+    if (!value) return array
     if (array.find(e => e.name === value)) return array
     return [...array, {
         name: value,

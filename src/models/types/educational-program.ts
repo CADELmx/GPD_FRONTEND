@@ -9,3 +9,9 @@ export type EducationalProgram = CreateEducationalProgram & {
     id: number;
     areaId: number;
 }
+
+export const DefaultEducationalProgram: CreateEducationalProgram = {
+    areaId: undefined,
+    abbreviation: '',
+    description: '',
+}

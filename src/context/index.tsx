@@ -1,27 +1,22 @@
 
-import { ChangeEvent, createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
-import { CookieValueTypes, deleteCookie, getCookie, setCookie } from 'cookies-next'
-import { defaultActivity, defaultPartialTemplate } from '../utils'
-import { CreateActivity } from '../models/types/activity'
-import { CreatePartialTemplate } from '../models/types/partial-template'
-import { CreateEducationalProgram, EducationalProgram } from '../models/types/educational-program'
-import { Area, CreateArea } from '../models/types/area'
+import { CookieValueTypes, getCookie } from 'cookies-next'
+import { Activity, CreateActivity, DefaultActivity } from '../models/types/activity'
+import { CreatePartialTemplate, DefaultPartialTemplate, PartialTemplate } from '../models/types/partial-template'
+import { CreateEducationalProgram, DefaultEducationalProgram, EducationalProgram } from '../models/types/educational-program'
+import { Area, CreateArea, DefaultArea } from '../models/types/area'
 import axios from 'axios'
-import { CreateSubject, Subject } from '../models/types/subject'
-import { CreateTemplate } from '../models/types/template'
+import { CreateSubject, DefaultSubject, Subject } from '../models/types/subject'
+import { CreateTemplate, DefaultTemplate, Template } from '../models/types/template'
 
 interface MemoryState {
     memory: {
-        partialTemplate: CreatePartialTemplate,
-        activities: CreateActivity[],
-        selectedActivity: CreateActivity,
         defaultGroups: string[],
         socket: Socket,
         user: CookieValueTypes
     },
     setStored: (prop: any) => void,
-    handleGlobalChange: (event: any) => void,
     signIn: (email: string, password: string) => Promise<{
         error: string | null,
         user: CookieValueTypes
@@ -41,9 +36,6 @@ export const TemplatesProvider = ({ children }: {
     children: React.ReactNode
 }) => {
     const [memory, setMemory] = useState({
-        partialTemplate: defaultPartialTemplate,
-        activities: [defaultActivity],
-        selectedActivity: defaultActivity,
         defaultGroups: [],
         socket: io(),
         user: undefined as CookieValueTypes
@@ -73,12 +65,6 @@ export const TemplatesProvider = ({ children }: {
         setMemory({ ...memory, user: undefined })
     }
     const setStored = (prop: Object) => setMemory((prev) => ({ ...prev, ...prop }))
-    const handleGlobalChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => setStored({
-        partialTemplate: {
-            ...memory.partialTemplate,
-            [event.target?.name]: event.target?.value
-        }
-    })
     useEffect(() => {
         const setupSocket = async () => {
             await fetch('/api/socket')
@@ -95,7 +81,6 @@ export const TemplatesProvider = ({ children }: {
         <TemplateContext.Provider value={{
             memory,
             setStored,
-            handleGlobalChange,
             signIn,
             signOut,
             signUp,
@@ -108,12 +93,12 @@ export const TemplatesProvider = ({ children }: {
 interface AreaState {
     areaState: {
         areas: Area[],
-        selectedArea: Area
+        selectedArea: CreateArea
     },
     setStoredAreas: (prop: any) => void,
     educationalState: {
         educationalPrograms: EducationalProgram[],
-        selectedEducationalProgram: EducationalProgram
+        selectedEducationalProgram: CreateEducationalProgram
     },
     setStoredEducationalPrograms: (prop: any) => void,
     subjectState: {
@@ -122,10 +107,20 @@ interface AreaState {
     },
     setStoredSubjects: (prop: any) => void
     templateState: {
-        templates: CreateTemplate[],
+        templates: Template[],
         selectedTemplate: CreateTemplate
     }
     setStoredTemplates: (prop: any) => void
+    partialTemplateState: {
+        partialTemplates: PartialTemplate[],
+        selectedPartialTemplate: CreatePartialTemplate
+    }
+    setStoredPartialTemplates: (prop: any) => void
+    activityState: {
+        activities: Activity[],
+        selectedActivity: CreateActivity
+    }
+    setStoredActivities: (prop: any) => void
 }
 
 const AreaContext = createContext({} as any)
@@ -139,48 +134,37 @@ export const AreasProvider = ({ children }: {
         areas: Area[], selectedArea: CreateArea
     }>({
         areas: [],
-        selectedArea: {
-            name: '',
-        }
+        selectedArea: DefaultArea
     })
     const [educationalState, setEducationalState] = useState<{
         educationalPrograms: EducationalProgram[],
         selectedEducationalProgram: CreateEducationalProgram
     }>({
         educationalPrograms: [],
-        selectedEducationalProgram: {
-            areaId: undefined,
-            abbreviation: '',
-            description: ''
-        }
+        selectedEducationalProgram: DefaultEducationalProgram
     })
     const [subjectState, setSubjectState] = useState<{
-        subjects: CreateSubject[],
+        subjects: Subject[],
         selectedSubject: CreateSubject
     }>({
         subjects: [],
-        selectedSubject: {
-            monthPeriod: '',
-            subjectName: '',
-            totalHours: 0,
-            weeklyHours: 0,
-            educationalProgramId: undefined,
-            id: undefined
-        }
+        selectedSubject: DefaultSubject
     })
     const [templateState, setTemplateState] = useState<{
-        templates: CreateTemplate[],
+        templates: Template[],
         selectedTemplate: CreateTemplate
     }>({
         templates: [],
-        selectedTemplate: {
-            areaId: undefined,
-            period: '',
-            state: '',
-            responsibleId: undefined,
-            revisedById: undefined,
-        }
+        selectedTemplate: DefaultTemplate
     })
+    const [partialTemplateState, setPartialTemplateState] = useState({
+        partialTemplates: [],
+        selectedPartialTemplate: DefaultPartialTemplate
+    });
+    const [activityState, setActivityState] = useState({
+        activities: [DefaultActivity],
+        selectedActivity: DefaultActivity
+    });
     const setStoredEducationalPrograms = (prop: Object) => {
         setEducationalState((educationalState) => ({ ...educationalState, ...prop }))
     }
@@ -193,6 +177,12 @@ export const AreasProvider = ({ children }: {
     const setStoredTemplates = (prop: Object) => {
         setTemplateState((areaState) => ({ ...areaState, ...prop }))
     }
+    const setStoredPartialTemplates = (prop: Object) => {
+        setPartialTemplateState((areaState) => ({ ...areaState, ...prop }))
+    }
+    const setStoredActivities = (prop: Object) => {
+        setActivityState((areaState) => ({ ...areaState, ...prop }))
+    }
     return (
         <AreaContext.Provider value={{
             areaState,
@@ -202,7 +192,11 @@ export const AreasProvider = ({ children }: {
             subjectState,
             setStoredSubjects,
             templateState,
-            setStoredTemplates
+            setStoredTemplates,
+            partialTemplateState,
+            setStoredPartialTemplates,
+            activityState,
+            setStoredActivities
         }}>
             {children}
         </AreaContext.Provider>

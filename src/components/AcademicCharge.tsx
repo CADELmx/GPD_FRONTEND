@@ -1,11 +1,14 @@
 import { Accordion, AccordionItem, Badge, BreadcrumbItem, Breadcrumbs, Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react"
 import { HorizontalDostIcon, StackIcon } from "./Icons"
-import { UseTemplates } from "../context"
+import { UseSecretary, UseTemplates } from "../context"
 import { ActivityCard } from "./Activity"
 import { EducationalProgram } from "../models/types/educational-program"
 
 export const AcademicCharge = ({ educationalPrograms }: { educationalPrograms: EducationalProgram[] }) => {
-    const { memory: { activities, selectedActivity }, setStored } = UseTemplates()
+    const { activityState: { activities, selectedActivity }, setStoredActivities } = UseSecretary()
+    const handleSwitchActivity = (id: string) => {
+        setStoredActivities({ selectedActivity: activities.find(activity => activity.id === id) })
+    }
     return (
         <Accordion aria-label="Academic Details" showDivider={false} isCompact fullWidth selectionMode="multiple">
             <AccordionItem
@@ -86,9 +89,7 @@ export const AcademicCharge = ({ educationalPrograms }: { educationalPrograms: E
                                         size="sm"
                                         key={id}
                                         accessKey={id}
-                                        onClick={() => {
-                                            setStored({ selectedActivity: activities.find(activity => activity.id === id) })
-                                        }}
+                                        onClick={() => handleSwitchActivity(id)}
                                         color={id === selectedActivity.id ? 'primary' : 'default'}
                                     >
                                         {

@@ -1,113 +1,14 @@
 
-import { Input, Select, Selection, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
+import { Button, Input, Select, Selection, SelectItem, SelectSection, Switch, Textarea } from "@nextui-org/react"
 import { ChangeEvent, Key, useEffect, useState } from "react"
-import { LockIcon } from "./Icons"
-import { UseTemplates } from "../context"
+import { UseSecretary, UseTemplates } from "../context"
 import { activitiesDistribution, checkEmptyStringOption, generatePeriods, getFirstSetValue, InitSelectedKeys, periods } from "../utils"
 import { EducationalProgram } from "../models/types/educational-program"
 import { CreateActivity } from "../models/types/activity"
 
-const YearSelector = ({ selectedYear, setState }: { selectedYear: string, setState: any }) => {
-    const { memory: { partialTemplate }, setStored } = UseTemplates()
-    const year = new Date().getFullYear()
-    const yearList = Array.from({ length: 3 }, (_, k) => `${year - k + 1}`)
-    return (
-        <Select
-            label='Año'
-            disallowEmptySelection
-            defaultSelectedKeys={[selectedYear]}
-            className="md:w-2/5"
-            isRequired
-            onChange={e => {
-                setState(e.target.value)
-                setStored({
-                    partialTemplate: {
-                        ...partialTemplate,
-                        year: e.target.value
-                    }
-                })
-            }}
-        >
-            {
-                yearList.map((year) => {
-                    return <SelectItem key={year} variant="flat">{year}</SelectItem>
-                })
-            }
-        </Select>
-    )
-}
-
-const PeriodSelector = ({ selectedYear }: { selectedYear: string }) => {
-    const { setStored, memory: { partialTemplate } } = UseTemplates()
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement> | { target: { value: string } }) => {
-        const option = e.target.value
-        const groups = periods.find(opt => {
-            return option.includes(opt.period)
-        })
-        const defaultGroups = option === "" ? [] :
-            groups?.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
-        setStored({
-            defaultGroups,
-            partialTemplate: {
-                ...partialTemplate,
-                period: option,
-                year: selectedYear
-            }
-        })
-    }
-    const actualMonth = new Date().toLocaleString('es-MX', { month: 'long' })
-    const actualPeriod = periods.find(p => p.months.includes(actualMonth))
-    const defaultPeriod = `${actualPeriod?.period} ${selectedYear}: Ordinario`
-    useEffect(() => {
-        if (!partialTemplate?.period) {
-            handleChange({ target: { value: defaultPeriod } })
-        }
-    }, [])
-    return (
-        <Select
-            label='Periodo'
-            autoCapitalize="words"
-            isRequired
-            onChange={handleChange}
-            disallowEmptySelection
-            defaultSelectedKeys={[defaultPeriod]}
-        >
-            <SelectSection title={'Ordinario'}>
-                {
-                    generatePeriods({ year: Number(selectedYear), ordinary: true }).map(p => {
-                        return <SelectItem key={p.id} variant="flat">{p.period}</SelectItem>
-                    })
-                }
-            </SelectSection>
-            <SelectSection title={'Extraordinario'}>
-                {
-                    generatePeriods({
-                        year: Number(selectedYear),
-                        ordinary: false
-                    }).map(p => {
-                        return <SelectItem key={p.id} variant="flat">{p.period}</SelectItem>
-                    })
-                }
-            </SelectSection>
-        </Select>
-    )
-}
-
 interface SelectorProps {
     activity: CreateActivity
     handler: any
-}
-
-export const YearAndPeriodSelector = () => {
-    const year = new Date().getFullYear()
-    const [selectedYear, setSelectedYear] = useState(`${year}`)
-    return (
-        <div className="flex flex-col sm:flex-row gap-2">
-            <YearSelector setState={setSelectedYear} selectedYear={selectedYear} />
-            <PeriodSelector selectedYear={selectedYear} />
-        </div>
-    )
 }
 
 export const ActTypeSelector = ({ activity, handler }: SelectorProps) => {
@@ -156,7 +57,33 @@ export const StayTypeSelector = ({ activity, handler }: SelectorProps) => {
 }
 
 export const GroupSelector = ({ activity, handler }: SelectorProps) => {
-    const { memory: { defaultGroups } } = UseTemplates()
+    const { partialTemplateState: { selectedPartialTemplate } } = UseSecretary()
+    const currentPeriod = periods.find(p => selectedPartialTemplate.period.includes(p.period)
+    )
+    const defaultGrades = [
+        {
+            id: 1,
+            name: 'A',
+        },
+        {
+            id: 2,
+            name: 'B',
+        },
+        {
+            id: 3,
+            name: 'C',
+        },
+    ]
+    const defaultGroups = currentPeriod?.grades.map(grade => {
+        return (
+            defaultGrades.map(g => `${grade}${g.name}`)
+        )
+    }).flat()
+    if (!defaultGroups){
+        return (<div>
+            No hay grupos disponibles
+        </div>)
+    }
     return (
         <div className="flex flex-col gap-2 sm:flex-row">
             <Select
@@ -217,7 +144,19 @@ export const AcademicProgramSelector = (
     )
 }
 
-export const YearSelectorAlter = ({ defaultYear, defaultPeriod, onSelectPeriod, onSelectYear }: { defaultYear: string, defaultPeriod?: string, onSelectYear: (e: Set<Key>) => void, onSelectPeriod: (e: Set<Key>) => void }) => {
+export const YearSelectorAlter = ({
+    defaultYear,
+    defaultPeriod,
+    onSelectPeriod,
+    onSelectYear,
+    isDisabled = false
+}: {
+    defaultYear: string,
+    defaultPeriod?: string,
+    onSelectYear: (e: Set<Key>) => void,
+    onSelectPeriod: (e: Set<Key>) => void,
+    isDisabled?: boolean
+}) => {
     const [selectedYearKeys, setSelectedYearKeys] = useState(new Set([defaultYear as Key]))
     const [selectedPeriodKeys, setSelectedPeriodKeys] = useState(new Set(defaultPeriod === "" ? [] : [defaultPeriod as Key]))
     const handleSelectYear = (e: Selection) => {
@@ -237,13 +176,13 @@ export const YearSelectorAlter = ({ defaultYear, defaultPeriod, onSelectPeriod, 
     }))
     const ordinaryPeriods = generatePeriods({ ordinary: true, year: Number(getFirstSetValue(selectedYearKeys)) })
     const notOrdinaryPeriods = generatePeriods({ ordinary: false, year: Number(getFirstSetValue(selectedYearKeys)) })
-
     return (
         <div className="flex flex-col sm:flex-row gap-2 items-center">
             <Select
                 className="sm:w-1/4 md:w-1/3"
                 label='Año'
                 isRequired
+                isDisabled={isDisabled}
                 disallowEmptySelection
                 defaultSelectedKeys={[defaultYear]}
                 selectedKeys={selectedYearKeys as Selection}
@@ -260,6 +199,7 @@ export const YearSelectorAlter = ({ defaultYear, defaultPeriod, onSelectPeriod, 
             </Select>
             <Select
                 isRequired
+                isDisabled={isDisabled}
                 label='Periodo'
                 placeholder="Selecciona un periodo"
                 selectedKeys={selectedPeriodKeys as Selection}

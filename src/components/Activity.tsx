@@ -4,9 +4,9 @@ import toast from 'react-hot-toast'
 import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementTypeSelector, StayTypeSelector } from './Selector'
 import { ChangeEvent, useEffect } from 'react'
 import { PlusIcon } from './Icons'
-import { UseTemplates } from '../context'
-import { defaultActivity } from '../utils'
-import { Activity, CreateActivity } from '../models/types/activity'
+import { UseSecretary, UseTemplates } from '../context'
+import { } from '../utils'
+import { CreateActivity, DefaultActivity } from '../models/types/activity'
 import { EducationalProgram } from '../models/types/educational-program'
 
 type Event = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -15,23 +15,28 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
     activity: CreateActivity,
     educationalPrograms: EducationalProgram[]
 }) => {
-    const { memory: { partialTemplate, activities, selectedActivity }, setStored } = UseTemplates()
+    const {
+        partialTemplateState: { selectedPartialTemplate },
+        activityState: { activities, selectedActivity },
+        setStoredPartialTemplates,
+        setStoredActivities
+    } = UseSecretary()
     const handleChange = (e: Event) => {
-        setStored({
+        setStoredActivities({
             selectedActivity: { ...selectedActivity, [e.target.name]: e.target.value }
         })
     }
     const handleDelete = () => {
         const newActivities = activities.filter(activity => activity.id !== selectedActivity.id)
         const selectedItem = newActivities.length > 1 ? newActivities[newActivities.length - 1] : newActivities[0]
-        setStored({
+        setStoredActivities({
             selectedActivity: selectedItem,
             activities: newActivities
         })
     }
     const changeManagementType = (e: SharedSelection) => {
         if (e === "all") return
-        setStored({
+        setStoredActivities({
             selectedActivity: {
                 ...selectedActivity,
                 managementType: e.size === 0 ? '' : e.anchorKey
@@ -41,7 +46,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
     const changeStayType = (e: SharedSelection) => {
         if (e === "all") return
         const weeklyHours = e.anchorKey === 'TSU' ? 1 : 2
-        setStored({
+        setStoredActivities({
             selectedActivity: {
                 ...selectedActivity,
                 weeklyHours,
@@ -50,7 +55,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
         })
     }
     const changeGroup = (e: SharedSelection) => {
-        setStored({
+        setStoredActivities({
             selectedActivity: {
                 ...selectedActivity,
                 gradeGroups: Array.from(e),
@@ -60,7 +65,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
     }
     const changeWeeklyHours = (e: ChangeEvent<HTMLInputElement>) => {
         if (activity.activityDistribution === "Estadía técnica") {
-            setStored({
+            setStoredActivities({
                 selectedActivity: {
                     ...selectedActivity, [e.target.name]: Number(e.target.value),
                     subtotalClassification: Number(e.target.value) * (activity.numberStudents || 1)
@@ -73,14 +78,14 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
             || activity.activityDistribution === "Tutorías"
         ) {
             const subtotalClassification = activity.gradeGroups.length === 0 || e.target.value === '' ? '' : activity.gradeGroups.length * Number(e.target.value)
-            setStored({
+            setStoredActivities({
                 selectedActivity: {
                     ...selectedActivity, [e.target.name]: Number(e.target.value),
                     subtotalClassification
                 }
             })
         } else {
-            setStored({
+            setStoredActivities({
                 selectedActivity: {
                     ...selectedActivity, [e.target.name]: Number(e.target.value),
                     subtotalClassification: Number(e.target.value)
@@ -90,7 +95,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
     }
     const changeActivityProgram = (e: SharedSelection) => {
         if (e === "all") return
-        setStored({
+        setStoredActivities({
             selectedActivity: {
                 ...selectedActivity,
                 educationalProgramId: e.size === 0 ? "" : e.anchorKey
@@ -98,7 +103,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
         })
     }
     const changeStudentsNumber = (e: ChangeEvent<HTMLInputElement>) => {
-        setStored({
+        setStoredActivities({
             selectedActivity: {
                 ...selectedActivity, [e.target.name]: Number(e.target.value),
                 subtotalClassification: Number(e.target.value) * (activity.weeklyHours || 1)
@@ -109,9 +114,9 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
         const total = activities
             .map(activity => activity.subtotalClassification)
             .reduce((p, c) => p + c, 0)
-        setStored({
-            partialTemplate: {
-                ...partialTemplate,
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
                 total
             }
         })
@@ -121,7 +126,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
     }, [activity.subtotalClassification])
 
     useEffect(() => {
-        setStored({
+        setStoredActivities({
             activities: activities.map(activity => activity.id === selectedActivity.id ? selectedActivity : activity)
         })
     }, [selectedActivity])
@@ -213,7 +218,7 @@ export const ActivityCard = ({ activity, educationalPrograms }: {
 }
 
 export const AddActivityButton = ({ isDisabled }: { isDisabled: boolean }) => {
-    const { memory: { activities }, setStored } = UseTemplates()
+    const { activityState: { activities }, setStoredActivities } = UseSecretary()
     const handleCreate = () => {
         if (activities.length >= 10) {
             return toast.error('No puedes agregar más carga academica', {
@@ -221,10 +226,10 @@ export const AddActivityButton = ({ isDisabled }: { isDisabled: boolean }) => {
             })
         }
         const newActivity = {
-            ...defaultActivity,
+            ...DefaultActivity,
             id: crypto.randomUUID()
         }
-        setStored({
+        setStoredActivities({
             activities: [
                 ...activities,
                 newActivity

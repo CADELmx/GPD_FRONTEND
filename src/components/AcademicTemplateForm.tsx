@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, Key, useEffect, useState } from 'react'
 import { AcademicCharge } from './AcademicCharge'
-import { YearAndPeriodSelector, YearSelectorAlter } from './Selector'
-import { Button, Input, Select, SelectItem, Textarea } from '@nextui-org/react'
+import { YearSelectorAlter } from './Selector'
+import { Button, Input, Select, Selection, SelectItem, Textarea } from '@nextui-org/react'
 import { NtInput } from './WorkerNumber'
 import { AddActivityButton } from './Activity'
 import toast from 'react-hot-toast'
 import { CheckIcon } from './Icons'
 import { UseSecretary, UseTemplates } from '../context'
-import { AddToArrayIfNotExists, AddToPositionIfNotExists, checkIfUndefined, getFirstSetValue, periods, positions, sumHours } from '../utils'
+import { AddToPositionIfNotExists, checkEmptyStringOption, checkIfUndefined, getFirstSetValue, periods, positions, sumHours } from '../utils'
 import { insertPartialTemplateAndActivities } from '../models/transactions/partial-template'
 import { playNotifySound } from '../toast'
 import { EducationalProgram } from '../models/types/educational-program'
@@ -19,27 +19,89 @@ export const AcademicTemplateForm = ({
     educationalPrograms,
     academicWorkers,
     partialTemplate: ssrPartialTemplate,
-    template: ssrTemplate
 }: {
     educationalPrograms: EducationalProgram[],
     academicWorkers: PersonalData[],
     partialTemplate?: PartialTemplate,
     template?: Template
 }) => {
-    const { memory: { partialTemplate, activities, socket }, setStored, handleGlobalChange } = UseTemplates()
-    const { templateState: { selectedTemplate } } = UseSecretary()
+    const { memory: { socket }, setStored } = UseTemplates()
+    const {
+        activityState: { activities },
+        templateState: { selectedTemplate },
+        partialTemplateState: { partialTemplates, selectedPartialTemplate },
+        setStoredPartialTemplates,
+    } = UseSecretary()
     const [loading, setLoading] = useState(false)
     const currentYear = String(new Date().getFullYear())
     const currentMonth = new Date().toLocaleString('es-MX', { month: 'long' })
     const currentPeriod = periods.find(p => p.months.includes(currentMonth))
     const defaultPeriodKey = `${currentPeriod?.period} ${currentYear}: Ordinario`
     const totalHours = sumHours({ activities: activities })
+
+    const handlePartialTemplateChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
+
+    const handleSelectGender = (e: Selection) => {
+        if (e === "all") return
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
+                gender: String(getFirstSetValue(e))
+            }
+        })
+    }
+
+    const handleSelectPosition = (e: Selection) => {
+        if (e === "all") return
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
+                position: String(getFirstSetValue(e))
+            }
+        })
+    }
+
+    const handleSelectPeriod = (e: Set<Key>) => {
+        const option = String(getFirstSetValue(e))
+        const groups = periods.find(opt => {
+            return e.has(opt.period)
+        })
+        const defaultGroups = option === "" ? [] :
+            groups?.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
+        setStored({
+            defaultGroups
+        })
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
+                period: String(getFirstSetValue(e)),
+            }
+        })
+    }
+
+    const handleSelectYear = (e: Set<Key>) => {
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
+                year: String(getFirstSetValue(e)),
+                period: ''
+            }
+        })
+    }
+
     const handleSubmit = () => {
         setLoading(true)
         const newPartialTemplate = {
-            ...partialTemplate,
-            total: Number(partialTemplate.total),
-            nt: Number(partialTemplate.nt),
+            ...selectedPartialTemplate,
+            total: Number(selectedPartialTemplate.total),
+            nt: Number(selectedPartialTemplate.nt),
         }
         const newActivities = activities.map(activity => {
             return {
@@ -57,7 +119,7 @@ export const AcademicTemplateForm = ({
             loading: 'Guardando plantilla...',
             success: ({ data, error, message }) => {
                 if (error) return message
-                setStored({ partialTemplate: data?.template })
+                setStoredPartialTemplates({ partialTemplates: [...partialTemplates, data?.template] })
                 playNotifySound()
                 socket.emit('createTemplate', data?.template)
                 return 'Plantilla guardada'
@@ -65,8 +127,18 @@ export const AcademicTemplateForm = ({
             error: 'Error al enviar plantilla'
         })
     }
+
     useEffect(() => {
-        setStored({ partialTemplate: ssrPartialTemplate })
+        console.log(selectedPartialTemplate)
+    }, [selectedPartialTemplate])
+
+    useEffect(() => {
+
+        if (ssrPartialTemplate?.id) {
+            setStoredPartialTemplates({
+                selectedPartialTemplate: ssrPartialTemplate
+            })
+        }
         const onCreatedTemplate = () => {
             setLoading(false)
             toast.success('Plantilla guardada', {
@@ -86,10 +158,11 @@ export const AcademicTemplateForm = ({
             socket.off('templateError', onTemplateError)
         }
     }, [])
+
     return (
         <div className="flex flex-col gap-2">
             {
-                !partialTemplate?.id && <NtInput academicWorkers={academicWorkers} />
+                !selectedPartialTemplate?.id && <NtInput academicWorkers={academicWorkers} />
             }
             <div className="flex gap-2" >
                 <Textarea
@@ -100,25 +173,26 @@ export const AcademicTemplateForm = ({
                     label="Nombre"
                     type="text"
                     name="name"
-                    onChange={handleGlobalChange}
-                    value={partialTemplate?.name}
+                    onChange={handlePartialTemplateChange}
+                    value={selectedPartialTemplate.name}
                 />
                 <Select
                     isRequired
                     className="w-40"
                     label="Sexo"
                     name="gender"
-                    onChange={handleGlobalChange}
+                    onSelectionChange={handleSelectGender}
                 >
                     <SelectItem key={'H'} variant="flat">H</SelectItem>
                     <SelectItem key={'M'} variant="flat">M</SelectItem>
                 </Select>
             </div>
             <Select
-                items={AddToPositionIfNotExists(positions, partialTemplate.position)}
+                items={AddToPositionIfNotExists(positions, selectedPartialTemplate.position)}
                 label='Puesto'
                 name='position'
-                onChange={handleGlobalChange}
+                selectedKeys={checkEmptyStringOption(selectedPartialTemplate.position)}
+                onSelectionChange={handleSelectPosition}
                 isRequired
             >
                 {
@@ -134,50 +208,30 @@ export const AcademicTemplateForm = ({
                 }
             </Select>
             <YearSelectorAlter
-                onSelectYear={(e) => {
-                    setStored({
-                        partialTemplate: {
-                            ...partialTemplate,
-                            year: String(getFirstSetValue(e))
-                        }
-                    })
-                }}
-                onSelectPeriod={(e) => {
-                    const option = String(getFirstSetValue(e))
-                    const groups = periods.find(opt => {
-                        return e.has(opt.period)
-                    })
-                    const defaultGroups = option === "" ? [] :
-                        groups?.grades.map(g => [`${g}A`, `${g}B`, `${g}C`]).flat()
-                    setStored({
-                        defaultGroups,
-                        partialTemplate: {
-                            ...partialTemplate,
-                            period: String(getFirstSetValue(e)),
-                        }
-                    })
-                }}
+                onSelectYear={handleSelectYear}
+                onSelectPeriod={handleSelectPeriod}
                 defaultYear={currentYear}
                 defaultPeriod={defaultPeriodKey}
+                isDisabled={Boolean(selectedTemplate.id)}
             />
             <AcademicCharge educationalPrograms={educationalPrograms} />
-            <AddActivityButton isDisabled={Boolean(partialTemplate.id)} />
+            <AddActivityButton isDisabled={Boolean(selectedPartialTemplate.id)} />
             <Input
                 label="Total"
                 type="number"
                 min={0}
                 name="total"
                 value={`${totalHours == 0 ? '' : totalHours}`}
-                defaultValue={`${partialTemplate?.total}`}
+                defaultValue={`${selectedPartialTemplate?.total}`}
                 isDisabled
-                onChange={handleGlobalChange}
+                onChange={handlePartialTemplateChange}
             />
             <Button
                 startContent={CheckIcon}
                 className="w-full bg-utim"
                 variant="solid"
                 onPress={handleSubmit}
-                isDisabled={Boolean((partialTemplate?.id) || (totalHours < 32))}
+                isDisabled={Boolean((selectedPartialTemplate?.id) || (totalHours < 32))}
                 isLoading={loading}
             >
                 Guardar

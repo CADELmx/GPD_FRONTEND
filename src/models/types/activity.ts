@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 export type CreateActivity = {
     id?: string
     partialTemplateId?: number;
@@ -18,8 +20,8 @@ export type Activity = CreateActivity & {
     managementType: string;
 }
 
-export const defaultActivity: CreateActivity = {
-    id: crypto.randomUUID(),
+export const DefaultActivity: CreateActivity = {
+    id: uuidv4(),
     partialTemplateId: undefined,
     educationalProgramId: undefined,
     activityDistribution: "",

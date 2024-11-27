@@ -20,3 +20,8 @@ export type AreaEducationalProgramCount = Area & {
         educationalPrograms: number;
     }
 }
+
+export const DefaultArea: CreateArea = {
+    id: undefined,
+    name: '',
+}

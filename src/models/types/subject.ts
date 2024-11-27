@@ -11,3 +11,12 @@ export type Subject = CreateSubject & {
     id: number;
     educationalProgramId: number;
 }
+
+export const DefaultSubject: CreateSubject = {
+    monthPeriod: '',
+    subjectName: '',
+    totalHours: 0,
+    weeklyHours: 0,
+    educationalProgramId: undefined,
+    id: undefined
+}

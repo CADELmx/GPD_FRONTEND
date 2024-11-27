@@ -1,8 +1,10 @@
 import { PartialTemplate } from "./partial-template";
 
+export type templateState = 'pendiente' | 'aprobado' | 'corrección'
+
 export type CreateTemplate = {
     id?: number;
-    state: string;
+    state: templateState;
     areaId?: number;
     period: string;
     responsibleId?: number;
@@ -19,4 +21,12 @@ export type Template = CreateTemplate & {
 
 export type TemplateJoinPartialTemplate = Template & {
     partialTemplate: PartialTemplate[];
+}
+
+export const DefaultTemplate: CreateTemplate = {
+    areaId: undefined,
+    period: '',
+    state: 'pendiente',
+    responsibleId: undefined,
+    revisedById: undefined,
 }

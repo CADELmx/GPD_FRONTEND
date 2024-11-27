@@ -63,8 +63,10 @@ export default function DirectorPartialTemplate({
     personalData: PersonalData[],
 }) {
     const {
+        partialTemplateState: { selectedPartialTemplate },
         educationalState: { educationalPrograms }, setStoredEducationalPrograms,
-        setStoredTemplates
+        setStoredTemplates,
+        setStoredPartialTemplates,
     } = UseSecretary()
     const router = useRouter()
     if (router.isFallback) {
@@ -76,6 +78,15 @@ export default function DirectorPartialTemplate({
         })
         setStoredTemplates({
             selectedTemplate: ssrTemplate
+        })
+        const selectedPeriod = ssrTemplate.period.split(':')[0]
+        setStoredPartialTemplates({
+            selectedPartialTemplate: {
+                ...selectedPartialTemplate,
+                year: selectedPeriod.substring(selectedPeriod.length - 4, selectedPeriod.length),
+                period: ssrTemplate.period,
+                templateId: Number(ssrTemplate.id)
+            }
         })
     }, [])
 
