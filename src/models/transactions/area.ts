@@ -34,6 +34,14 @@ export const getAreas = () => {
     return serverClient.get<AreasResult>('/areas')
 }
 
+export const getAreasByWorkers = ({ director = false }: { director?: boolean }) => {
+    return serverClient.get<AreasResult>('/areas/workers', {
+        params: {
+            director
+        }
+    })
+}
+
 export const getAreasEducationalProgramsCount = () => {
     return serverClient.get<AreasEducationalProgramsCountResult>('/areas/educational-programs/', {
         params: {

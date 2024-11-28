@@ -1,6 +1,5 @@
 import { Socket } from "socket.io"
 import { CreateActivity } from "../models/types/activity"
-import { CreatePartialTemplate } from "../models/types/partial-template"
 import { toast } from "react-hot-toast"
 import { Key } from "react"
 

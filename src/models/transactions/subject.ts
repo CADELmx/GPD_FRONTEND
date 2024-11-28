@@ -9,6 +9,15 @@ export interface SubjectsResult extends ApiResponse {
     data: Subject[]
 }
 
+export type SubjectGrouped = {
+    period: string,
+    subjects: Subject[]
+}
+
+export interface SubjectGroupedResult extends ApiResponse {
+    data: SubjectGrouped[]
+}
+
 export const getSubject = ({ id }: GetById) => {
     return serverClient.get<SubjectResult>('/subject/', {
         params: {
@@ -19,6 +28,14 @@ export const getSubject = ({ id }: GetById) => {
 
 export const getSubjects = () => {
     return serverClient.get<SubjectsResult>('/subject')
+}
+
+export const getSubjectsByProgramGroupedByPeriod = ({ id }: GetById) => {
+    return serverClient.get<SubjectGroupedResult>('/subject/grouped', {
+        params: {
+            id
+        }
+    })
 }
 
 export const createSubject = ({ data }: { data: CreateSubject }) => {

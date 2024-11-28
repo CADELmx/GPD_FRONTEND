@@ -201,6 +201,7 @@ export const YearSelectorAlter = ({
                 isRequired
                 isDisabled={isDisabled}
                 label='Periodo'
+                disallowEmptySelection
                 placeholder="Selecciona un periodo"
                 selectedKeys={selectedPeriodKeys as Selection}
                 onSelectionChange={handleSelectPeriod}
