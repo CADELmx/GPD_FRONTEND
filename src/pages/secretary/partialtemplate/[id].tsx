@@ -2,8 +2,8 @@ import { AcademicTemplateForm } from "@/components/AcademicTemplateForm"
 import { ModalError } from "@/components/ModalError"
 import { generateSingleRecord } from "@/models/apiClient"
 import { getEducationalPrograms } from "@/models/transactions/educational-program"
+import { getPartialTemplates } from "@/models/transactions/partial-template"
 import { getAllPersonalData } from "@/models/transactions/personal-data"
-import { getTemplates } from "@/models/transactions/templates"
 import { EducationalProgram } from "@/models/types/educational-program"
 import { PartialTemplateJoinActivity } from "@/models/types/partial-template"
 import { PersonalData } from "@/models/types/personal-data"
@@ -32,7 +32,7 @@ export default function SecretaryPartialTemplate({ partialTemplate, error, educa
 }
 
 export const getStaticPaths = async () => {
-    const { data: { data, error } } = await getTemplates()
+    const { data: { data, error } } = await getPartialTemplates()
     if (error || data.length === 0) {
         return {
             paths: [],
