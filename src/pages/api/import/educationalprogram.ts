@@ -19,7 +19,7 @@ export type FormidableFile = formidable.File | undefined
 
 async function readAndWriteFile(file: FormidableFile, newPath: string) {
     try {
-        if(!file) {
+        if (!file) {
             return 'error'
         }
         const path = `${newPath}/${file.originalFilename}`
@@ -31,9 +31,9 @@ async function readAndWriteFile(file: FormidableFile, newPath: string) {
     }
 }
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function UploadFile(req: NextApiRequest, res: NextApiResponse) {
     const [_, { file }] = await formidableParse(req)
-    if(!file) {
+    if (!file) {
         return res.status(400).json({ error: { code: 400, message: 'No se ha seleccionado ningún archivo' } })
     }
     const status = await readAndWriteFile(file[0], './public/uploads')

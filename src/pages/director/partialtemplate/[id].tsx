@@ -69,9 +69,7 @@ export default function DirectorPartialTemplate({
         setStoredPartialTemplates,
     } = UseSecretary()
     const router = useRouter()
-    if (router.isFallback) {
-        return (<div>...loading</div>)
-    }
+    
     useEffect(() => {
         setStoredEducationalPrograms({
             educationalPrograms: ssrEducationalPrograms
@@ -90,6 +88,9 @@ export default function DirectorPartialTemplate({
         })
     }, [])
 
+    if (router.isFallback) {
+        return (<div>...loading</div>)
+    }
     return (
         <>
             <AcademicTemplateForm

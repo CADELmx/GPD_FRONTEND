@@ -52,7 +52,7 @@ export const PeriodAccordions = ({ subjects, personalData, isDisabled = false }:
             {
                 subjects.map((subjectGrouped) => {
                     return (
-                        <AccordionItem isDisabled={isDisabled} classNames={{
+                        <AccordionItem key={subjectGrouped.period} isDisabled={isDisabled} classNames={{
                             content: 'flex flex-col gap-2',
                         }} title={`Cuatrimestre ${subjectGrouped.period}`}>
                             {
