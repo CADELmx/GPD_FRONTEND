@@ -125,6 +125,7 @@ export const EducationalProgramModal = ({ isOpen, onOpen, onOpenChange }: ModalP
 export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }: ModalProps) => {
     const { educationalState: { selectedEducationalProgram, educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const handleDelete = async () => {
+        if (!selectedEducationalProgram?.id) return
         toast.promise(deleteEducationalProgram({ id: selectedEducationalProgram.id }), {
             loading: 'Eliminando programa educativo...',
             success: ({ data: { message, error } }) => {

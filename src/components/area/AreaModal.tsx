@@ -112,6 +112,7 @@ export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }: {
 }) => {
     const { areaState: { selectedArea, areas }, setStoredAreas } = UseSecretary()
     const handleDelete = () => {
+        if (!selectedArea.id) return
         toast.promise(deleteArea({ id: selectedArea.id }), {
             loading: 'Eliminando área...',
             success: ({ data: { message, error } }) => {
