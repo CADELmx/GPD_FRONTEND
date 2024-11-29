@@ -5,13 +5,13 @@ import { getEducationalPrograms } from "@/models/transactions/educational-progra
 import { getAllPersonalData } from "@/models/transactions/personal-data"
 import { getTemplates } from "@/models/transactions/templates"
 import { EducationalProgram } from "@/models/types/educational-program"
-import { PartialTemplate } from "@/models/types/partial-template"
+import { PartialTemplateJoinActivity } from "@/models/types/partial-template"
 import { PersonalData } from "@/models/types/personal-data"
 import { useRouter } from "next/router"
 
-export default function SecretaryPartialTemplate({ template, error, educationalPrograms, academicWorkers }: {
-    template: PartialTemplate,
+export default function SecretaryPartialTemplate({ partialTemplate, error, educationalPrograms, academicWorkers }: {
     error: string | null,
+    partialTemplate: PartialTemplateJoinActivity,
     educationalPrograms: EducationalProgram[],
     academicWorkers: PersonalData[],
 }) {
@@ -22,7 +22,11 @@ export default function SecretaryPartialTemplate({ template, error, educationalP
     return (
         <>
             <ModalError error={error} />
-            <AcademicTemplateForm academicWorkers={academicWorkers} educationalPrograms={educationalPrograms} template={template} />
+            <AcademicTemplateForm
+                academicWorkers={academicWorkers}
+                educationalPrograms={educationalPrograms}
+                partialTemplate={partialTemplate}
+            />
         </>
     )
 }

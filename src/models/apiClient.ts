@@ -41,7 +41,7 @@ export const generateSingleRecord = async ({ id }: GetById) => {
     return {
         props: {
             error: error ? 'Error al obtener la plantilla, recarga la página' : null,
-            template: data,
+            partialTemplate: data,
         }
     }
 }
