@@ -2,12 +2,11 @@ import { ModalError } from "@/components/ModalError";
 import { PeriodAccordions } from "@/components/partialTemplate/Accordion";
 import { YearSelectorAlter } from "@/components/Selector";
 import { UseSecretary } from "@/context";
-import { getAreas, getAreasByWorkers } from "@/models/transactions/area";
-import { getEducationalPrograms, getEducationalProgramsByArea } from "@/models/transactions/educational-program";
+import { getAreasByWorkers } from "@/models/transactions/area";
+import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
 import { getInsesnsitivePersonalData } from "@/models/transactions/personal-data";
 import { getSubjectsByProgramGroupedByPeriod, SubjectGrouped } from "@/models/transactions/subject";
 import { Area } from "@/models/types/area";
-import { EducationalProgram } from "@/models/types/educational-program";
 import { PersonalData } from "@/models/types/personal-data";
 import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { Select, Selection, SelectItem } from "@nextui-org/react";
@@ -19,31 +18,25 @@ export const getStaticProps = async () => {
         data: areas,
         error: areaError
     } } = await getAreasByWorkers({ director: false })
-    const { data: {
-        data: educationalPrograms,
-        error: educationalError
-    } } = await getEducationalPrograms()
     return {
         props: {
-            error: (areaError || educationalError) ? 'Error al cargar las áreas, recarga la página' : null,
+            error: (areaError) ? 'Error al cargar las áreas, recarga la página' : null,
             areas,
-            educationalPrograms
         }
     }
 }
 
 export default function DirectorActivity({
-    educationalPrograms: ssrEducationalPrograms,
     areas: ssrAreas,
     error
 }: {
-    educationalPrograms: EducationalProgram[],
     areas: Area[],
     error: string | null
 }) {
     const {
         educationalState: { educationalPrograms },
         areaState: { areas },
+        partialTemplateState: { selectedPartialTemplate },
         setStoredAreas,
         setStoredEducationalPrograms,
     } = UseSecretary()
@@ -52,6 +45,7 @@ export default function DirectorActivity({
     const [personalData, setPersonalData] = useState<PersonalData[]>([]);
     const [selectedAreaKeys, setSelectedAreaKeys] = useState(InitSelectedKeys);
     const [selectedEduKeys, setSelectedEduKeys] = useState(InitSelectedKeys);
+    const [isDisabled, setIsDisabled] = useState(true);
     const handleSelectArea = (e: Selection) => {
         if (e === "all") return
         toast.promise(getEducationalProgramsByArea({
@@ -86,13 +80,16 @@ export default function DirectorActivity({
         setSelectedEduKeys(e)
     }
     const handleSelectYear = () => {
+        setIsDisabled(true)
         setSubjects(originalSubjects)
     }
     const handleSelectPeriod = (e: Set<Key>) => {
         if (e.size === 0) {
             setSubjects(originalSubjects)
+            setIsDisabled(true)
             return
         }
+        setIsDisabled(false)
         const currentCourse = periods.find(period => String(getFirstSetValue(e)).includes(period.period))
         const newSubjects = originalSubjects.filter(subject => {
             return currentCourse?.grades.includes(subject.period)
@@ -118,22 +115,12 @@ export default function DirectorActivity({
         setStoredAreas({
             areas: ssrAreas
         })
-        setStoredEducationalPrograms({
-            educationalPrograms: ssrEducationalPrograms
-        })
         return () => {
         };
     }, []);
     return (
         <div className="flex flex-col gap-2">
             <ModalError error={error} />
-            <YearSelectorAlter
-                defaultYear={String(new Date().getFullYear())}
-                onSelectPeriod={handleSelectPeriod}
-                onSelectYear={handleSelectYear}
-                isDisabled={false}
-                key={1}
-            />
             <Select
                 label='Área'
                 placeholder="Escoge el área"
@@ -149,6 +136,7 @@ export default function DirectorActivity({
                 }
             </Select>
             <Select
+                isDisabled={selectedAreaKeys.size === 0}
                 disallowEmptySelection
                 label='Programa educativo'
                 placeholder="Escoge el programa educativo"
@@ -164,7 +152,18 @@ export default function DirectorActivity({
                     )
                 }
             </Select>
-            <PeriodAccordions subjects={subjects} personalData={personalData} />
+            <YearSelectorAlter
+                defaultYear={String(new Date().getFullYear())}
+                onSelectPeriod={handleSelectPeriod}
+                onSelectYear={handleSelectYear}
+                isDisabled={selectedAreaKeys.size === 0 || selectedEduKeys.size === 0}
+                key={1}
+            />
+            <PeriodAccordions
+                subjects={subjects}
+                personalData={personalData}
+                isDisabled={isDisabled}
+            />
         </div >
     )
 }

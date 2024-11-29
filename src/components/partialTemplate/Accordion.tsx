@@ -45,13 +45,14 @@ const SubjectPersonalDataCard = ({ subject, personalData }: { subject: Subject, 
     )
 }
 
-export const PeriodAccordions = ({ subjects, personalData }: { personalData: PersonalData[], subjects: SubjectGrouped[] }) => {
+
+export const PeriodAccordions = ({ subjects, personalData, isDisabled = false }: { personalData: PersonalData[], subjects: SubjectGrouped[], isDisabled?: boolean }) => {
     return (
         <Accordion>
             {
                 subjects.map((subjectGrouped) => {
                     return (
-                        <AccordionItem classNames={{
+                        <AccordionItem isDisabled={isDisabled} classNames={{
                             content: 'flex flex-col gap-2',
                         }} title={`Cuatrimestre ${subjectGrouped.period}`}>
                             {
