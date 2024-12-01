@@ -1,5 +1,5 @@
 import { getCookie } from "cookies-next";
-import { ApiResponse, GetById, serverClient } from "../apiClient";
+import { ApiResponse, CreateManyResult, GetById, serverClient } from "../apiClient";
 import { Area, AreaEducationalProgramCount, AreaJoinEducationalPrograms, CreateArea } from "../types/area";
 
 export interface AreaResult extends ApiResponse {
@@ -60,6 +60,10 @@ export const getAreaByEducationalProgram = ({ id }: GetById) => {
 
 export const createArea = ({ data }: { data: CreateArea }) => {
     return serverClient.post<AreaResult>('/areas', data)
+}
+
+export const createManyAreas = ({ data }: { data: CreateArea[] }) => {
+    return serverClient.post<CreateManyResult>('/areas/many', data)
 }
 
 export const updateArea = ({ id, data }: { id: number, data: CreateArea }) => {

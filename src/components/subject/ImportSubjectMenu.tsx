@@ -1,5 +1,5 @@
 import { UseSecretary } from "@/context";
-import { QuestionMarkIcon, UploadIcon } from "../Icons"
+import { UploadIcon } from "../Icons"
 import { ChangeEvent, useEffect, useState } from "react";
 import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { tableClassNames } from "../educationalProgram/EducationalProgramCard";
@@ -11,7 +11,40 @@ import { createManySubjects } from "@/models/transactions/subject";
 import { getFirstSetValue, InitSelectedKeys } from "@/utils";
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
 import { EducationalProgram } from "@/models/types/educational-program";
-import Link from "next/link";
+import { parseResult } from "../educationalProgram/ImportMenu";
+import { ParseErrorLink } from "../ParseError";
+
+const ParseNewSubjects = (data: string): parseResult<CreateSubject> => {
+    try {
+        const keys = Object.keys(JSON.parse(data)[0]).map(e => e.toLowerCase())
+        if (!keys.some(e => e === 'subjectname' && 'totalhours' && 'weeklyhours' && 'monthperiod')) {
+            return {
+                status: 'error',
+                data: [],
+                message: 'Formato incorrecto'
+            }
+        }
+        const newSubjects: CreateSubject[] = JSON
+            .parse(data)
+            .map((subject: CreateSubject, index: number) => {
+                return {
+                    ...subject,
+                    index
+                }
+            })
+        return {
+            status: 'success',
+            data: newSubjects,
+            message: 'Materias listas para registrar'
+        }
+    } catch (error) {
+        return {
+            status: 'error',
+            data: [],
+            message: 'Error al parsear los datos'
+        }
+    }
+}
 
 export const ImportSubjectsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
@@ -42,43 +75,33 @@ export const ImportSubjectsMenu = () => {
         }
     }
     const handleExport = async () => {
-        if (file.name) {
+        if (file.name !== '') {
             setLoading(true)
             const formData = new FormData();
             formData.append('file', file);
-            toast.promise(axios.post('/api/import/educationalprogram', formData), {
+            toast.promise(axios.post('/api/import/upload', formData), {
                 loading: 'Importando materias...',
                 success: ({ status }) => {
                     if (status === 200) {
-                        toast.promise(axios.get(`/api/import/${file?.name}`), {
+                        toast.promise(axios.get(`/api/import/${file.name}`), {
                             loading: 'Cargando materias...',
                             success: ({ data, status }) => {
                                 if (status === 200) {
-                                    const keys = Object.keys(JSON.parse(data)[0]).map(e => e.toLowerCase())
-                                    if (!keys.some(e => e === 'subjectname' && 'totalhours' && 'weeklyhours' && 'monthperiod')) {
-                                        setLoading(false)
+                                    const { data: newSubjects, message, status } = ParseNewSubjects(data)
+                                    setLoading(false)
+                                    if (status === 'error') {
                                         return (
-                                            <Link passHref legacyBehavior href={'/about'}>
-                                                <Button
-                                                    className=""
-                                                    color="danger"
-                                                    variant="light"
-                                                    endContent={QuestionMarkIcon}
-                                                >
-                                                    Formato incorrecto
-                                                </Button>
-                                            </Link>
+                                            <ParseErrorLink
+                                                passHref
+                                                legacyBehavior
+                                                href={'/about'}
+                                            >
+                                                {message}
+                                            </ParseErrorLink>
                                         )
                                     }
-                                    const newSubjects = JSON.parse(data).map((subject: CreateSubject, index: number) => {
-                                        return {
-                                            ...subject,
-                                            index
-                                        }
-                                    })
                                     setSubjects(newSubjects)
-                                    setLoading(false)
-                                    return 'Materias listas para registrar'
+                                    return message
                                 } else {
                                     setLoading(false)
                                     return 'Error al importar los programas educativos'
@@ -211,7 +234,7 @@ export const ImportSubjectsMenu = () => {
                 color="primary"
                 fullWidth
                 onPress={handleExport}
-                isLoading={loading && file.name !== ''}
+                isLoading={loading && file?.name !== ''}
             >
                 Importar programas educativos
             </Button>
