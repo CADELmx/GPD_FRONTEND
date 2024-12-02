@@ -1,5 +1,5 @@
 
-import { Button, Input, Selection, SharedSelection, Textarea } from '@nextui-org/react'
+import { Button, Input, SharedSelection, Textarea } from '@nextui-org/react'
 import toast from 'react-hot-toast'
 import { AcademicProgramSelector, ActTypeSelector, GroupSelector, ManagementTypeSelector, StayTypeSelector } from './Selector'
 import { ChangeEvent, useEffect } from 'react'
@@ -8,6 +8,7 @@ import { UseSecretary, UseTemplates } from '../context'
 import { } from '../utils'
 import { CreateActivity, DefaultActivity } from '../models/types/activity'
 import { EducationalProgram } from '../models/types/educational-program'
+import { v4 as uuidv4 } from 'uuid'
 
 type Event = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
 
@@ -227,7 +228,7 @@ export const AddActivityButton = ({ isDisabled }: { isDisabled: boolean }) => {
         }
         const newActivity = {
             ...DefaultActivity,
-            id: crypto.randomUUID()
+            id: uuidv4()
         }
         setStoredActivities({
             activities: [

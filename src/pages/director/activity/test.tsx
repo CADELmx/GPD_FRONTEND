@@ -7,10 +7,11 @@ import { getEducationalProgramsByArea } from "@/models/transactions/educational-
 import { getInsesnsitivePersonalData } from "@/models/transactions/personal-data";
 import { getSubjectsByProgramGroupedByPeriod, SubjectGrouped } from "@/models/transactions/subject";
 import { Area } from "@/models/types/area";
+import { CreatePartialTemplate } from "@/models/types/partial-template";
 import { PersonalData } from "@/models/types/personal-data";
 import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { Select, Selection, SelectItem } from "@nextui-org/react";
-import { Key, useEffect, useState } from "react";
+import { createContext, Key, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export const getStaticProps = async () => {
@@ -25,6 +26,7 @@ export const getStaticProps = async () => {
         }
     }
 }
+
 
 export default function DirectorActivity({
     areas: ssrAreas,

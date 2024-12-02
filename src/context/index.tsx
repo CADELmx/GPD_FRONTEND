@@ -113,6 +113,7 @@ interface AreaState {
     setStoredTemplates: (prop: any) => void
     partialTemplateState: {
         partialTemplates: PartialTemplate[],
+        selectedPartialTemplates: CreatePartialTemplate[],
         selectedPartialTemplate: CreatePartialTemplate
     }
     setStoredPartialTemplates: (prop: any) => void
@@ -157,8 +158,13 @@ export const AreasProvider = ({ children }: {
         templates: [],
         selectedTemplate: DefaultTemplate
     })
-    const [partialTemplateState, setPartialTemplateState] = useState({
+    const [partialTemplateState, setPartialTemplateState] = useState<{
+        partialTemplates: PartialTemplate[],
+        selectedPartialTemplates: CreatePartialTemplate[],
+        selectedPartialTemplate: CreatePartialTemplate
+    }>({
         partialTemplates: [],
+        selectedPartialTemplates: [],
         selectedPartialTemplate: DefaultPartialTemplate
     });
     const [activityState, setActivityState] = useState({
