@@ -8,19 +8,16 @@ import { useEffect } from "react"
 import { UseSecretary, UseTemplates } from "../../../context"
 import { getAllPersonalData } from "../../../models/transactions/personal-data"
 import { PersonalData } from "../../../models/types/personal-data"
+import { generatePaths } from "../../../utils/routes"
 
 export const getStaticPaths = async () => {
     const { data: { data, error } } = await getTemplates()
-    if (error || data.length === 0) {
-        return {
-            paths: [],
-            fallback: true
-        }
-    }
-    const paths = data.map(({ id }) => ({ params: { id: id.toString() } }))
+    const { fallback, paths } = generatePaths({
+        data, error
+    })
     return {
-        paths,
-        fallback: true
+        fallback,
+        paths
     }
 }
 
@@ -69,7 +66,7 @@ export default function DirectorPartialTemplate({
         setStoredPartialTemplates,
     } = UseSecretary()
     const router = useRouter()
-    
+
     useEffect(() => {
         setStoredEducationalPrograms({
             educationalPrograms: ssrEducationalPrograms

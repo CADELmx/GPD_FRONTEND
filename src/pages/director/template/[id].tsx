@@ -1,19 +1,14 @@
 import { getTemplate, getTemplates } from "@/models/transactions/templates";
 import { Template } from "@/models/types/template";
 import { useRouter } from "next/router";
+import { generatePaths } from "../../../utils/routes";
 
 export const getStaticPaths = async () => {
     const { data: { data, error } } = await getTemplates()
-    if (error || data.length === 0) {
-        return {
-            paths: [],
-            fallback: true,
-        }
-    }
-    const paths = data.map(({ id }) => ({ params: { id: id.toString() } }))
+    const { fallback, paths } = generatePaths({ data, error })
     return {
-        paths,
-        fallback: true,
+        fallback,
+        paths
     }
 }
 

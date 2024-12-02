@@ -8,6 +8,7 @@ import { EducationalProgram } from "@/models/types/educational-program"
 import { PartialTemplateJoinActivity } from "@/models/types/partial-template"
 import { PersonalData } from "@/models/types/personal-data"
 import { useRouter } from "next/router"
+import { generatePaths } from "../../../utils/routes"
 
 export default function SecretaryPartialTemplate({ partialTemplate, error, educationalPrograms, academicWorkers }: {
     error: string | null,
@@ -33,16 +34,10 @@ export default function SecretaryPartialTemplate({ partialTemplate, error, educa
 
 export const getStaticPaths = async () => {
     const { data: { data, error } } = await getPartialTemplates()
-    if (error || data.length === 0) {
-        return {
-            paths: [],
-            fallback: true,
-        }
-    }
-    const paths = data.map(({ id }) => ({ params: { id: id.toString() } }))
+    const { fallback, paths } = generatePaths({ data, error })
     return {
-        paths,
-        fallback: true,
+        fallback,
+        paths
     }
 }
 

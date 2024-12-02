@@ -30,6 +30,14 @@ export const getSubjects = () => {
     return serverClient.get<SubjectsResult>('/subject')
 }
 
+export const getSubjectsByEducationalProgram = ({ id }: GetById) => {
+    return serverClient.get<SubjectsResult>('/subject', {
+        params: {
+            programid: id
+        }
+    })
+}
+
 export const getSubjectsByProgramGroupedByPeriod = ({ id }: GetById) => {
     return serverClient.get<SubjectGroupedResult>('/subject/grouped', {
         params: {

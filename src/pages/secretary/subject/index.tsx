@@ -1,92 +1,83 @@
-import { UploadIcon } from "@/components/Icons"
-import { ModalError } from "@/components/ModalError"
-import { ImportSubjectsMenu } from "@/components/subject/ImportSubjectMenu"
-import { SubjectTable } from "@/components/subject/SubjectCard"
-import { DeleteSubjectModal, SubjectModal } from "@/components/subject/SubjectModal"
-import { UseSecretary } from "@/context"
-import { getAreasJoinEducationalPrograms } from "@/models/transactions/area"
-import { getSubjects } from "@/models/transactions/subject"
-import { Area } from "@/models/types/area"
-import { Subject } from "@/models/types/subject"
-import { Accordion, AccordionItem, Button, useDisclosure } from "@nextui-org/react"
-import { useEffect, useState } from "react"
+import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { ModalError } from "../../../components/ModalError"
+import { getEducationalPrograms } from "../../../models/transactions/educational-program"
+import { EducationalProgram } from "../../../models/types/educational-program"
+import { UseSecretary } from "../../../context"
+import { useEffect } from "react"
+import Link from "next/link"
+import { tableClassNames } from "../../../components/educationalProgram/EducationalProgramCard"
 
 export const getStaticProps = async () => {
-    const { data: {
-        data: subjects,
-        error: subjectsError
-    } } = await getSubjects()
-    const { data: {
-        data: areas,
-        error: areasError
-    } } = await getAreasJoinEducationalPrograms()
-    const error = (areasError || subjectsError) ? 'Error al obtener areas y/o materias, recargue la página' : null
+    const { data: { data, error } } = await getEducationalPrograms()
+    if (error) return {
+        props: {
+            error: 'Error al obtener los programas educativos, recarga la página',
+            educationalPrograms: []
+        }
+    }
     return {
         props: {
-            subjects,
-            areas: areas.filter((area) => area.educationalPrograms.length !== 0).map((area) => ({ ...area, educationalPrograms: [] })),
-            error
+            educationalPrograms: data,
+            error: null
         }
     }
 }
 
-export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrAreas, error }: {
-    subjects: Subject[],
-    areas: Area[],
-    error: string | null
+export default function SecretaryAllSubjects({ educationalPrograms: ssrEducationalPrograms, error }: {
+    educationalPrograms: EducationalProgram[], error: string | null
 }) {
-    const { setStoredSubjects, setStoredAreas } = UseSecretary()
-    const EditSubjectModal = useDisclosure()
-    const DeleteModal = useDisclosure()
-    const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]))
+    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     useEffect(() => {
-        setStoredAreas({ areas: ssrAreas })
-        setStoredSubjects({ subjects: ssrSubjects })
-    }, []);
+        setStoredEducationalPrograms({
+            educationalPrograms: ssrEducationalPrograms
+        })
+    }, [])
+
     return (
         <>
             <ModalError error={error} />
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Materias</h1>
-            <Accordion
-                showDivider={false}
+            <Table
                 isCompact
-                selectedKeys={selectedKeys}
-                onSelectionChange={setSelectedKeys}
+                isHeaderSticky
+                classNames={{
+                    ...tableClassNames,
+                    base: `max-h-[34rem] overflow-auto`,
+                }}
             >
-                <AccordionItem
-                    key='1'
-                    title='Importar materias'
-                    startContent={UploadIcon}
-                >
-                    <ImportSubjectsMenu />
-                </AccordionItem>
-            </Accordion>
-            {
-                selectedKeys.size === 1 || (
-                    <>
-                        <Button
-                            className="bg-utim"
-                            onPress={EditSubjectModal.onOpen}
-                        >
-                            Nueva materia
-                        </Button>
-                        <SubjectTable
-                            onOpenModal={EditSubjectModal.onOpen}
-                            onOpenDeleteModal={DeleteModal.onOpen}
-                        />
-                    </>
-                )
-            }
-            <SubjectModal
-                isOpen={EditSubjectModal.isOpen}
-                onOpen={EditSubjectModal.onOpen}
-                onOpenChange={EditSubjectModal.onOpenChange}
-            />
-            <DeleteSubjectModal
-                isOpen={DeleteModal.isOpen}
-                onOpen={DeleteModal.onOpen}
-                onOpenChange={DeleteModal.onOpenChange}
-            />
+                <TableHeader>
+                    <TableColumn>
+                        Programa educativo
+                    </TableColumn>
+                    <TableColumn>
+                        Acciones
+                    </TableColumn>
+                </TableHeader>
+                <TableBody items={educationalPrograms}>
+                    {(educationalProgram) => (
+                        <TableRow>
+                            <TableCell>
+                                {
+                                    educationalProgram.description
+                                }
+                            </TableCell>
+                            <TableCell>
+                                {
+                                    <Link passHref legacyBehavior href={`/secretary/subject/${educationalProgram.id}`}>
+                                        <Button
+                                            size="sm"
+                                            variant="solid"
+                                            color="primary"
+                                        >
+                                            Ver materias
+                                        </Button>
+                                    </Link>
+                                }
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
         </>
     )
 }

@@ -1,5 +1,5 @@
 import { ApiResponse, CreateManyResult, GetById, serverClient } from "../apiClient";
-import { CreateEducationalProgram, EducationalProgram } from "../types/educational-program";
+import { CreateEducationalProgram, EducationalProgram, EducationalProgramJoinSubject } from "../types/educational-program";
 
 export interface EducationalProgramResult extends ApiResponse {
     data: EducationalProgram
@@ -7,6 +7,10 @@ export interface EducationalProgramResult extends ApiResponse {
 
 export interface EducationalProgramsResult extends ApiResponse {
     data: EducationalProgram[]
+}
+
+export interface EducationalProgramsJoinSubjectResult extends ApiResponse {
+    data: EducationalProgramJoinSubject[]
 }
 
 export interface EducationalProgramsImportResult {
@@ -23,6 +27,10 @@ export const getEducationalProgramsByArea = ({ id }: GetById) => {
             id
         }
     })
+}
+
+export const getEducationalProgramsJoinSubject = () => {
+    return serverClient.get<EducationalProgramsJoinSubjectResult>('/educational-programs/subject')
 }
 
 export const createEducationalProgram = ({ data }: { data: CreateEducationalProgram }) => {
