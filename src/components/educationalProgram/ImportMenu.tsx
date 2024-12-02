@@ -31,8 +31,9 @@ const ParseNewEducationalPrograms = (data: string): parseResult<CreateEducationa
         const newEducationalPrograms: CreateEducationalProgram[] = JSON
             .parse(data)
             .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
-            .map((e: CreateEducationalProgram, _: number) => ({
+            .map((e: CreateEducationalProgram, index: number) => ({
                 ...e,
+                index
             }));
         return {
             status: 'success',

@@ -54,10 +54,13 @@ export default function DirectorActivity({
             loading: 'Cargando programas educativos',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
+                setSelectedEduKeys(InitSelectedKeys)
+                const plural = data.length > 1 ? 's' : ''
                 setStoredEducationalPrograms({
                     educationalPrograms: data
                 })
-                return `${data.length} programas educativos cargados`
+                if (data.length === 0) return 'No hay programas educativos en esta área'
+                return `${data.length} programa${plural} educativo${plural} cargado${plural}`
             },
             error: 'Error al cargar los programas educativos'
         })

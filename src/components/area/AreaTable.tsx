@@ -46,7 +46,7 @@ export const AreasTable = ({ onOpenModal, onOpenDeleteModal }: {
                                 <TableCell>{area.name}</TableCell>
                                 <TableCell>
                                     <Chip variant="bordered">
-                                        {area._count.educationalPrograms}
+                                        {area?._count.educationalPrograms || 0}
                                     </Chip>
                                 </TableCell>
                                 <TableCell>

@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { UseSecretary } from "@/context";
-import { getFirstSetValue, InitSelectedKeys } from "@/utils";
+import { InitSelectedKeys } from "@/utils";
 import { playNotifySound } from "@/toast";
 import { ParseErrorLink } from "../ParseError";
 import { createManyAreas } from "@/models/transactions/area";
@@ -18,7 +18,7 @@ export interface parseResult<T = any> {
 }
 
 
-const ParseNewEducationalPrograms = (data: string): parseResult<CreateArea> => {
+const ParseNewAreasPrograms = (data: string): parseResult<CreateArea> => {
     try {
         const keys = Object.keys(JSON.parse(data)[0]);
         if (keys.some(key => !['name'].includes(key))) {
@@ -31,8 +31,9 @@ const ParseNewEducationalPrograms = (data: string): parseResult<CreateArea> => {
         const newAreas: CreateArea[] = JSON
             .parse(data)
             .sort((a: CreateArea, b: CreateArea) => a.name.localeCompare(b.name))
-            .map((e: CreateArea, _: number) => ({
+            .map((e: CreateArea, index: number) => ({
                 ...e,
+                index
             }));
         return {
             status: 'success',
@@ -48,8 +49,8 @@ const ParseNewEducationalPrograms = (data: string): parseResult<CreateArea> => {
     }
 }
 
-export const ImportEducationalProgramsMenu = () => {
-    const { areaState: { areas } } = UseSecretary()
+export const ImportAreasMenu = () => {
+    const { areaState: { areas }, setStoredAreas } = UseSecretary()
     const [file, setFile] = useState<File>(new File([], ''));
     const [areasToImport, setAreasToImport] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -76,7 +77,7 @@ export const ImportEducationalProgramsMenu = () => {
                             loading: 'Cargando areas...',
                             success: ({ status, data }) => {
                                 if (status === 200) {
-                                    const { data: newAreas, message, status } = ParseNewEducationalPrograms(data);
+                                    const { data: newAreas, message, status } = ParseNewAreasPrograms(data);
                                     setLoading(false);
                                     if (status === 'success') {
                                         setAreasToImport(newAreas);
@@ -100,7 +101,7 @@ export const ImportEducationalProgramsMenu = () => {
                                 return 'Error al importar los areas, intenta de nuevo'
                             }
                         }, {
-                            id: 'import-educational-programs'
+                            id: 'import-areas'
                         })
                         return 'Archivo subido con éxito'
                     }
@@ -111,7 +112,7 @@ export const ImportEducationalProgramsMenu = () => {
                     return 'Error al subir el archivo, intenta de nuevo'
                 }
             }, {
-                id: 'import-educational-programs'
+                id: 'import-areas'
             })
 
         }
