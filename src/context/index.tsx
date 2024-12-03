@@ -118,8 +118,12 @@ interface AreaState {
     }
     setStoredPartialTemplates: (prop: any) => void
     activityState: {
-        activities: Activity[],
-        selectedActivity: CreateActivity
+        activities: CreateActivity[],
+        selectedActivity: CreateActivity,
+        groups: {
+            id: string,
+            name: string
+        }[]
     }
     setStoredActivities: (prop: any) => void
 }
@@ -167,9 +171,14 @@ export const AreasProvider = ({ children }: {
         selectedPartialTemplates: [],
         selectedPartialTemplate: DefaultPartialTemplate
     });
-    const [activityState, setActivityState] = useState({
+    const [activityState, setActivityState] = useState<{
+        activities: CreateActivity[],
+        selectedActivity: CreateActivity,
+        groups: []
+    }>({
         activities: [DefaultActivity],
-        selectedActivity: DefaultActivity
+        selectedActivity: DefaultActivity,
+        groups: []
     });
     const setStoredEducationalPrograms = (prop: Object) => {
         setEducationalState((educationalState) => ({ ...educationalState, ...prop }))

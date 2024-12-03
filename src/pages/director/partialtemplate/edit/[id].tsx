@@ -1,14 +1,14 @@
+import { AcademicTemplateForm } from "@/components/AcademicTemplateForm"
+import { UseSecretary } from "@/context"
+import { getEducationalPrograms } from "@/models/transactions/educational-program"
+import { getAllPersonalData } from "@/models/transactions/personal-data"
+import { getTemplate, getTemplates } from "@/models/transactions/templates"
+import { EducationalProgram } from "@/models/types/educational-program"
+import { PersonalData } from "@/models/types/personal-data"
+import { Template } from "@/models/types/template"
+import { generatePaths } from "@/utils/routes"
 import { useRouter } from "next/router"
-import { getTemplate, getTemplates } from "../../../models/transactions/templates"
-import { Template } from "../../../models/types/template"
-import { AcademicTemplateForm } from "../../../components/AcademicTemplateForm"
-import { getEducationalPrograms } from "../../../models/transactions/educational-program"
-import { EducationalProgram } from "../../../models/types/educational-program"
 import { useEffect } from "react"
-import { UseSecretary, UseTemplates } from "../../../context"
-import { getAllPersonalData } from "../../../models/transactions/personal-data"
-import { PersonalData } from "../../../models/types/personal-data"
-import { generatePaths } from "../../../utils/routes"
 
 export const getStaticPaths = async () => {
     const { data: { data, error } } = await getTemplates()

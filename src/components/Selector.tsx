@@ -79,7 +79,7 @@ export const GroupSelector = ({ activity, handler }: SelectorProps) => {
             defaultGrades.map(g => `${grade}${g.name}`)
         )
     }).flat()
-    if (!defaultGroups){
+    if (!defaultGroups) {
         return (<div>
             No hay grupos disponibles
         </div>)
@@ -202,6 +202,7 @@ export const YearSelectorAlter = ({
                 isDisabled={isDisabled}
                 label='Periodo'
                 disallowEmptySelection
+                defaultSelectedKeys={defaultPeriod ? [defaultPeriod] : []}
                 placeholder="Selecciona un periodo"
                 selectedKeys={selectedPeriodKeys as Selection}
                 onSelectionChange={handleSelectPeriod}

@@ -4,7 +4,7 @@ import { PlusIcon } from "@/components/Icons";
 import { ModalError } from "@/components/ModalError";
 import { YearSelectorAlter } from "@/components/Selector";
 import { UseSecretary } from "@/context";
-import { getAreas } from "@/models/transactions/area";
+import { getAreas, getAreasByWorkers } from "@/models/transactions/area";
 import { getUserData } from "@/models/transactions/auth";
 import { getInsesnsitivePersonalData } from "@/models/transactions/personal-data";
 import { insertTemplate } from "@/models/transactions/templates";
@@ -19,7 +19,7 @@ import toast from "react-hot-toast";
 
 
 export const getStaticProps = async () => {
-    const { data: { data: areas, error } } = await getAreas()
+    const { data: { data: areas, error } } = await getAreasByWorkers({ director: false })
     return {
         props: {
             error,
@@ -72,7 +72,7 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
             loading: 'Registrando plantilla',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
-                Router.push(`/director/partialtemplate/${data.id}`)
+                Router.push(`/director/partialtemplate/create/${data.id}`)
                 return message
             },
             error: 'Error al crear la plantilla'
@@ -183,11 +183,5 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
                 Crear plantilla
             </Button>
         </>
-    )
-}
-
-export const PeriodSelector = () => {
-    return (
-        <></>
     )
 }
