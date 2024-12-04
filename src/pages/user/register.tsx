@@ -14,6 +14,39 @@ export default function Register() {
         nt: '',
         name: ''
     });
+    const validate = () => {
+        const errors = {
+            email: '',
+            password: '',
+            nt: '',
+            name: '',
+            repeatPassword: ''
+        }
+        if (userInfo.email === '') {
+            errors.email = 'El correo es requerido'
+        }
+        if (userInfo.password === '') {
+            errors.password = 'La contraseña es requerida'
+        }
+        if (userInfo.nt === '') {
+            errors.nt = 'El número de trabajador es requerido'
+        }
+        if (userInfo.name === '') {
+            errors.name = 'El nombre es requerido'
+        }
+        if (passwordRepeat === '') {
+            errors.repeatPassword = 'La contraseña es requerida'
+        }
+        if (userInfo.password !== passwordRepeat) {
+            errors.repeatPassword = 'Las contraseñas no coinciden'
+        }
+        const isValid = Object.values(errors).every((error) => error === '')
+        return {
+            errors,
+            isValid
+        }
+    }
+    const [passwordRepeat, setPasswordRepeat] = useState('');
     const handleSubmit = async () => {
         setLoading(true)
         toast.promise(signUp(userInfo.email, userInfo.password, Number(userInfo.nt)), {
@@ -54,8 +87,8 @@ export default function Register() {
         }, {
             id: 'get-personal-data'
         })
-
     }
+    const { errors, isValid } = validate()
     return (
         <>
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Crear nueva cuenta</h1>
@@ -79,6 +112,14 @@ export default function Register() {
                     isRequired
                 />
                 <Input
+                    onChange={(e) => setPasswordRepeat(e.target.value)}
+                    label="Repetir contraseña"
+                    value={passwordRepeat}
+                    type="password"
+                    isInvalid={passwordRepeat !== userInfo.password}
+                    isRequired
+                />
+                <Input
                     label="Número de trabajador"
                     onChange={handleGetPersonalData}
                     name="nt"
@@ -96,7 +137,7 @@ export default function Register() {
                 />
                 <Button
                     onPress={handleSubmit}
-                    isDisabled={userInfo.email === '' || userInfo.password === ''}
+                    isDisabled={!isValid}
                     isLoading={loading}
                     type="submit"
                     className="bg-utim"

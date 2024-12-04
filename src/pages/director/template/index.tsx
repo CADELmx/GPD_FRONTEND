@@ -11,6 +11,7 @@ import { insertTemplate } from "@/models/transactions/templates";
 import { Area } from "@/models/types/area";
 import { PersonalData } from "@/models/types/personal-data";
 import { CreateTemplate, Template } from "@/models/types/template";
+import { playNotifySound } from "@/toast";
 import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { Button, Chip, Select, Selection, SelectItem } from "@nextui-org/react";
 import Router from "next/router";
@@ -72,8 +73,9 @@ export default function DirectorIndex({ areas: ssrAreas, template: ssrTemplate, 
             loading: 'Registrando plantilla',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
+                playNotifySound()
                 Router.push(`/director/partialtemplate/create/${data.id}`)
-                return message
+                return message + ' Redirigiendo...'
             },
             error: 'Error al crear la plantilla'
         })

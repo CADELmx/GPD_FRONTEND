@@ -34,8 +34,10 @@ export const insertPartialTemplate = (
     return serverClient.post<PartialTemplateResult>('/templates', data)
 }
 
-export const insertPartialTemlatesWithActivities = ({ data }: { data: { templateId: number, partialTemplate: CreatePartialTemplate } }) => {
-    return serverClient.post<PartialTemplateResult>('/partial-templates/activities', data)
+export const insertPartialTemlatesWithActivities = ({ data }: { data: CreatePartialTemplate }) => {
+    return serverClient.post<PartialTemplateResult>('/partial-templates/activities', {
+        partialTemplate: data
+    })
 }
 
 export const getPartialTemplates = () => {

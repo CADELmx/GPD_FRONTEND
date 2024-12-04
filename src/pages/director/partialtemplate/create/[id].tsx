@@ -12,6 +12,7 @@ import { Area } from "@/models/types/area";
 import { CreatePartialTemplate } from "@/models/types/partial-template";
 import { PersonalData } from "@/models/types/personal-data";
 import { Template } from "@/models/types/template";
+import { playNotifySound } from "@/toast";
 import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { generatePaths } from "@/utils/routes";
 import { Button, Divider, Select, Selection, SelectItem } from "@nextui-org/react";
@@ -35,7 +36,6 @@ export const getStaticPaths = async () => {
 }
 
 export const getStaticProps = async ({ params: { id } }: { params: { id: string } }) => {
-    console.log(id)
     const { data: {
         data: areas,
         error: areaError
@@ -73,14 +73,13 @@ const handleInsertPartialTemplates = (templateId: number, partialTemplates: Crea
         const newTotal = (partialTemplate.activities !== undefined) ? partialTemplate.activities.reduce((acc, activity) => acc + activity.subtotalClassification, 0) : 0
         return {
             ...partialTemplate,
+            templateId: templateId,
             total: newTotal
         }
     })
+    console.log(newPartialTemplates)
     const partialTemplatePromises = newPartialTemplates.map((partialTemplate) => insertPartialTemlatesWithActivities({
-        data: {
-            partialTemplate,
-            templateId: templateId,
-        }
+        data: partialTemplate
     }))
     toast.promise(Promise.all(partialTemplatePromises), {
         error: 'Error al guardar las plantillas parciales',
@@ -88,6 +87,7 @@ const handleInsertPartialTemplates = (templateId: number, partialTemplates: Crea
         success: (partialTemplateResponses) => {
             const partialTemplateErrors = partialTemplateResponses.filter(({ data }) => data.error)
             const successLength = partialTemplateResponses.length - partialTemplateErrors.length
+            playNotifySound()
             return `${successLength} plantillas parciales guardadas`
         }
     })

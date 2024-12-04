@@ -53,7 +53,6 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
     const { setStoredSubjects, setStoredAreas } = UseSecretary()
     const EditSubjectModal = useDisclosure()
     const DeleteModal = useDisclosure()
-    const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]))
     useEffect(() => {
         setStoredAreas({ areas: ssrAreas })
         setStoredSubjects({ subjects: ssrSubjects })
@@ -62,36 +61,16 @@ export default function SubjectSecretary({ subjects: ssrSubjects, areas: ssrArea
         <>
             <ModalError error={error} />
             <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">Materias</h1>
-            <Accordion
-                showDivider={false}
-                isCompact
-                selectedKeys={selectedKeys}
-                onSelectionChange={setSelectedKeys}
+            <Button
+                className="bg-utim"
+                onPress={EditSubjectModal.onOpen}
             >
-                <AccordionItem
-                    key='1'
-                    title='Importar materias'
-                    startContent={UploadIcon}
-                >
-                    <ImportSubjectsMenu />
-                </AccordionItem>
-            </Accordion>
-            {
-                selectedKeys.size === 1 || (
-                    <>
-                        <Button
-                            className="bg-utim"
-                            onPress={EditSubjectModal.onOpen}
-                        >
-                            Nueva materia
-                        </Button>
-                        <SubjectTable
-                            onOpenModal={EditSubjectModal.onOpen}
-                            onOpenDeleteModal={DeleteModal.onOpen}
-                        />
-                    </>
-                )
-            }
+                Nueva materia
+            </Button>
+            <SubjectTable
+                onOpenModal={EditSubjectModal.onOpen}
+                onOpenDeleteModal={DeleteModal.onOpen}
+            />
             <SubjectModal
                 isOpen={EditSubjectModal.isOpen}
                 onOpen={EditSubjectModal.onOpen}

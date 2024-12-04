@@ -24,7 +24,7 @@ const WorkerSelector = ({ subject, personalData, group, period }: { subject: Sub
             activityName: subject.subjectName,
             weeklyHours: subject.weeklyHours,
             subtotalClassification: subject.weeklyHours,
-            activityDistribution: 'Docnencia',
+            activityDistribution: 'Docenencia',
             id: uuidv4(),
             gradeGroups: [`${period}${group}`],
         }

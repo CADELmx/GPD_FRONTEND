@@ -14,7 +14,8 @@ interface MemoryState {
     memory: {
         defaultGroups: string[],
         socket: Socket,
-        user: CookieValueTypes
+        user: CookieValueTypes,
+        isSecretary: CookieValueTypes
     },
     setStored: (prop: any) => void,
     signIn: (email: string, password: string) => Promise<{
@@ -38,7 +39,8 @@ export const TemplatesProvider = ({ children }: {
     const [memory, setMemory] = useState({
         defaultGroups: [],
         socket: io(),
-        user: undefined as CookieValueTypes
+        user: undefined as CookieValueTypes,
+        isSecretary: undefined as CookieValueTypes
     })
     const signIn = async (email: string, password: string) => {
         const { data: { error, user } } = await axios.post('/api/auth/signin', {
