@@ -89,7 +89,7 @@ export const AcademicCharge = ({ educationalPrograms }: { educationalPrograms: E
                                         size="sm"
                                         key={id}
                                         accessKey={id}
-                                        onClick={() => handleSwitchActivity(id)}
+                                        onClick={() => handleSwitchActivity(id as string)}
                                         color={id === selectedActivity.id ? 'primary' : 'default'}
                                     >
                                         {

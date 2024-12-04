@@ -4,11 +4,10 @@ import { YearSelectorAlter } from "@/components/Selector";
 import { UseSecretary } from "@/context";
 import { getAreasByWorkers } from "@/models/transactions/area";
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
-import { insertPartialTemlatesWithActivities, insertPartialTemplate } from "@/models/transactions/partial-template";
+import { insertPartialTemlatesWithActivities } from "@/models/transactions/partial-template";
 import { getInsesnsitivePersonalData } from "@/models/transactions/personal-data";
 import { getSubjectsByProgramGroupedByPeriod, SubjectGrouped } from "@/models/transactions/subject";
 import { getTemplate, getTemplates } from "@/models/transactions/templates";
-import { CreateActivity } from "@/models/types/activity";
 import { Area } from "@/models/types/area";
 import { CreatePartialTemplate } from "@/models/types/partial-template";
 import { PersonalData } from "@/models/types/personal-data";
@@ -16,6 +15,7 @@ import { Template } from "@/models/types/template";
 import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { generatePaths } from "@/utils/routes";
 import { Button, Divider, Select, Selection, SelectItem } from "@nextui-org/react";
+import { useRouter } from "next/router";
 import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { v4 as uuidv4 } from 'uuid'
@@ -68,7 +68,7 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
     }
 }
 
-export const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[]) => {
+const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[]) => {
     const partialTemplatePromises = partialTemplates.map((partialTemplate) => insertPartialTemlatesWithActivities({
         data: {
             partialTemplate,
@@ -211,6 +211,10 @@ export default function DirectorActivity({
         return () => {
         };
     }, []);
+    const router = useRouter()
+    if (router.isFallback) return <div>
+        Cargando...
+    </div>
     return (
         <div className="flex flex-col gap-2">
             <ModalError error={error} />

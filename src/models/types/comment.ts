@@ -13,5 +13,4 @@ export type Comment = CreateComment & {
 
 export type UpdateComment = {
     comment: string;
-    partialTemplateId: number;
 }

@@ -54,7 +54,7 @@ export const ChangeStatus = ({ status, templateid }: {
     const handleInsertComment = () => {
         toast.promise(insertComment({
             partialTemplateId: templateid, comment: {
-                comment: comment
+                comment
             }
         }), {
             loading: 'Enviando comentario...',
