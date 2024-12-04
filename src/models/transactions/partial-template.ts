@@ -57,7 +57,7 @@ export const getPartialTemplate = (
 export const updatePartialTemplate = (
     { id, data }: { id: number, data?: UpdatePartialTemplate }
 ) => {
-    return serverClient.put<PartialTemplateResult>(`/partial-template/${id}`, data)
+    return serverClient.put<PartialTemplateResult>(`/partial-templates/${id}`, data)
 }
 
 export const getPartialTemplateJoinActivity = ({ id }: GetById) => {

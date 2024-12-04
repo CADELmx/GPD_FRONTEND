@@ -30,7 +30,7 @@ export const ChangeStatus = ({ status, templateid }: {
 
     const handleUpdateStatus = (newStatus: StatusType) => {
         toast.promise(updatePartialTemplate({
-            id: templateid, data: {
+            id: Number(templateid), data: {
                 status: newStatus.name
             }
         }), {
