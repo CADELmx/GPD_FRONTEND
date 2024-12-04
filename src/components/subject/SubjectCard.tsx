@@ -26,8 +26,9 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
         onOpenDeleteModal()
     }
     const onSubjectSelectionChange = (e: Selection) => {
+        console.log(e)
         if (e === "all") return setSelectedSubjects(subjects)
-        setSelectedSubjects(subjects.filter(subject => e.has(subject.id)))
+        setSelectedSubjects(subjects.filter(subject => e.has(String(subject.id))))
     }
     const onChangeEditMode = (e: boolean) => {
         if (e) setSelectedSubjects([])
@@ -119,7 +120,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                 }
             </div>
             <Table
-            className="scrollbar"
+                className="scrollbar"
                 classNames={{
                     ...tableClassNames,
                     base: `max-h-[34rem] overflow-auto`,
@@ -128,7 +129,7 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
                 aria-label="Tabla de materias"
                 selectionMode={editMode ? 'multiple' : 'none'}
                 onSelectionChange={onSubjectSelectionChange}
-                selectedKeys={selectedSubjects.map(subject => subject.id)}
+                selectedKeys={selectedSubjects.map(subject => String(subject.id))}
             >
                 <TableHeader>
                     <TableColumn>
