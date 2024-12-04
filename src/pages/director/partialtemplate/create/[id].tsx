@@ -69,7 +69,14 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
 }
 
 const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[]) => {
-    const partialTemplatePromises = partialTemplates.map((partialTemplate) => insertPartialTemlatesWithActivities({
+    const newPartialTemplates = partialTemplates.map((partialTemplate) => {
+        const newTotal = (partialTemplate.activities !== undefined) ? partialTemplate.activities.reduce((acc, activity) => acc + activity.subtotalClassification, 0) : 0
+        return {
+            ...partialTemplate,
+            total: newTotal
+        }
+    })
+    const partialTemplatePromises = newPartialTemplates.map((partialTemplate) => insertPartialTemlatesWithActivities({
         data: {
             partialTemplate,
             templateId: templateId,
