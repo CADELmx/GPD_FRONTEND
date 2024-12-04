@@ -1,5 +1,5 @@
 import { ApiResponse, GetById, serverClient } from "../apiClient";
-import { CreateTemplate, Template } from "../types/template";
+import { CreateTemplate, Template, TemplateJoinPartialTemplate } from "../types/template";
 
 export interface TemplatesResult extends ApiResponse {
     data: Template[]
@@ -7,6 +7,10 @@ export interface TemplatesResult extends ApiResponse {
 
 export interface TemplateResult extends ApiResponse {
     data: Template
+}
+
+export interface TemplateJoinPartialTemplateResult extends ApiResponse {
+    data: TemplateJoinPartialTemplate[]
 }
 
 export const getTemplates = async () => {
@@ -25,8 +29,8 @@ export const getTemplate = ({ id }: GetById) => {
     })
 }
 
-export const getTemplateJoinPartialTemplates = ({id}: GetById) => {
-    return serverClient.get<TemplateResult>('/templates/', {
+export const getTemplateJoinPartialTemplates = ({ id }: GetById) => {
+    return serverClient.get<TemplateJoinPartialTemplateResult>('/templates/', {
         params: {
             id
         }

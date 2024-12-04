@@ -8,10 +8,16 @@ import Link from "next/link"
 import { tableClassNames } from "../../../components/educationalProgram/EducationalProgramCard"
 import { ImportSubjectsMenu } from "@/components/subject/ImportSubjectMenu"
 import { UploadIcon } from "@/components/Icons"
+import { Area } from "../../../models/types/area"
+import { getAreasJoinEducationalPrograms } from "../../../models/transactions/area"
 
 export const getStaticProps = async () => {
     const { data: { data, error } } = await getEducationalPrograms()
-    if (error) return {
+    const { data: {
+        data: areas,
+        error: areasError
+    } } = await getAreasJoinEducationalPrograms()
+    if (error || areasError) return {
         props: {
             error: 'Error al obtener los programas educativos, recarga la página',
             educationalPrograms: []
@@ -19,21 +25,25 @@ export const getStaticProps = async () => {
     }
     return {
         props: {
+            areas,
             educationalPrograms: data,
             error: null
         }
     }
 }
 
-export default function SecretaryAllSubjects({ educationalPrograms: ssrEducationalPrograms, error }: {
-    educationalPrograms: EducationalProgram[], error: string | null
+export default function SecretaryAllSubjects({ educationalPrograms: ssrEducationalPrograms, areas: ssrAreas, error }: {
+    educationalPrograms: EducationalProgram[],
+    areas: Area[],
+    error: string | null
 }) {
-    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
+    const { educationalState: { educationalPrograms }, areaState: { areas }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
     const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]))
     useEffect(() => {
         setStoredEducationalPrograms({
             educationalPrograms: ssrEducationalPrograms
         })
+        setStoredAreas({ areas: ssrAreas })
     }, [])
 
     return (
