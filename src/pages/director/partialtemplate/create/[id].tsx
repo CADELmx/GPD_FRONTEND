@@ -4,9 +4,11 @@ import { YearSelectorAlter } from "@/components/Selector";
 import { UseSecretary } from "@/context";
 import { getAreasByWorkers } from "@/models/transactions/area";
 import { getEducationalProgramsByArea } from "@/models/transactions/educational-program";
+import { insertPartialTemlatesWithActivities, insertPartialTemplate } from "@/models/transactions/partial-template";
 import { getInsesnsitivePersonalData } from "@/models/transactions/personal-data";
 import { getSubjectsByProgramGroupedByPeriod, SubjectGrouped } from "@/models/transactions/subject";
 import { getTemplate, getTemplates } from "@/models/transactions/templates";
+import { CreateActivity } from "@/models/types/activity";
 import { Area } from "@/models/types/area";
 import { CreatePartialTemplate } from "@/models/types/partial-template";
 import { PersonalData } from "@/models/types/personal-data";
@@ -66,6 +68,23 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
     }
 }
 
+export const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[]) => {
+    const partialTemplatePromises = partialTemplates.map((partialTemplate) => insertPartialTemlatesWithActivities({
+        data: {
+            partialTemplate,
+            templateId: templateId,
+        }
+    }))
+    toast.promise(Promise.all(partialTemplatePromises), {
+        error: 'Error al guardar las plantillas parciales',
+        loading: 'Guardando plantillas parciales',
+        success: (partialTemplateResponses) => {
+            const partialTemplateErrors = partialTemplateResponses.filter(({ data }) => data.error)
+            const successLength = partialTemplateResponses.length - partialTemplateErrors.length
+            return `${successLength} plantillas parciales guardadas`
+        }
+    })
+}
 
 export default function DirectorActivity({
     template: ssrTemplate,
@@ -95,9 +114,6 @@ export default function DirectorActivity({
     const [isDisabled, setIsDisabled] = useState(true);
     const handleSave = () => {
         console.log(selectedPartialTemplates)
-        const activities = selectedPartialTemplates.map(({ activities }) => {
-            return activities || []
-        }).flat()
         const firstString = ssrTemplate.period.split(':')[0]
         const firstStringLength = firstString.length
         const newPartialTemplates: CreatePartialTemplate[] = selectedPartialTemplates.map((partialTemplate: CreatePartialTemplate) => {
@@ -107,8 +123,7 @@ export default function DirectorActivity({
                 year: firstString.substring(firstStringLength - 4, firstStringLength),
             }
         })
-        console.log(newPartialTemplates)
-        console.log(activities)
+        handleInsertPartialTemplates(Number(ssrTemplate.id), newPartialTemplates)
     }
     const handleSelectArea = (e: Selection) => {
         if (e === "all") return
@@ -138,6 +153,7 @@ export default function DirectorActivity({
             loading: 'Cargando materias',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
+                if (data.length === 0) return 'No hay materias en este programa educativo'
                 setSubjects(data)
                 setOriginalSubjects(data)
                 return `${data.length} materias cargadas`

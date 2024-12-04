@@ -23,6 +23,8 @@ const WorkerSelector = ({ subject, personalData, group, period }: { subject: Sub
             ...DefaultActivity,
             activityName: subject.subjectName,
             weeklyHours: subject.weeklyHours,
+            subtotalClassification: subject.weeklyHours,
+            activityDistribution: 'Docnencia',
             id: uuidv4(),
             gradeGroups: [`${period}${group}`],
         }
@@ -134,7 +136,7 @@ const hoverClass = 'hover:cursor-default'
 
 export const PeriodAccordions = ({ subjects, personalData, isDisabled = false }: { personalData: PersonalData[], subjects: SubjectGrouped[], isDisabled?: boolean }) => {
     return (
-        <Accordion showDivider={false} selectedKeys={'all'} isCompact itemClasses={{ heading: hoverClass, title: 'font-bold text-utim ' + hoverClass, titleWrapper: hoverClass, trigger: hoverClass }}>
+        <Accordion showDivider={false} selectedKeys='all' isCompact itemClasses={{ heading: hoverClass, title: 'font-bold text-utim ' + hoverClass, titleWrapper: hoverClass, trigger: hoverClass }}>
             {
                 subjects.map((subjectGrouped) => {
                     return (
