@@ -203,11 +203,11 @@ export default function DirectorActivity({
     }, [selectedAreaKeys]);
     useEffect(() => {
         if (ssrTemplate.id) {
-            handleSelectArea(new Set([ssrTemplate.areaId]))
+            setIsDisabled(false)
+            handleSelectArea(new Set([String(ssrTemplate.areaId)]))
             const firstString = ssrTemplate.period.split(':')[0]
             const firstStringLength = firstString.length
             setDefaultYear(ssrTemplate.period.split(':')[0].substring(firstStringLength - 4, firstStringLength))
-            setIsDisabled(false)
         }
         setStoredAreas({
             areas: ssrAreas
@@ -278,7 +278,7 @@ export default function DirectorActivity({
             <PeriodAccordions
                 subjects={subjects}
                 personalData={personalData}
-                isDisabled={isDisabled}
+                isDisabled={false}
             />
         </div >
     )
