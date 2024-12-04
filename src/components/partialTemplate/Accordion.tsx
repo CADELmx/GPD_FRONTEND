@@ -79,7 +79,6 @@ const WorkerSelector = ({ subject, personalData, group, period }: { subject: Sub
                 })
             })
         }
-        console.log(selectedPartialTemplates)
         setSelectedPersonalDataKeys(e)
     }
     return (

@@ -185,7 +185,6 @@ export const EducationalProgramDeleteModal = ({ isOpen, onOpen, onOpenChange }: 
 }
 
 export const ChangeAreaModal = ({ isOpen, onOpen, onOpenChange, selectedEducationalPrograms }: ModalProps & { selectedEducationalPrograms: EducationalProgram[] }) => {
-    console.log(selectedEducationalPrograms)
     const { areaState: { areas }, educationalState: { educationalPrograms }, setStoredEducationalPrograms } = UseSecretary()
     const [selectedAreas, setSelectedAreas] = useState(InitSelectedKeys);
     const handleSelectArea = (e: Selection) => {

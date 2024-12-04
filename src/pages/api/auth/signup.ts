@@ -8,7 +8,6 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             return res.status(400).json({ error: 'Credenciales requeridas' })
         }
         const { data: { data, error, message }, status } = await signUp({ data: { email, password, nt, active: true } })
-        console.log(data, error, message, status)
         if (error) {
             return res.status(400).json({ error: message })
         }

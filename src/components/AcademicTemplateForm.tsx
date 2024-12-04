@@ -129,7 +129,7 @@ export const AcademicTemplateForm = ({
     }
 
     useEffect(() => {
-        console.log(selectedPartialTemplate)
+        .log(selectedPartialTemplate)
     }, [selectedPartialTemplate])
 
     useEffect(() => {

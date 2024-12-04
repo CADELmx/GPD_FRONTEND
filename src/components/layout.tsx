@@ -56,7 +56,6 @@ export const Layout = ({ children }: {
             setTransport(socket.io.engine.transport.name)
             socket.io.engine.on("upgrade", (transport) => {
                 setTransport(transport.name)
-                console.log(transport.name)
             })
             socket.emit("connection")
         }

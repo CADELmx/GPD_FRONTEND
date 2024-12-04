@@ -9,7 +9,6 @@ export default function EditUser() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Handle form submission
-        console.log({ email, nt, password });
     };
 
     return (

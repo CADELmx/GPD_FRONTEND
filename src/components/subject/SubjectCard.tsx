@@ -26,7 +26,6 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
         onOpenDeleteModal()
     }
     const onSubjectSelectionChange = (e: Selection) => {
-        console.log(e)
         if (e === "all") return setSelectedSubjects(subjects)
         setSelectedSubjects(subjects.filter(subject => e.has(String(subject.id))))
     }
@@ -45,7 +44,9 @@ export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
     }
     const checkSamePeriod = (subjects: Subject[]) => {
         const period = subjects[0].monthPeriod
-        return subjects.every(subject => subject.monthPeriod === period)
+        return subjects.every(subject => {
+            return subject.monthPeriod === period
+        })
     }
     const checkSameEducationalProgram = (subjects: Subject[]) => {
         const program = subjects[0].educationalProgramId
