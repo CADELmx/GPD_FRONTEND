@@ -104,7 +104,7 @@ export const ImportSubjectsMenu = () => {
                                     return message
                                 } else {
                                     setLoading(false)
-                                    return 'Error al importar los programas educativos'
+                                    return 'Error al importar las materias'
                                 }
                             },
                             error: () => {
@@ -149,7 +149,7 @@ export const ImportSubjectsMenu = () => {
                     educationalProgramId: Number(getFirstSetValue(selectedEducationalKeys)),
                     data: newSubjects
                 }), {
-                    loading: 'Registrando programas educativos...',
+                    loading: 'Registrando materias...',
                     success: ({ data: { data, error, message } }) => {
                         setLoading(false)
                         if (error) return message
@@ -160,17 +160,18 @@ export const ImportSubjectsMenu = () => {
                         setSelectedSubjectKeys(new Set([]))
                         setSelectedAreaKeys(new Set([]))
                         playNotifySound()
-                        return `${data.count} programas educativos registrados`
+                        const plural = data.count > 1 ? 's' : ''
+                        return `${data.count} materia${plural} registrada${plural}`
                     },
                     error: () => {
                         setLoading(false)
-                        return 'Error al registrar los programas educativos'
+                        return 'Error al registrar los materias'
                     }
                 })
 
             } catch (error: any) {
                 setLoading(false)
-                toast.error('Error al registrar los programas educativos')
+                toast.error('Error al registrar los materias')
             }
         }
     }
@@ -179,14 +180,14 @@ export const ImportSubjectsMenu = () => {
             toast.promise(getEducationalProgramsByArea({
                 id: Number(getFirstSetValue(selectedAreaKeys))
             }), {
-                loading: 'Cargando programas educativos',
+                loading: 'Cargando materias',
                 success: ({ data: { data, error, message } }) => {
                     if (error) return message
                     setSelectedEducationalKeys(new Set([]))
                     setEducationalPrograms(data)
                     return message
                 },
-                error: 'Error al cargar programas educativos, intenta de nuevo'
+                error: 'Error al cargar materias, intenta de nuevo'
             })
         }
         return () => {
@@ -260,9 +261,9 @@ export const ImportSubjectsMenu = () => {
                 selectedKeys={selectedEducationalKeys as Selection}
                 onSelectionChange={onSelectionEducationProgramChange}
                 key={'table'}
-                label="Programas educativos"
+                label="materias"
                 placeholder="Selecciona un programa educativo"
-                aria-label="Selector de programas educativos"
+                aria-label="Selector de materias"
                 items={educationalPrograms}
                 isDisabled={educationalPrograms.length === 0}
                 disallowEmptySelection
