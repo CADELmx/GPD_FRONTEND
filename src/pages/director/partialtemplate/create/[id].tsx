@@ -189,8 +189,9 @@ export default function DirectorActivity({
     useEffect(() => {
         const fetchPersonalData = async () => {
             const { data: { data, error } } = await getInsesnsitivePersonalData({
-                area: String(areas.find(area => area.id === getFirstSetValue(selectedAreaKeys))?.name)
+                area: String(areas.find(area => area.id === Number(getFirstSetValue(selectedAreaKeys)))?.name)
             })
+            console.log(data)
             if (error) {
                 return
             }
@@ -278,7 +279,7 @@ export default function DirectorActivity({
             <PeriodAccordions
                 subjects={subjects}
                 personalData={personalData}
-                isDisabled={false}
+                isDisabled={isDisabled}
             />
         </div >
     )
