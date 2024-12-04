@@ -1,5 +1,5 @@
 import { ApiResponse, GetById, serverClient } from "../apiClient";
-import { Comment, UpdateComment } from "../types/comment";
+import { Comment, CreateComment, UpdateComment } from "../types/comment";
 
 export interface CommentsResult extends ApiResponse {
     data: Comment[]
@@ -20,12 +20,11 @@ export const getComment = (
 }
 
 export const insertComment = (
-    { partialTemplateId, comment }: { partialTemplateId: number, comment: UpdateComment }
+    { comment }: { comment: CreateComment }
 ) => {
-    return serverClient.post<CommentResult>('/comments', {
-        partialTemplateId,
+    return serverClient.post<CommentResult>('/comments',
         comment
-    })
+    )
 }
 
 export const updateComment = (

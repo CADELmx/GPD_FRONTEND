@@ -42,6 +42,8 @@ export const ChangeStatus = ({ status, templateid }: {
                 return `Estado cambiado a ${newStatus.name}`
             },
             error: 'Error al cambiar'
+        }, {
+            id: 'change-status'
         })
     }
     const handleSubmit = (newStatus: StatusType) => {
@@ -52,9 +54,12 @@ export const ChangeStatus = ({ status, templateid }: {
         }
     }
     const handleInsertComment = () => {
+        console.log(comment)
+        console.log(templateid)
         toast.promise(insertComment({
-            partialTemplateId: templateid, comment: {
-                comment
+            comment: {
+                comment,
+                partialTemplateId: Number(templateid),
             }
         }), {
             loading: 'Enviando comentario...',
@@ -64,17 +69,22 @@ export const ChangeStatus = ({ status, templateid }: {
                 return 'Comentario enviado'
             },
             error: 'Error al enviar comentario'
+        }, {
+            id: 'create-comment'
         })
     }
     const handleSetStatus = () => {
+        const newStatus = statusTypes.find(status => status.name === 'corrección')
+        if (newStatus === undefined) return
         toast.promise(updatePartialTemplate({
-            id: templateid, data: {
-                status: 'Corrección'
+            id: Number(templateid), data: {
+                status: newStatus?.name
             }
         }), {
             loading: 'Cambiando estado...',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
+                setTaskStatus(newStatus)
                 socket.emit('correctionPartialTemplate', data)
                 return 'Enviado a corrección'
             },
