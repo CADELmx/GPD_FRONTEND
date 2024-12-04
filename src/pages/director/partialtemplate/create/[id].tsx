@@ -69,6 +69,7 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
 }
 
 const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[]) => {
+    const router = useRouter()
     const newPartialTemplates = partialTemplates.map((partialTemplate) => {
         const newTotal = (partialTemplate.activities !== undefined) ? partialTemplate.activities.reduce((acc, activity) => acc + activity.subtotalClassification, 0) : 0
         return {
@@ -87,8 +88,10 @@ const handleInsertPartialTemplates = (templateId: number, partialTemplates: Crea
         success: (partialTemplateResponses) => {
             const partialTemplateErrors = partialTemplateResponses.filter(({ data }) => data.error)
             const successLength = partialTemplateResponses.length - partialTemplateErrors.length
+            const plural = successLength < 1 ? 's' : ''
             playNotifySound()
-            return `${successLength} plantillas parciales guardadas`
+            router.push('/')
+            return `${successLength} plantilla${plural} parciale${plural} guardada${plural}`
         }
     })
 }
