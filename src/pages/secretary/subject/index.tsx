@@ -20,7 +20,8 @@ export const getStaticProps = async () => {
     if (error || areasError) return {
         props: {
             error: 'Error al obtener los programas educativos, recarga la página',
-            educationalPrograms: []
+            educationalPrograms: [],
+            areas: []
         }
     }
     return {
@@ -37,7 +38,7 @@ export default function SecretaryAllSubjects({ educationalPrograms: ssrEducation
     areas: Area[],
     error: string | null
 }) {
-    const { educationalState: { educationalPrograms }, areaState: { areas }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
+    const { educationalState: { educationalPrograms }, setStoredEducationalPrograms, setStoredAreas } = UseSecretary()
     const [selectedKeys, setSelectedKeys] = useState<any>(new Set<any>([]))
     useEffect(() => {
         setStoredEducationalPrograms({
