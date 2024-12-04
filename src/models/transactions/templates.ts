@@ -24,3 +24,11 @@ export const getTemplate = ({ id }: GetById) => {
         }
     })
 }
+
+export const getTemplateJoinPartialTemplates = ({id}: GetById) => {
+    return serverClient.get<TemplateResult>('/templates/', {
+        params: {
+            id
+        }
+    })
+} 

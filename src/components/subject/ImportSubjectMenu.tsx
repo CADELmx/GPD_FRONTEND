@@ -236,7 +236,7 @@ export const ImportSubjectsMenu = () => {
                 onPress={handleExport}
                 isLoading={loading && file?.name !== ''}
             >
-                Importar programas educativos
+                Importar materias
             </Button>
             <Select
                 isDisabled={subjects.length === 0}
