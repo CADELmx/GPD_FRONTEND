@@ -46,7 +46,7 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
             template: TemplateData,
             educationalPrograms: EducationalData,
             personalData: PersonalData
-        }
+        }, revalidate: 1
     }
 }
 
