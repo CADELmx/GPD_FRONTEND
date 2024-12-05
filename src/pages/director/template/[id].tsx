@@ -15,7 +15,7 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async ({ params: { id } }: { params: { id: string } }) => {
     const { data: { data: template, error } } = await getTemplate({ id: Number(id) })
     return {
-        revalidate: 3,
+        revalidate: 1,
         props: {
             template,
             error
