@@ -129,10 +129,6 @@ export const AcademicTemplateForm = ({
     }
 
     useEffect(() => {
-        .log(selectedPartialTemplate)
-    }, [selectedPartialTemplate])
-
-    useEffect(() => {
 
         if (ssrPartialTemplate?.id) {
             setStoredPartialTemplates({
