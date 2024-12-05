@@ -68,8 +68,7 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
     }
 }
 
-const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[]) => {
-    const router = useRouter()
+const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[], router) => {
     const newPartialTemplates = partialTemplates.map((partialTemplate) => {
         const newTotal = (partialTemplate.activities !== undefined) ? partialTemplate.activities.reduce((acc, activity) => acc + activity.subtotalClassification, 0) : 0
         return {
@@ -115,6 +114,7 @@ export default function DirectorActivity({
         setStoredEducationalPrograms,
         setStoredActivities
     } = UseSecretary()
+    const router = useRouter()
     const [subjects, setSubjects] = useState<SubjectGrouped[]>([]);
     const [defaultYear, setDefaultYear] = useState(String(new Date().getFullYear()));
     const [originalSubjects, setOriginalSubjects] = useState<SubjectGrouped[]>([]);
@@ -133,7 +133,7 @@ export default function DirectorActivity({
                 year: firstString.substring(firstStringLength - 4, firstStringLength),
             }
         })
-        handleInsertPartialTemplates(Number(ssrTemplate.id), newPartialTemplates)
+        handleInsertPartialTemplates(Number(ssrTemplate.id), newPartialTemplates, router)
     }
     const handleSelectArea = (e: Selection) => {
         if (e === "all") return
@@ -222,7 +222,7 @@ export default function DirectorActivity({
         return () => {
         };
     }, []);
-    const router = useRouter()
+
     if (router.isFallback) return <div>
         Cargando...
     </div>
