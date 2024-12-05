@@ -70,7 +70,7 @@ export default function DirectorPartialTemplates({ partialTemplates: ssrTemplate
 export const getStaticProps = async () => {
     const { data: { data, error } } = await getPartialTemplatesJoinComments()
     return {
-        revalidate: 3,
+        revalidate: 1,
         props: {
             partialTemplates: data,
             error: error ? 'Error al obtener las plantillas, recarga la página' : null
