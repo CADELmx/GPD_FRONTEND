@@ -28,7 +28,7 @@ export const getStaticProps = async () => {
             areas,
             ssrEducationalPrograms: EducationalPrograms,
             error: error ? 'Algo salió mal al obtener las áreas, recarga la página' : null
-        }
+        }, revalidate: 1
     }
 }
 
