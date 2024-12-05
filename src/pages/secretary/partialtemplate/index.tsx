@@ -85,7 +85,7 @@ export default function SecretaryPartialTemplates({ partialTemplates, error }: {
 export const getStaticProps = async () => {
     const { props } = await generateRecords()
     return {
-        revalidate: 3,
+        revalidate: 1,
         props
     }
 }
