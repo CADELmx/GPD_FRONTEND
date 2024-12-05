@@ -14,7 +14,7 @@ import { useEffect, useState } from "react"
 export const getStaticProps = async () => {
     const { data: { data, error } } = await getAreasEducationalProgramsCount()
     return {
-        revalidate: 3,
+        revalidate: 1,
         props: {
             areas: data,
             error,
