@@ -8,7 +8,7 @@ import { Accordion, AccordionItem, Chip, Table, TableBody, TableCell, TableColum
 export const getStaticProps = async () => {
     const { data: { data, error, message } } = await getAreasJoinEducationalPrograms()
     return {
-        revalidate: 3,
+        revalidate: 1,
         props: {
             data,
             error: error ? message : null
