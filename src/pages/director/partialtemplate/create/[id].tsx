@@ -64,7 +64,7 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
             areas,
             template,
             groups
-        }
+        }, revalidate: 1
     }
 }
 
