@@ -41,7 +41,7 @@ export const getStaticProps = async ({ params: { id } }: {
             subjects,
             areas: areas.filter((area) => area.educationalPrograms.length !== 0).map((area) => ({ ...area, educationalPrograms: [] })),
             error
-        }
+        }, revalidate: 1
     }
 }
 
