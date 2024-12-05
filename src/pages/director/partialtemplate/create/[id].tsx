@@ -16,7 +16,7 @@ import { playNotifySound } from "@/toast";
 import { getFirstSetValue, InitSelectedKeys, periods } from "@/utils";
 import { generatePaths } from "@/utils/routes";
 import { Button, Divider, Select, Selection, SelectItem } from "@nextui-org/react";
-import { useRouter } from "next/router";
+import { useRouter, NextRouter } from "next/router";
 import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { v4 as uuidv4 } from 'uuid'
@@ -68,7 +68,7 @@ export const getStaticProps = async ({ params: { id } }: { params: { id: string 
     }
 }
 
-const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[], router) => {
+const handleInsertPartialTemplates = (templateId: number, partialTemplates: CreatePartialTemplate[], router:NextRouter) => {
     const newPartialTemplates = partialTemplates.map((partialTemplate) => {
         const newTotal = (partialTemplate.activities !== undefined) ? partialTemplate.activities.reduce((acc, activity) => acc + activity.subtotalClassification, 0) : 0
         return {
