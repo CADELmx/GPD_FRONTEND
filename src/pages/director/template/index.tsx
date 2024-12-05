@@ -25,7 +25,7 @@ export const getStaticProps = async () => {
         props: {
             error,
             areas
-        }
+        }, revalidate: 1
     }
 }
 
