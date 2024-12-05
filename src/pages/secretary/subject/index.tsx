@@ -22,14 +22,14 @@ export const getStaticProps = async () => {
             error: 'Error al obtener los programas educativos, recarga la página',
             educationalPrograms: [],
             areas: []
-        }
+        }, revalidate: 1
     }
     return {
         props: {
             areas,
             educationalPrograms: data,
             error: null
-        }
+        }, revalidate: 1
     }
 }
 
