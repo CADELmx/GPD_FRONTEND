@@ -1,81 +1,163 @@
-import { Button, Chip, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Button, Chip, Select, Selection, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 import { UploadIcon } from "../Icons"
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { UseSecretary } from "@/context";
+import { CreateEducationalProgram } from "@/models/types/educational-program";
+import { createManyEducationalPrograms } from "@/models/transactions/educational-program";
+import { getFirstSetValue, InitSelectedKeys } from "@/utils";
+import { playNotifySound } from "@/toast";
 import { tableClassNames } from "./EducationalProgramCard";
-import { UseSecretary } from "../../context";
-import { getFirstSetValue } from "../../utils";
-import { createManyEducationalPrograms } from "../../models/transactions/educational-program";
-import { EducationalProgram } from "../../models/types/educational-program";
-import { playNotifySound } from "../../toast";
+import { ParseErrorLink } from "../ParseError";
 
-export const ExportEducationalProgramsMenu = () => {
+export interface parseResult<T = any> {
+    status: 'success' | 'error';
+    message: string;
+    data: T[]
+}
+
+
+const ParseNewEducationalPrograms = (data: string): parseResult<CreateEducationalProgram> => {
+    try {
+        const keys = Object.keys(JSON.parse(data)[0]);
+        if (keys.some(key => !['abbreviation', 'description'].includes(key))) {
+            return {
+                status: 'error',
+                message: 'Formato incorrecto',
+                data: []
+            };
+        }
+        const newEducationalPrograms: CreateEducationalProgram[] = JSON
+            .parse(data)
+            .sort((a: CreateEducationalProgram, b: CreateEducationalProgram) => a.abbreviation.localeCompare(b.abbreviation))
+            .map((e: CreateEducationalProgram, index: number) => ({
+                ...e,
+                index
+            }));
+        return {
+            status: 'success',
+            message: 'Programas educativos listos para ser registrados',
+            data: newEducationalPrograms
+        };
+    } catch (error) {
+        return {
+            status: 'error',
+            message: 'Error al importar, json inválido',
+            data: []
+        }
+    }
+}
+
+export const ImportEducationalProgramsMenu = () => {
     const { areaState: { areas } } = UseSecretary()
-    const [file, setFile] = useState(null);
-    const [educationalPrograms, setEducationalPrograms] = useState([]);
+    const [file, setFile] = useState<File>(new File([], ''));
+    const [educationalPrograms, setEducationalPrograms] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState<any>(new Set<any>([]));
-    const [selectedArea, setSelectedArea] = useState<any>(new Set<any>([]));
-    const handleFileChange = (e) => {
+    const [selectedEductationalPrograms, setSelectedEducationalPrograms] = useState(InitSelectedKeys);
+    const [selectedArea, setSelectedArea] = useState(InitSelectedKeys);
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setFile(e.target.files[0])
         }
     }
+    const handleEducationalProgramSelection = (e: Selection) => {
+        if (e === 'all') return setSelectedEducationalPrograms(new Set(educationalPrograms.map((e) => `${e.index}`)))
+        setSelectedEducationalPrograms(e)
+    }
     const handleExport = async () => {
-        if (file) {
+        if (file.name !== '') {
             setLoading(true)
             const formData = new FormData();
             formData.append('file', file);
-            const { status } = await axios.post('/api/import/educationalprogram', formData)
-            if (status === 200) {
-                const { data } = await axios.get(`/api/import/${file.name}`)
-                const newEducationalPrograms = JSON.parse(data)
-                    .sort((a, b) => a.abbreviation.localeCompare(b.abbreviation))
-                    .map((e, i) => ({
-                        ...e,
-                        index: i
-                    }))
-                setEducationalPrograms(newEducationalPrograms)
-                setFile(null)
-            }
-            setLoading(false)
+            toast.promise(axios.post('/api/import/upload', formData), {
+                loading: 'Subiendo archivo...',
+                success: ({ status }) => {
+                    if (status === 200) {
+                        toast.promise(axios.get(`/api/import/${file.name}`), {
+                            loading: 'Cargando programas educativos...',
+                            success: ({ status, data }) => {
+                                if (status === 200) {
+                                    const { data: newEducationalPrograms, message, status } = ParseNewEducationalPrograms(data);
+                                    setLoading(false);
+                                    if (status === 'success') {
+                                        setEducationalPrograms(newEducationalPrograms);
+                                        return message
+                                    }
+                                    return (
+                                        <ParseErrorLink
+                                            passHref
+                                            legacyBehavior
+                                            href={'/about'}
+                                        >
+                                            {message}
+                                        </ParseErrorLink>
+                                    )
+                                }
+                                setLoading(false)
+                                return 'Error al subir el archivo';
+                            },
+                            error: () => {
+                                setLoading(false)
+                                return 'Error al importar los programas educativos, intenta de nuevo'
+                            }
+                        }, {
+                            id: 'import-educational-programs'
+                        })
+                        return 'Archivo subido con éxito'
+                    }
+                    return 'Error al subir el archivo'
+                },
+                error: () => {
+                    setLoading(false)
+                    return 'Error al subir el archivo, intenta de nuevo'
+                }
+            }, {
+                id: 'import-educational-programs'
+            })
+
         }
     }
     const handleSubmit = async () => {
         if (selectedEductationalPrograms.size > 0) {
-            setLoading(true)
-            const newEducationalPrograms: EducationalProgram[] = Array.from(selectedEductationalPrograms).map((index: string) => {
-                const { abbreviation, description }: {
-                    abbreviation: string,
-                    description: string
-                } = educationalPrograms[index]
-                return ({
-                    abbreviation,
-                    description
+            try {
+                setLoading(true)
+                const newEducationalPrograms: CreateEducationalProgram[] = Array.from(selectedEductationalPrograms).map((index) => {
+                    const { abbreviation, description }: {
+                        abbreviation: string,
+                        description: string
+                    } = educationalPrograms[Number(index)]
+                    return ({
+                        abbreviation,
+                        description
+                    })
                 })
-            })
-            toast.promise(createManyEducationalPrograms({
-                areaId: getFirstSetValue(selectedArea),
-                data: newEducationalPrograms
-            }), {
-                loading: 'Registrando programas educativos...',
-                success: ({ data: { data, error, message } }) => {
-                    setLoading(false)
-                    if (error) return message
-                    setEducationalPrograms(educationalPrograms.filter(e => {
-                        return !selectedEductationalPrograms.has(`${e.index}`)
-                    }))
-                    setSelectedEducationalPrograms(new Set([]))
-                    setSelectedArea(new Set([]))
-                    playNotifySound()
-                    return `${data.count} programas educativos registrados`
-                },
-                error: () => {
-                    setLoading(false)
-                    return 'Error al registrar los programas educativos'
-                }
-            })
+                toast.promise(createManyEducationalPrograms({
+                    areaId: Number(getFirstSetValue(selectedArea)),
+                    data: newEducationalPrograms
+                }), {
+                    loading: 'Registrando programas educativos...',
+                    success: ({ data: { data, error, message } }) => {
+                        setLoading(false)
+                        if (error) return message
+                        playNotifySound()
+                        setEducationalPrograms(educationalPrograms.filter(e => {
+                            return !selectedEductationalPrograms.has(`${e.index}`)
+                        }))
+                        setSelectedEducationalPrograms(new Set([]))
+                        setSelectedArea(new Set([]))
+                        playNotifySound()
+                        return `${data.count} programas educativos registrados`
+                    },
+                    error: () => {
+                        setLoading(false)
+                        return 'Error al registrar los programas educativos'
+                    }
+                })
+            } catch (error: any) {
+                setLoading(false)
+                toast.error('Error al registrar los programas educativos')
+            }
         }
     }
     return (
@@ -92,8 +174,8 @@ export const ExportEducationalProgramsMenu = () => {
                         <p className="text-xs text-utim">Archivos en formato JSON</p>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                        <Chip isDisabled={!file} variant="bordered">
-                            {file ? file?.name : 'Nada seleccionado'}
+                        <Chip isDisabled={!file?.name} variant="bordered">
+                            {file?.name || 'Nada seleccionado'}
                         </Chip>
                         {
                             file &&
@@ -119,7 +201,7 @@ export const ExportEducationalProgramsMenu = () => {
                 color="primary"
                 fullWidth
                 onPress={handleExport}
-                isLoading={loading && file}
+                isLoading={loading && file?.name !== ''}
             >
                 Importar programas educativos
             </Button>
@@ -129,10 +211,10 @@ export const ExportEducationalProgramsMenu = () => {
                 label='Areas'
                 placeholder="Selecciona un area"
                 onSelectionChange={(e) => {
-                    if (e === 'all') return setSelectedArea(new Set(areas.map((area) => area.id)))
+                    if (e === 'all') return
                     setSelectedArea(e)
                 }}
-                selectedKeys={selectedArea}
+                selectedKeys={selectedArea as Selection}
                 disallowEmptySelection
             >
                 {
@@ -155,11 +237,15 @@ export const ExportEducationalProgramsMenu = () => {
                 Registrar en el área seleccionada
             </Button>
             <Table
-                selectedKeys={selectedEductationalPrograms}
-                onSelectionChange={setSelectedEducationalPrograms}
+                selectedKeys={selectedEductationalPrograms as Selection}
+                onSelectionChange={handleEducationalProgramSelection}
                 isCompact
+                isHeaderSticky
                 selectionMode="multiple"
-                classNames={tableClassNames}
+                classNames={{
+                    ...tableClassNames,
+                    base: 'max-h-[34rem] overflow-auto'
+                }}
                 key={'table'}
                 aria-label="tabla de importaciones"
             >
@@ -172,7 +258,7 @@ export const ExportEducationalProgramsMenu = () => {
                     </TableColumn>
                 </TableHeader>
                 <TableBody
-                    key={'ld'}
+                    key={'educational-table-body'}
                     items={educationalPrograms}
                     emptyContent={'Nada exportado aún'}
                 >

@@ -1,62 +1,209 @@
 import { UseSecretary } from "@/context"
-import { Button, Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
+import { CreateSubject, Subject } from "@/models/types/subject"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection, Switch, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react"
+import { ArrowsRightLeftIcon, PencilIcon, TrashIcon, VericalDotsIcon } from "../Icons"
+import { tableClassNames } from "../educationalProgram/EducationalProgramCard"
+import { useState } from "react"
+import { SwitchMode } from "../SwitchMode"
+import { ChangePeriodModal, ChangeProgramModal, DeleteManySubjectsModal } from "./SubjectModal"
 
-export const SubjectCard = ({ subject, onOpenModal, onOpenDeleteModal }) => {
-    const { setStoredSubjects } = UseSecretary()
-    const handlePress = () => {
+export const SubjectTable = ({ onOpenModal, onOpenDeleteModal }: {
+    onOpenModal: () => void,
+    onOpenDeleteModal: () => void
+}) => {
+    const [editMode, setEditMode] = useState(false);
+    const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([]);
+    const { setStoredSubjects, subjectState: { subjects } } = UseSecretary()
+    const ChangeFromProgramModal = useDisclosure()
+    const ChangeFromPeriodModal = useDisclosure()
+    const DeleteSubjectsModal = useDisclosure()
+    const handlePress = (subject: CreateSubject) => {
         setStoredSubjects({ selectedSubject: subject })
         onOpenModal()
     }
-    const handleDelete = () => {
+    const handleDelete = (subject: CreateSubject) => {
         setStoredSubjects({ selectedSubject: subject })
         onOpenDeleteModal()
     }
-    return (
-        <Card>
-            <CardHeader>{subject.name}</CardHeader>
-            <CardBody className="flex">
-                <p className="text-1xl text-utim">
-                    Cuatrimestre: {subject.monthPeriod}
-                </p>
-                <p>
-                    Horas semanales: {subject.weeklyHours}
-                </p>
-                <p>
-                    Horas totales: {subject.totalHours}
-                </p>
-            </CardBody>
-            <CardFooter>
-                <Button onPress={handlePress} isIconOnly variant="light">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                    </svg>
-                </Button>
-                <Button onPress={handleDelete} isIconOnly color="danger" variant="light">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                    </svg>
-                </Button>
-            </CardFooter>
-        </Card>
-    )
-}
-
-export const SubjectCards = ({ subjects, onOpenModal, onOpenDeleteModal }) => {
-    if (subjects.length === 0) return (
-        <p>No hay materias registradas</p>
-    )
+    const onSubjectSelectionChange = (e: Selection) => {
+        if (e === "all") return setSelectedSubjects(subjects)
+        setSelectedSubjects(subjects.filter(subject => e.has(String(subject.id))))
+    }
+    const onChangeEditMode = (e: boolean) => {
+        if (e) setSelectedSubjects([])
+        setEditMode(e)
+    }
+    const handleChangeEducationalProgram = () => {
+        ChangeFromProgramModal.onOpen()
+    }
+    const handleChangePeriod = () => {
+        ChangeFromPeriodModal.onOpen()
+    }
+    const handleDeleteMany = () => {
+        DeleteSubjectsModal.onOpen()
+    }
+    const checkSamePeriod = (subjects: Subject[]) => {
+        const period = subjects[0].monthPeriod
+        return subjects.every(subject => {
+            return subject.monthPeriod === period
+        })
+    }
+    const checkSameEducationalProgram = (subjects: Subject[]) => {
+        const program = subjects[0].educationalProgramId
+        return subjects.every(subject => subject.educationalProgramId === program)
+    }
+    const disabledChangePeriod = selectedSubjects.length === 0 || !checkSamePeriod(selectedSubjects)
+    const disabledChangeProgram = selectedSubjects.length === 0 || !checkSameEducationalProgram(selectedSubjects)
     return (
         <div className="flex flex-col gap-2">
-            {
-                subjects.map(subject => (
-                    <SubjectCard
-                        onOpenModal={onOpenModal}
-                        onOpenDeleteModal={onOpenDeleteModal}
-                        card={subject}
-                        key={subject.id}
-                    />
-                ))
-            }
+            <div className="flex-col md:flex gap-2 items-center">
+                <ChangeProgramModal
+                    isOpen={ChangeFromProgramModal.isOpen}
+                    onOpen={ChangeFromProgramModal.onOpen}
+                    onOpenChange={ChangeFromProgramModal.onOpenChange}
+                    selectedSubjects={selectedSubjects}
+                />
+                <ChangePeriodModal
+                    isOpen={ChangeFromPeriodModal.isOpen}
+                    onOpen={ChangeFromPeriodModal.onOpen}
+                    onOpenChange={ChangeFromPeriodModal.onOpenChange}
+                    selectedSubjects={selectedSubjects}
+                />
+                <DeleteManySubjectsModal
+                    isOpen={DeleteSubjectsModal.isOpen}
+                    onOpen={DeleteSubjectsModal.onOpen}
+                    onOpenChange={DeleteSubjectsModal.onOpenChange}
+                    selectedSubjects={selectedSubjects}
+                />
+                <SwitchMode
+                    isSelected={editMode}
+                    isDisabled={subjects.length === 0}
+                    onValueChange={onChangeEditMode}
+                >
+                    Selección múltiple
+                </SwitchMode>
+                {
+                    editMode && (
+                        <div className="flex flex-col sm:flex-row items-center pt-2 md:pt-0 gap-2">
+                            <Button
+                                fullWidth
+                                aria-label="Cambiar de programa educativo"
+                                isDisabled={disabledChangeProgram}
+                                startContent={ArrowsRightLeftIcon}
+                                color="primary"
+                                onPress={handleChangeEducationalProgram}
+                            >
+                                Cambiar de programa educativo
+                            </Button>
+                            <div className="flex gap-2 w-full">
+                                <Button
+                                    fullWidth
+                                    aria-label="Cambiar de cuatrimestre"
+                                    isDisabled={disabledChangePeriod}
+                                    startContent={ArrowsRightLeftIcon}
+                                    color="primary"
+                                    onPress={handleChangePeriod}
+                                >
+                                    Cambiar de cuatrimestre
+                                </Button>
+                                <Button
+                                    aria-label="Eliminar varios"
+                                    isDisabled={selectedSubjects.length === 0}
+                                    startContent={TrashIcon}
+                                    color="danger"
+                                    onPress={handleDeleteMany}
+                                >
+                                    Eliminar
+                                </Button>
+                            </div>
+                        </div>
+                    )
+                }
+            </div>
+            <Table
+                className="scrollbar"
+                classNames={{
+                    ...tableClassNames,
+                    base: `max-h-[34rem] overflow-auto`,
+                }}
+                isHeaderSticky
+                aria-label="Tabla de materias"
+                selectionMode={editMode ? 'multiple' : 'none'}
+                onSelectionChange={onSubjectSelectionChange}
+                selectedKeys={selectedSubjects.map(subject => String(subject.id))}
+            >
+                <TableHeader>
+                    <TableColumn>
+                        Nombre
+                    </TableColumn>
+                    <TableColumn>
+                        Horas semanales
+                    </TableColumn>
+                    <TableColumn>
+                        Horas totales
+                    </TableColumn>
+                    <TableColumn>
+                        Periodo
+                    </TableColumn>
+                    <TableColumn>
+                        {
+                            editMode || 'Acciones'
+                        }
+                    </TableColumn>
+                </TableHeader>
+                <TableBody items={subjects} emptyContent='Sin materias'>
+                    {
+                        (subject) => (
+                            <TableRow key={subject.id}>
+                                <TableCell>
+                                    {subject.subjectName}
+                                </TableCell>
+                                <TableCell>
+                                    {subject.weeklyHours}
+                                </TableCell>
+                                <TableCell>
+                                    {subject.totalHours}
+                                </TableCell>
+                                <TableCell>
+                                    {subject.monthPeriod}
+                                </TableCell>
+                                <TableCell>
+                                    {
+                                        editMode || (
+                                            <Dropdown>
+                                                <DropdownTrigger>
+                                                    <Button
+                                                        isIconOnly
+                                                        variant="light"
+                                                    >
+                                                        {VericalDotsIcon}
+                                                    </Button>
+                                                </DropdownTrigger>
+                                                <DropdownMenu>
+                                                    <DropdownItem
+                                                        startContent={PencilIcon}
+                                                        onPress={() => handlePress(subject)}
+                                                    >
+                                                        Editar
+                                                    </DropdownItem>
+                                                    <DropdownItem
+                                                        startContent={TrashIcon}
+                                                        onPress={() => handleDelete(subject)}
+                                                        color="danger"
+                                                    >
+                                                        Elminar
+                                                    </DropdownItem>
+                                                </DropdownMenu>
+                                            </Dropdown>
+                                        )
+                                    }
+                                </TableCell>
+                            </TableRow>
+                        )
+                    }
+                </TableBody>
+            </Table>
         </div>
     )
 }
+

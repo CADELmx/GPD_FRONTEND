@@ -1,6 +1,18 @@
-import { getPartialTemplatesJoinActivities } from "@/models/transactions"
+import axios from "axios"
+import { getCookie } from "cookies-next"
 import style from "excel4node/distribution/lib/style"
 import Workbook from "excel4node/distribution/lib/workbook/workbook"
+
+export const serverClient = axios.create({
+    baseURL: process.env.API_URL,
+    headers: {
+        'Authorization': `Bearer ${getCookie('token')}`
+    }
+})
+
+export const getPartialTemplatesJoinActivities = () => {
+    return serverClient.get('/partial-templates/activities')
+}
 
 const styleOptions = {
     font: {
@@ -198,8 +210,9 @@ export const setupWorkSheet = (act, j, cellType) => {
 }
 
 export default async function handler(req, res) {
-    const { data: { data, error }, error: axiosError } = await getPartialTemplatesJoinActivities()
-    if (error || axiosError) return res.status(500).json({ error: 'Error al obtener datos de las plantillas' })
+    const { data: { data, error }, status } = await getPartialTemplatesJoinActivities()
+    if (status !== 200) return res.status(500).json({ error: 'Error al obtener datos de las plantillas' })
+    if (error) return res.status(500).json({ error: 'Error al obtener datos de las plantillas' })
     const workBooks = data.map((record, i) => {
         const { workbook, worksheet, cellType } = generateWorkSheet()
         record.actividad.forEach((act, i) => setupWorkSheet(act, i, cellType))

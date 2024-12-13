@@ -10,6 +10,18 @@ export const LoginButton = () => {
         return null
     }
     return (
-        user ? <Chip avatar={<Avatar color="primary" />}>{user}</Chip> : <Link href="/user" passHref legacyBehavior><Button variant='bordered'>Iniciar sesión</Button></Link>
+        <Link href="/user" passHref legacyBehavior>
+            {
+                user ? (
+                    <Chip className='cursor-pointer' avatar={<Avatar color="primary" />}>
+                        {user}
+                    </Chip>
+                ) : (
+                    <Button variant='bordered'>
+                        Iniciar sesión
+                    </Button>
+                )
+            }
+        </Link>
     )
 }

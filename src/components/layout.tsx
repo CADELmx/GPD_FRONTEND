@@ -6,39 +6,46 @@ import logo from "/public/utim.png"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { LoginButton } from "./LoginButton"
-import { AcademicHatIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
+import { AcademicHatIcon, CheckIcon, EyeIcon, InboxIcon, PlusIcon } from "./Icons"
 import { UseTemplates } from "../context"
+import { Template } from "@/models/types/template"
 
-export const Layout = ({ children }) => {
-    const navBarMenuItems = [
-        { name: "Inicio", href: "/" },
-        { name: "Secretaría", href: "/secretary" },
-        { name: "Estado de plantillas", href: "/templatestatus" },
-    ]
+export const Layout = ({ children }: {
+    children: React.ReactNode
+}) => {
     const secretaryItems = [
         {
-            name: "Plantillas", href: "/secretary", icon: InboxIcon
+            name: "Plantillas docentes - vista general", href: "/secretary/template", icon: InboxIcon
         },
         {
-            name: "Areas", href: "/secretary/area", icon: AcademicHatIcon
+            name: 'Plantillas docentes - vista detallada', href: '/secretary/partialtemplate', icon: InboxIcon
+        },
+        {
+            name: "Áreas", href: "/secretary/area", icon: AcademicHatIcon
         },
         {
             name: "Programas educativos", href: "/secretary/educationalprogram", icon: AcademicHatIcon
         },
+        {
+            name: "Materias", href: "/secretary/subject", icon: AcademicHatIcon
+        }
     ]
     const programDirectorItems = [
+
         {
             name: "Ver estado de plantillas parciales", href: "/director/partialtemplate", icon: EyeIcon
         },
         {
-            name: 'Ver estado de plantillas', href: '/director/template', icon: EyeIcon
+            name: 'Ver estado de plantillas', href: '/', icon: EyeIcon
         },
         {
-            name: 'Crear nueva plantilla', href: '/director', icon: PlusIcon
-
+            name: 'Crear nueva plantilla', href: '/director/template', icon: PlusIcon
+        },
+        {
+            name: 'Ver áreas y programas educativos', href: '/director/area', icon: AcademicHatIcon
         }
     ]
-    const { memory: { socket, user } } = UseTemplates()
+    const { memory: { socket } } = UseTemplates()
     const [isConnected, setIsConnected] = useState(false);
     const [transport, setTransport] = useState("N/A");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,7 +56,6 @@ export const Layout = ({ children }) => {
             setTransport(socket.io.engine.transport.name)
             socket.io.engine.on("upgrade", (transport) => {
                 setTransport(transport.name)
-                console.log(transport.name)
             })
             socket.emit("connection")
         }
@@ -57,15 +63,7 @@ export const Layout = ({ children }) => {
             setIsConnected(false)
             setTransport("N/A")
         }
-        function onTemplateError(data) {
-            if (router.pathname === "/") {
-                toast.error(data, {
-                    id: "template-error",
-                    duration: 5000,
-                })
-            }
-        }
-        function onCreatedTemplate(data) {
+        function onCreatedTemplate(data: Template) {
             if (router.pathname === "/secretary") {
                 toast.success('Plantilla docente recibida', {
                     id: "template-created",
@@ -73,9 +71,9 @@ export const Layout = ({ children }) => {
                 })
             }
         }
-        function onStatusUpdate(data) {
+        function onStatusUpdate(data: Template) {
             if (router.pathname === "/") {
-                toast.success(`Estado de la plantilla ${data.id} cambiado a ${data.status}`, {
+                toast.success(`Estado de la plantilla ${data.id} cambiado a ${data.state}`, {
                     id: "status",
                     duration: 5000,
                 })
@@ -88,7 +86,6 @@ export const Layout = ({ children }) => {
         socket.on("disconnect", onDisconnect)
         socket.on("createdTemplate", onCreatedTemplate)
         socket.on("updateStatus", onStatusUpdate)
-        socket.on("templateError", onTemplateError)
         return () => {
             socket.off("connect", onConnect)
             socket.off("disconnect", onDisconnect)
@@ -103,7 +100,7 @@ export const Layout = ({ children }) => {
                         className="sm:hidden"
                     />
                     <NavbarBrand>
-                        <Image src={logo} alt="UTIM" className="sm:w-32 sm:flex" width={80} height={80} />
+                        <Image src={logo} alt="UTIM" className="sm:w-32 sm:flex" width={80} height={33} priority />
                     </NavbarBrand>
                 </NavbarContent>
                 <NavbarContent className="hidden sm:flex" justify="center">
@@ -114,18 +111,28 @@ export const Layout = ({ children }) => {
                                 <Button variant="light">Dirección de carrera</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="academic items" items={programDirectorItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="default"
+                            aria-label="academic items"
+                            items={programDirectorItems}
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                            selectionMode="single"
+                            selectedKeys={[router.pathname]}
+                        >
                             {
                                 (directorItem) => (
                                     <DropdownItem
-                                        startContent={directorItem.icon
-                                        }
+                                        href={directorItem.href}
+                                        as={Link}
+                                        className="data-[selected=true]:bg-default"
+                                        startContent={directorItem.icon}
                                         textValue={directorItem.name}
-                                        key={directorItem.name}
+                                        key={directorItem.href}
                                     >
-                                        <Link passHref href={directorItem.href}>
-                                            {directorItem.name}
-                                        </Link>
+                                        {directorItem.name}
                                     </DropdownItem>
                                 )
                             }
@@ -137,18 +144,29 @@ export const Layout = ({ children }) => {
                                 <Button variant="light">Secretaría</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="secretary items" items={secretaryItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="default"
+                            aria-label="secretary items"
+                            items={secretaryItems}
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                            selectionMode="single"
+                            selectedKeys={[router.pathname]}
+                        >
                             {
                                 (secretaryItem) => (
                                     <DropdownItem
+                                        as={Link}
+                                        href={secretaryItem.href}
                                         startContent={secretaryItem.icon
                                         }
+                                        className="data-[selected=true]:bg-default"
                                         textValue={secretaryItem.name}
-                                        key={secretaryItem.name}
+                                        key={secretaryItem.href}
                                     >
-                                        <Link passHref href={secretaryItem.href}>
-                                            {secretaryItem.name}
-                                        </Link>
+                                        {secretaryItem.name}
                                     </DropdownItem>
                                 )
                             }
@@ -168,10 +186,14 @@ export const Layout = ({ children }) => {
                             <Chip
                                 variant="dot"
                                 radius="full"
-                                className="flex sm:hidden"
+                                className="flex sm:hidden pr-0"
+                                classNames={{
+                                    content: "pr-0",
+                                    dot: "pr-0",
+                                    base: "pr-0",
+                                }}
                                 color={isConnected ? "success" : "danger"}
-                            >.
-                            </Chip>
+                            />
                         </NavbarContent>
                     )
                 }
@@ -182,18 +204,27 @@ export const Layout = ({ children }) => {
                                 <Button variant="light" size="lg">Dirección de carrera</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="academic items" items={programDirectorItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="primary"
+                            aria-label="academic items"
+                            items={programDirectorItems}
+                            selectedKeys={[router.pathname]}
+                            selectionMode="single"
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                        >
                             {
                                 (directorItem) => (
                                     <DropdownItem
                                         startContent={directorItem.icon
                                         }
+                                        className="data-[selected=true]:bg-primary"
                                         textValue={directorItem.name}
-                                        key={directorItem.name}
+                                        key={directorItem.href}
                                     >
-                                        <Link passHref href={directorItem.href}>
-                                            {directorItem.name}
-                                        </Link>
+                                        {directorItem.name}
                                     </DropdownItem>
                                 )
                             }
@@ -205,18 +236,27 @@ export const Layout = ({ children }) => {
                                 <Button variant="light" size="lg">Secretaría</Button>
                             </DropdownTrigger>
                         </NavbarItem>
-                        <DropdownMenu variant="solid" color="primary" aria-label="secretary items" items={secretaryItems}>
+                        <DropdownMenu
+                            variant="solid"
+                            color="default"
+                            aria-label="secretary items"
+                            items={secretaryItems}
+                            selectedKeys={[router.pathname]}
+                            classNames={{
+                                base: 'p-0 m-0',
+                            }}
+                            selectionMode="single"
+                        >
                             {
                                 (secretaryItem) => (
                                     <DropdownItem
+                                        href={secretaryItem.href}
                                         startContent={secretaryItem.icon
                                         }
                                         textValue={secretaryItem.name}
-                                        key={secretaryItem.name}
+                                        key={secretaryItem.href}
                                     >
-                                        <Link passHref href={secretaryItem.href}>
-                                            {secretaryItem.name}
-                                        </Link>
+                                        {secretaryItem.name}
                                     </DropdownItem>
                                 )
                             }

@@ -2,10 +2,16 @@ import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader
 import toast from "react-hot-toast"
 import { UseSecretary } from "../../context"
 import { createArea, deleteArea, updateArea } from "../../models/transactions/area"
+import { CreateArea } from "@/models/types/area"
+import { ChangeEvent } from "react"
 
-export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
+export const AreaModal = ({ isOpen, onOpen, onOpenChange }: {
+    isOpen: boolean,
+    onOpen: () => void,
+    onOpenChange: () => void
+}) => {
     const { areaState: { selectedArea, areas }, setStoredAreas } = UseSecretary()
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>) => {
         setStoredAreas({
             selectedArea: {
                 ...selectedArea,
@@ -17,8 +23,8 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
         setStoredAreas({ selectedArea: null })
         onOpenChange()
     }
-    const handleUpdate = async (id, newArea) => {
-        toast.promise(updateArea(id, newArea), {
+    const handleUpdate = async (id: number, newArea: CreateArea) => {
+        toast.promise(updateArea({ id, data: newArea }), {
             loading: 'Actualizando área...',
             success: ({ data: { message, data, error } }) => {
                 if (error) return message
@@ -32,8 +38,8 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
             error: 'Error al realizar esta acción, intente de nuevo'
         })
     }
-    const handleCreate = async (area) => {
-        toast.promise(createArea(area), {
+    const handleCreate = async (area: CreateArea) => {
+        toast.promise(createArea({ data: area }), {
             loading: 'Creando área...',
             success: ({ data: { message, data, error } }) => {
                 if (error) return message
@@ -55,7 +61,13 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
         }
     }
     return (
-        <Modal backdrop="blur" isOpen={isOpen} placement="center" isDismissable onOpenChange={onOpenChange}>
+        <Modal
+            backdrop="blur"
+            isOpen={isOpen}
+            placement="center"
+            isDismissable
+            onOpenChange={onOpenChange}
+        >
             <ModalContent>
                 {
                     (onClose) => (
@@ -71,8 +83,19 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
                                 ></Input>
                             </ModalBody>
                             <ModalFooter>
-                                <Button variant="light" color="danger" onPress={handleClose}>Cancelar</Button>
-                                <Button className="bg-utim" onPress={handleSubmit}>Guardar</Button>
+                                <Button
+                                    variant="light"
+                                    color="danger"
+                                    onPress={handleClose}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    className="bg-utim"
+                                    onPress={handleSubmit}
+                                >
+                                    Guardar
+                                </Button>
                             </ModalFooter>
                         </>
                     )
@@ -82,10 +105,15 @@ export const AreaModal = ({ isOpen, onOpen, onOpenChange }) => {
     )
 }
 
-export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }) => {
+export const DeleteAreaModal = ({ isOpen, onOpen, onOpenChange }: {
+    isOpen: boolean,
+    onOpen: () => void,
+    onOpenChange: () => void
+}) => {
     const { areaState: { selectedArea, areas }, setStoredAreas } = UseSecretary()
     const handleDelete = () => {
-        toast.promise(deleteArea(selectedArea.id), {
+        if (!selectedArea.id) return
+        toast.promise(deleteArea({ id: selectedArea.id }), {
             loading: 'Eliminando área...',
             success: ({ data: { message, error } }) => {
                 if (error) return message

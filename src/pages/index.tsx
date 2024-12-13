@@ -1,44 +1,18 @@
+import { Button } from '@nextui-org/react';
+import Link from 'next/link';
 
-import { getEducationalPrograms } from "../models/transactions/educational-program";
-import { getAllPersonalData } from "../models/transactions/personal-data";
-import { ModalError } from "../components/ModalError";
-import { AcademicTemplateForm } from "../components/AcademicTemplateForm";
-import { EducationalProgram } from "../models/types/educational-program";
-import { PersonalData } from "../models/types/personal-data";
-
-export default function Index(
-  { educationalPrograms, academicWorkers, getSsrError }: {
-    educationalPrograms: EducationalProgram[],
-    academicWorkers: PersonalData[],
-    getSsrError: string | null
-  }
-) {
+export default function Index() {
   return (
-    <>
-      <h1 className="text-1xl font-bold text-center text-utim tracking-widest capitalize p-2 m-2">llenado de plantilla</h1>
-      <ModalError error={getSsrError} />
-      <AcademicTemplateForm educationalPrograms={educationalPrograms} academicWorkers={academicWorkers} />
-    </>
-  )
-}
 
-export const getStaticProps = async () => {
-  const eduPromise = getEducationalPrograms()
-  const acaPromise = getAllPersonalData()
-  const [educationalResponse, academicResponse] = await Promise.all([eduPromise, acaPromise])
-  const { data: academicData } = academicResponse
-  const { data: educationalData } = educationalResponse
-  console.log(educationalData, academicData)
-  const error = educationalData.error || academicData.error
-  if (error) {
-    console.error('#ERROR# Error al obtener datos de programas educativos y/o trabajadores')
-  }
-  return {
-    revalidate: 3,
-    props: {
-      getSsrError: error ? 'Algo salió mal, recarga la página' : null,
-      educationalPrograms: educationalData.data,
-      academicWorkers: academicData.data,
-    }
-  }
+    <div className='flex flex-col gap-2 items-center justify-center'>
+      <p className='text-2xl font-bold text-utim text-center'>
+        Bienvenido a la plataforma de gestión de plantillas docentes
+      </p>
+      <Link href={'/user'} passHref legacyBehavior>
+        <Button color="primary">
+          Comenzar
+        </Button>
+      </Link>
+    </div>
+  )
 }

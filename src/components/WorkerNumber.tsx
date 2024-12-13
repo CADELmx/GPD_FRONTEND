@@ -2,27 +2,34 @@ import { Chip, Input, Select, SelectItem, SelectSection, Switch } from "@nextui-
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { BarsArrowDown, LockIcon, PencilIcon, UnlockIcon } from "./Icons"
-import { UseTemplates } from "../context"
+import { UseSecretary, UseTemplates } from "../context"
 import { getPersonalData } from "../models/transactions/personal-data"
-import { playLevelUpSound } from "../toast"
+import { playNotifySound } from "../toast"
 import { PersonalData } from "../models/types/personal-data"
 
 
 export const NtInput = ({ academicWorkers }: { academicWorkers: PersonalData[] }) => {
-    const { memory: { partialTemplate }, setStored } = UseTemplates()
+    const { partialTemplateState: { selectedPartialTemplate }, setStoredPartialTemplates } = UseSecretary()
     const [idError, setIdError] = useState(false)
     const [locked, setLocked] = useState(false)
     const [selectorActive, setSelectorActive] = useState(false)
-    const handleChangeFromBackend = async (newValue) => {
+    const handleChangeFromBackend = async (newValue: string) => {
         if (newValue === '' || !newValue) return
         toast.promise(getPersonalData({ id: Number(newValue) }), {
             loading: 'Buscando número de trabajador',
             success: ({ data: { data, error, message } }) => {
                 if (error) return message
                 if (data) {
-                    playLevelUpSound()
+                    playNotifySound()
                     setIdError(false)
-                    setStored({ partialTemplate: { ...partialTemplate, nt: data.ide, position: data.position, name: data.name } })
+                    setStoredPartialTemplates({
+                        selectedPartialTemplate: {
+                            ...selectedPartialTemplate,
+                            nt: data.ide,
+                            position: data.position,
+                            name: data.name
+                        }
+                    })
                     setLocked(true)
                     return 'Número de trabajador encontrado'
                 } else {
