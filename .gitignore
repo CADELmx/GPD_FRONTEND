@@ -25,7 +25,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
-
+.env
 # vercel
 .vercel
 
@@ -33,10 +33,20 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# database files sql and erd desiner file
+# uploads folder
+/public/uploads
+
+# database files sql and erd designer file
 *.sql
 *.erd.json
 
 # test xlsx generated files
 
 *.xlsx
+
+# pwa workers
+
+sw.js
+sw.js.map
+workbox-*.js
+workbox-*.js.map
